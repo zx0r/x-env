@@ -7,8 +7,8 @@
 # dependencies: ["conf.d/30-ux.fish"]
 # backlinks: ["config.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-06-25"
-# last_commit: "853273b8893d56d11bcf030b42de63bfa22f1837"
+# updated_at: "2026-09-09"
+# last_commit: "pending"
 # tags: ["keymaps", "bindings", "vi-mode", "widgets"]
 # ---
 
@@ -25,6 +25,7 @@ function fish_user_key_bindings
     # 1. Enable default key bindings in insert mode for hybrid Vi ergonomics
     fish_default_key_bindings -M insert
     fish_vi_key_bindings --no-erase insert
+    fish_vi_cursor
 
     # 2. System Clipboard Integration (y/yy/p in Vi modes)
     bind -M visual -m default y 'fish_clipboard_copy; commandline -f end-selection repaint-mode'

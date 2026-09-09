@@ -67,7 +67,12 @@ set -g fish_complete_timeout 0.1
 # 7. Cursor Customization (Visual/UX Layer)
 # Define cursor variables so they are available when keymaps initialize
 set -g fish_vi_force_cursor 1
-set -g fish_cursor_default underline # Normal mode: Blinking Underline
-set -g fish_cursor_insert beam # Insert mode: Blinking Beam (thin line)
-set -g fish_cursor_visual block # Visual mode: Blinking Underline
-set -g fish_cursor_replace_one underscore # Replace mode: Blinking Underline
+set -g fish_cursor_default underscore blink # Normal mode: Blinking Underline
+set -g fish_cursor_insert underscore blink # Insert mode: Blinking Underline
+set -g fish_cursor_visual block # Visual mode: Block
+set -g fish_cursor_replace_one underscore # Replace mode: Underline
+
+# Enable vi cursor shapes when using tmux
+if string match -q -- 'tmux*' $TERM
+    set -g fish_vi_force_cursor 1
+end

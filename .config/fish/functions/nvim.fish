@@ -7,9 +7,9 @@
 # dependencies: []
 # backlinks: []
 # created_at: "2026-06-24"
-# updated_at: "2026-06-25"
-# last_commit: "f4adbd9652c78a01f562b7194602f3fa10eeea80"
-# tags: []
+# updated_at: "2026-09-09"
+# last_commit: "pending"
+# tags: ["editor", "wrapper", "nvim"]
 # ---
 
 function nvim --wraps nvim --description "Wrapper for profile-aware nvimx routing"
@@ -24,5 +24,10 @@ function nvim --wraps nvim --description "Wrapper for profile-aware nvimx routin
         end
     else
         command nvim $argv
+    end
+
+    # Guaranteed terminal cursor restoration post-TUI exit (blinking underline: \e[3 q)
+    if status is-interactive
+        echo -en "\e[3 q"
     end
 end

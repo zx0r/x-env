@@ -18,6 +18,33 @@ This log tracks structural modifications, metadata updates, and relationship upd
 
 ## Commit: pending
 **Author:** Antigravity <antigravity@google.com>  
+**Date:** Wed Sep 09 23:41:00 2026 +0700  
+**Subject:** fix(ux/cursor): enforce reliable blinking underline cursor restoration across nvim and fish shell
+
+### I. Modified Modules & Scope of Impact
+*   [`conf.d/30-ux.fish`](file:///Users/x0r/.config/fish/conf.d/30-ux.fish) (UX / UI (30-39)) - Fixed invalid cursor shape keyword strings to valid Fish `underscore blink`.
+*   [`conf.d/40-keymaps.fish`](file:///Users/x0r/.config/fish/conf.d/40-keymaps.fish) (Input & Mappings (40-49)) - Registered `fish_vi_cursor` initialization inside `fish_user_key_bindings`.
+*   [`functions/nvim.fish`](file:///Users/x0r/.config/fish/functions/nvim.fish) (Functions) - Added guaranteed zero-fork stdout escape sequence `\e[3 q` post-editor execution.
+
+### II. Metadata Integration & State Transitions
+*   **Front-matter Update:** Updated `updated_at: "2026-09-09"` in `conf.d/30-ux.fish`, `conf.d/40-keymaps.fish`, and `functions/nvim.fish`.
+*   **Dependency Changes:** None.
+
+### III. Architectural Changes & Systems Optimization
+*   **Fish Cursor Keyword Normalization:** Fish terminal parser expects `underscore` (not `underline`), leading to unhandled fallback blocks. Corrected definitions to `underscore blink`.
+*   **TUI Post-Execution Cursor Enforcement:** Guarded terminal cursor shape restoration directly in `functions/nvim.fish` using in-process `echo -en "\e[3 q"` to prevent terminal multiplexer / TUI reset overrides upon Neovim exit.
+
+### IV. Empirical Validation & Performance Metrics
+*   **Objective:** Eliminate cursor resetting to block shape upon exiting Neovim sessions.
+*   **Systemic Effect:** Instant and persistent restoration to blinking underline cursor in shell prompt and tmux multiplexer.
+*   **Verification Signals:**
+    *   *Syntax Check:* `fish -n conf.d/30-ux.fish conf.d/40-keymaps.fish functions/nvim.fish` returns code 0.
+    *   *Escape Verification:* `__fish_cursor_xterm underscore blink` successfully outputs `\e[3 q`.
+
+---
+
+## Commit: pending
+**Author:** Antigravity <antigravity@google.com>  
 **Date:** Wed Sep 09 22:25:00 2026 +0700  
 **Subject:** fix(variables): correct LESS_TERMCAP ANSI escape codes using zero-fork fish syntax
 
