@@ -1,0 +1,620 @@
+{
+  "NoSyncFrame_SharedPreferences": {
+    "topLeft": "{169, 826}",
+    "screenFrame": "{{0, 0}, {1890, 3360}}"
+  },
+  "NoSyncNextAnnoyanceTime": 798521223.569668,
+  "NSOverlayScrollersFallBackForAccessoryViews": false,
+  "NoSyncCommandHistoryHasEverBeenUsed": true,
+  "AppleSmoothFixedFontsSizeThreshold": 1,
+  "NSNavPanelExpandedSizeForOpenMode": "{880, 448}",
+  "NoSyncRecordedVariables": {
+    "1": [
+      {
+        "name": "presentationName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxRole",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "lastCommand",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "profileName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "showingAlternateScreen",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "id",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "termid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "homeDirectory",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "jobName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "columns",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "uname",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tab.tmuxWindowTitle",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "processTitle",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxClientName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "hostname",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "selectionLength",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "mouseInfo",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "path",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "shell",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "triggerName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "parentSession",
+        "isTerminal": false,
+        "nonterminalContext": 1
+      },
+      {
+        "name": "terminalIconName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxWindowPane",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "mouseReportingMode",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "name",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxStatusRight",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "iterm2",
+        "isTerminal": false,
+        "nonterminalContext": 4
+      },
+      {
+        "name": "tmuxPaneTitle",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "rows",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxWindowPaneIndex",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tty",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "autoLogId",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "badge",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "username",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "logFilename",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "effective_root_pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "sshIntegrationLevel",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tab.tmuxWindowName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tab",
+        "isTerminal": false,
+        "nonterminalContext": 2
+      },
+      {
+        "name": "tmuxStatusLeft",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "selection",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "bellCount",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "autoNameFormat",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "autoName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "terminalWindowName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "creationTimeString",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "commandLine",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "applicationKeypad",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "jobPid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      }
+    ],
+    "16": [
+      {
+        "name": "style",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "frame",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.termid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.mouseInfo",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.terminalWindowName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.terminalIconName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "isHotkeyWindow",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab",
+        "isTerminal": false,
+        "nonterminalContext": 2
+      },
+      {
+        "name": "currentTab.currentSession.processTitle",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.lastCommand",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.window",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "id",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.name",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "titleOverride",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "number",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.commandLine",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.effective_root_pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.path",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.hostname",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.tty",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.username",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "iterm2",
+        "isTerminal": false,
+        "nonterminalContext": 4
+      },
+      {
+        "name": "titleOverrideFormat",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.bellCount",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentTab.currentSession.jobName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      }
+    ],
+    "4": [
+      {
+        "name": "pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "localhostName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "effectiveTheme",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      }
+    ],
+    "2": [
+      {
+        "name": "currentSession.terminalWindowName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.bellCount",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.commandLine",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "title",
+        "isTerminal": false,
+        "nonterminalContext": 1
+      },
+      {
+        "name": "title",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxWindowTitle",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.terminalIconName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.effective_root_pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxWindowName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "window",
+        "isTerminal": false,
+        "nonterminalContext": 16
+      },
+      {
+        "name": "currentSession.tty",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.jobName",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.name",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.processTitle",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.lastCommand",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.mouseInfo",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "id",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "titleOverride",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "window",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.username",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.termid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "iterm2",
+        "isTerminal": false,
+        "nonterminalContext": 4
+      },
+      {
+        "name": "titleOverrideFormat",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.hostname",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.pid",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession.path",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "tmuxWindow",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      },
+      {
+        "name": "currentSession",
+        "isTerminal": false,
+        "nonterminalContext": 1
+      }
+    ],
+    "0": [
+      {
+        "name": "",
+        "isTerminal": true,
+        "nonterminalContext": 0
+      }
+    ]
+  },
+  "NoSyncLastOSVersion": "Version 26.4.1 (Build 25E253)",
+  "NoSyncInstallationId": "67531C96-837D-4752-81EA-7060E9C824A5",
+  "NoSyncLastSystemPythonVersionRequirement": "1.17",
+  "NoSyncIgnoreSystemWindowRestoration": true,
+  "HotkeyMigratedFromSingleToMulti": true,
+  "NoSyncRestoreWindowsCount": 0,
+  "NoSyncBFPRecents": [
+    "MesloLGM Nerd Font Mono",
+    "JetBrainsMono Nerd Font Mono",
+    "MesloLGMDZ Nerd Font",
+    "MesloLGM Nerd Font"
+  ],
+  "NSWindow Frame NSColorPanel": "0 83 250 297 0 0 1890 3360 ",
+  "NoSyncTipOfTheDayEligibilityBeganTime": 798348423.569456,
+  "NoSyncAllAppVersions": [
+    "3.6.9",
+    "3.6.10"
+  ],
+  "NoSyncUserHasSelectedCommand": true,
+  "OpenBookmark": false,
+  "NSRepeatCountBinding": "",
+  "NSSplitView Subview Frames NSColorPanelSplitView": [
+    "0.000000, 0.000000, 230.000000, 262.000000, NO, NO",
+    "0.000000, 263.000000, 230.000000, 67.000000, NO, NO"
+  ],
+  "NoSyncLaunchExperienceControllerRunCount": 23,
+  "SUSendProfileInfo": false,
+  "SUHasLaunchedBefore": true,
+  "NSOSPLastRootDirectory": "626f6f6b7c02000000000510400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005c01000004000000030300000000002005000000010100005573657273000000030000000101000078307200080000000106000010000000200000000800000004030000324300000000000008000000040300003d6e00000000000008000000010600003c0000004c000000080000000004000041c79c9b124475ec180000000102000002000000000000000f0000000000000000000000000000000000000001050000080000000403000000000000000000000400000003030000f5010000080000000109000066696c653a2f2f2f0c000000010100004d6163696e746f736820484408000000040300000050a11b73000000080000000004000041c7c1d108800000240000000101000031394344314341392d464137302d344444302d393439412d38394331343042344245454518000000010200008100000001000000ef13000001000000000000000000000001000000010100002f000000d8000000feffffff010000000000000011000000041000002c00000000000000051000005c00000000000000101000007c00000000000000401000006c0000000000000002200000500100000000000005200000c00000000000000010200000d00000000000000011200000040100000000000012200000e40000000000000013200000f400000000000000202000003001000000000000302000009c0000000000000001c00000a40000000000000011c00000200000000000000012c00000b40000000000000001d000009c0000000000000010d000000400000000000000",
+  "SUFeedAlternateAppNameKey": "iTerm",
+  "NoSyncRemoveDeprecatedKeyMappings": 1,
+  "SULastCheckTime": "2026-04-21T06:54:11.598922",
+  "NoSyncSuppressDownloadConfirmation": true,
+  "NoSyncSavedWindowPositions": {
+    "0": "{0, 3360}"
+  },
+  "NSQuotedKeystrokeBinding": "",
+  "NSScrollViewShouldScrollUnderTitlebar": false,
+  "NSAutoFillHeuristicControllerEnabled": false,
+  "NSScrollAnimationEnabled": false,
+  "NSToolbar Configuration com.apple.NSColorPanel": {
+    "TB Is Shown": 1
+  },
+  "NoSyncWindowRestoresWorkspaceAtLaunch": false,
+  "NoSyncSuppressDownloadConfirmation_selection": 0,
+  "IRMemory": 4,
+  "NSWindow Frame iTerm Window 0": "0 0 1890 3360 0 0 1890 3360 "
+}

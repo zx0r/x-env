@@ -1,0 +1,102 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "a8c0cc8a-bdc7-43b2-b1a2-85548d517ec7",
+        "type": "context-percentage",
+        "color": "brightBlack"
+      },
+      {
+        "id": "bb7ef2d7-671a-4c23-9f65-85253d9d89f7",
+        "type": "context-length"
+      },
+      {
+        "id": "tokens-total",
+        "type": "tokens-total",
+        "color": "brightBlack"
+      },
+      {
+        "id": "context-bar",
+        "type": "context-bar",
+        "color": "brightBlack"
+      },
+      {
+        "id": "session-cost",
+        "type": "session-cost",
+        "color": "brightYellow",
+        "bold": true
+      }
+    ],
+    [
+      {
+        "id": "git-branch",
+        "type": "git-branch",
+        "color": "brightRed",
+        "bold": true
+      },
+      {
+        "id": "git-changes",
+        "type": "git-changes",
+        "color": "brightYellow"
+      },
+      {
+        "id": "git-insertions",
+        "type": "git-insertions",
+        "color": "brightGreen"
+      },
+      {
+        "id": "git-deletions",
+        "type": "git-deletions",
+        "color": "brightRed"
+      },
+      {
+        "id": "git-root-dir",
+        "type": "git-root-dir",
+        "color": "brightGreen"
+      },
+      {
+        "id": "git-worktree",
+        "type": "current-working-dir",
+        "color": "brightBlack"
+      }
+    ],
+    [
+      {
+        "id": "session-usage",
+        "type": "session-usage",
+        "color": "brightCyan"
+      },
+      {
+        "id": "session-name",
+        "type": "session-name",
+        "color": "brightCyan"
+      },
+      {
+        "id": "claude-session-id",
+        "type": "claude-session-id",
+        "color": "brightCyan"
+      }
+    ]
+  ],
+  "flexMode": "full",
+  "compactThreshold": 80,
+  "colorLevel": 3,
+  "defaultSeparator": " ❱",
+  "defaultPadding": " ",
+  "inheritSeparatorColors": true,
+  "globalBold": true,
+  "powerline": {
+    "enabled": true,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "theme": "custom",
+    "autoAlign": false
+  }
+}

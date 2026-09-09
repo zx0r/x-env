@@ -1,0 +1,22 @@
+# https://gist.github.com/alphashuro/ca4b64571a364653766df08bd91fc9d4?permalink_comment_id=4143216
+# Remember to:
+
+# add allow_remote_control yes to kitty.conf
+# add --listen-on unix:/tmp/mykitty to ~/.config/kitty/macos-launch-services-cmdline
+# echo allow_remote_control yes >> ~/.config/kitty/kitty.conf
+# echo --listen-on unix:/tmp/mykitty >> ~/.config/kitty/macos-launch-services-cmdline
+# Restart kitty after the changes
+
+on alfred_script(q)
+	set cmd to q
+	repeat while cmd starts with space
+   		set cmd to cmd's text 2 thru -1
+	end repeat
+
+	tell application "kitty" to activate
+	do shell script "/Applications/Kitty.app/Contents/MacOS/kitty @ --to unix:/tmp/mykitty new-window --new-tab"
+	tell application "System Events" to keystroke cmd
+	tell application "System Events"
+		key code 36 -- enter key
+	end tell
+end alfred_script

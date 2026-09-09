@@ -1,0 +1,10 @@
+# Cloaking is a HOSTS (or /etc/hosts) file on steroids. 
+# You can point to a cloaking file using the cloaking_rules key in the dnscrypt-proxy.toml configuration file.
+
+localhost                127.0.0.1
+localhost                ::1
+dev.next                 127.0.0.1
+*.local                  127.0.0.1
+ads.*                    192.168.100.1
+ads.*                    192.168.100.2
+ads.*                    ::1

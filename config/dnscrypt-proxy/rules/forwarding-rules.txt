@@ -1,0 +1,28 @@
+# --- Local network zones (RFC 8375 + Legacy) ---
+lan              192.168.1.1
+home.arpa        192.168.1.1
+
+# --- Reverse DNS for private ranges (RFC 1918) ---
+10.in-addr.arpa       192.168.1.1
+168.192.in-addr.arpa  192.168.1.1
+
+# 172.16.0.0/12 accurate mapping (16 zones)
+16.172.in-addr.arpa   192.168.1.1
+17.172.in-addr.arpa   192.168.1.1
+18.172.in-addr.arpa   192.168.1.1
+19.172.in-addr.arpa   192.168.1.1
+20.172.in-addr.arpa   192.168.1.1
+21.172.in-addr.arpa   192.168.1.1
+22.172.in-addr.arpa   192.168.1.1
+23.172.in-addr.arpa   192.168.1.1
+24.172.in-addr.arpa   192.168.1.1
+25.172.in-addr.arpa   192.168.1.1
+26.172.in-addr.arpa   192.168.1.1
+27.172.in-addr.arpa   192.168.1.1
+28.172.in-addr.arpa   192.168.1.1
+29.172.in-addr.arpa   192.168.1.1
+30.172.in-addr.arpa   192.168.1.1
+31.172.in-addr.arpa   192.168.1.1
+
+# --- Link-local (RFC 3927) ---
+254.169.in-addr.arpa  192.168.1.1

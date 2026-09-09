@@ -1,0 +1,35 @@
+# 🏗️ Kitty Multi-Tab Session
+
+
+# # Launch multiple tabs on startup
+# # Each `new_tab` command creates a new tab with a specific title and command.
+
+# Tab 1: Development Environment
+new_tab Dev
+launch fish
+cd $HOME/projects
+#launch fish -c "cd $HOME/projects"  # Navigate to project directory and open Neovim
+
+# Tab 2: Git Management
+new_tab GIT
+launch fish -c "~/.config/kitty/scripts/session-tab-lazygit.sh"  # Run script to find a Git repo and start lazygit
+
+# # Tab 3: File Management
+new_tab Yazi
+launch fish -c "yazi"  # Launch Yazi file manager
+
+# # Tab 4: System Monitoring
+new_tab SysMon
+launch fish -c "btop"  # Launch btop for system monitoring
+
+# # Tab 5: Logs Viewer
+# new_tab Logs
+# # launch fish
+# launch fish -c "tail -f /var/log/syslog"  # Tail system logs in real-time
+
+# # Tab 6: SSH to Remote Server
+# new_tab SSH
+# launch fish
+# launch fish -c "echo 'SSH tab ready; uncomment and edit the line below to connect.'"
+# launch fish -c "ssh user@remote-server"  # SSH into a remote server (uncomment and customize)
+

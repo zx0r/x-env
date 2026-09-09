@@ -1,0 +1,301 @@
+# NOTE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+#  █████╗ ██╗      █████╗  ██████╗██████╗ ██╗████████╗████████╗██╗   ██╗
+# ██╔══██╗██║     ██╔══██╗██╔════╝██╔══██╗██║╚══██╔══╝╚══██╔══╝╚██╗ ██╔╝
+# ███████║██║     ███████║██║     ██████╔╝██║   ██║      ██║    ╚████╔╝
+# ██╔══██║██║     ██╔══██║██║     ██╔══██╗██║   ██║      ██║     ╚██╔╝
+# ██║  ██║███████╗██║  ██║╚██████╗██║  ██║██║   ██║      ██║      ██║
+# ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝   ╚═╝      ╚═╝      ╚═╝
+#		“Stay Hungry, Stay Foolish.”
+#                  Steve Jobs  Apple
+
+#  Author       : zx0r
+#  License      : MIT License
+#  Description  : Alacritty Configuration: alactitty.toml
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GENERAL SETTINGS
+[general]
+ipc_socket         = true          	                                   # Offer IPC using alacritty msg (Unix only)
+live_config_reload = true  	                                           # Enable live config reload (changes require restart)
+
+# ENVIRONMENT VARIABLES
+[env]
+# Default shell
+SHELL            = "/usr/local/bin/fish"                               # Use Fish shell as the default shell
+
+# Terminal settings
+TERM 	           = "xterm-256color"    	                               # Set the terminal type (required for true colors and advanced features)
+COLORTERM        = "truecolor"  	 	                                   # Enable true colors (required for Neovim and other tools)
+
+# Editor configuration
+EDITOR           = "nvim"                                              # Set the default editor to Neovim
+VISUAL           = "nvim"                                              # Set the default editor to Neovim
+GIT_EDITOR       = "nvim"
+SUDO_EDITOR      = "nvim"
+
+# Language settings
+LANG 	           = "en_US.UTF-8"                                	     # Set the language and locale (optional)
+LC_ALL 	         = "en_US.UTF-8"
+PYTHONIOENCODING = "UTF-8"
+
+
+# TERMINAL SETTINGS 
+# Set Your PATH, Run on the terminal $(which fish)
+[terminal]
+osc52 = "OnlyCopy"                                                     # Allow OSC 52 clipboard copy
+shell = { program = "/usr/local/bin/fish", args = ["--login"] }        # Perfectly Work for macOS (Fish Shell + Tmux)
+# shell = { program = "/opt/homebrew/bin/fish", args = ["--login"] }   # Perfectly Work for macOS (Fish Shell + Tmux)
+
+# TMUX INTEGRATION
+# args = ["--login", "-c", "tmux"]
+# args = ["--login", "-c", "tmux attach || tmux"]
+# args = ["--login", "-c", "tmux attach-session -t base || tmux new-session -s base"]
+
+# WINDOW SETTINGS
+[window]
+blur         	            = true                                  # Blur behind transparent windows (macOS/KDE Wayland)
+opacity 		              = 0.8                                   # Background opacity (0.0 = transparent, 1.0 = opaque)
+startup_mode              = "Maximized"                           # Startup mode (Windowed, Maximized, Fullscreen)
+title        	            = "Alacritty"                           # Window title
+position     	            = "None"                                # Let the window manager handle placement
+padding 	   	            = { x = 5, y = 5 }                      # Padding around the window (scaled by DPI)
+dynamic_padding 	        = true                                  # Spread padding evenly around content
+dynamic_title             = true                                  # Allow terminal apps to change the window title
+decorations 		          = "None"                                # Window decorations (Full, None, etc.)
+decorations_theme_variant = "None"                                # Override system theme variant (Dark, Light, None)
+dimensions		            = { columns = 120, lines = 30 }         # Window size in columns and lines
+class = { instance        = "Alacritty", general = "Alacritty" }  # Window class (Linux/BSD)
+
+# SCROLLING SETTINGS
+[scrolling]
+history             = 10000                                       # Maximum scrollback lines
+multiplier          = 3                                           # Lines scrolled per input increment
+
+[selection]
+save_to_clipboard = false
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+# FONT SETTINGS
+[font]
+size                = 13.0                               	                  		# Font size in points
+offset              = { x = 0, y = 0 }                  	                  		# Offset (x = horizontal, y = vertical)
+glyph_offset 	      = { x = 0, y = 0 }  				                               	# Glyph offset (x = horizontal, y = vertical)
+builtin_box_drawing = true                 				                            	# Use built-in font for box drawing characters
+normal 	            = { family = "FiraMono Nerd Font", style = "Regular" }    	# Default font
+bold                = { family = "FiraMono Nerd Font", style = "Bold" }       	# Bold font style
+italic              = { family = "FiraMono Nerd Font", style = "Italic" }       # Italic font style
+bold_italic         = { family = "FiraMono Nerd Font", style = "Bold Italic" }  # Bold italic font style
+
+# CURSOR SETTINGS
+[cursor]
+style = { shape = "Underline", blinking = "On" }   # Green underline cursor with blinking
+blink_interval  = 350                              # Blinking interval in milliseconds
+thickness       = 0.15                             # Cursor thickness (relative to cell width)
+
+# BELL SETTINGS
+[bell]
+animation = "Ease"                                 # Visual bell animation
+duration  = 200                                    # Duration of the visual bell flash (ms)
+color     = "#ffffff"                              # Visual bell color
+
+# KEYBOARD SETTINGS
+[keyboard]
+bindings = [
+
+  # Basic Operations
+  { key = "V",        mods = "Command",       action = "Paste" },                     # Paste text
+  { key = "C",        mods = "Command",       action = "Copy" },                      # Copy text
+  { key = "Insert",   mods = "Shift",         action = "PasteSelection" },            # Paste selection
+  { key = "L",        mods = "Control",       action = "ClearLogNotice" },            # Clear log notice
+  { key = "L",        mods = "Control",       chars = "\u000c" },                     # Clear log notice (alternative)
+  { key = "PageUp",   mods = "Shift",         action = "ScrollPageUp" },              # Scroll page up
+  { key = "PageDown", mods = "Shift",         action = "ScrollPageDown" },            # Scroll page down
+  { key = "Home",     mods = "Shift",         action = "ScrollToTop" },               # Scroll to top
+  { key = "End",      mods = "Shift",         action = "ScrollToBottom" },            # Scroll to bottom
+
+  # Vi Mode
+  { key = "F2",       mods = "None",          action = "ToggleViMode", mode = "Vi" },          # Toggle Vi mode
+  { key = "PageUp",   mods = "Shift",         action = "ScrollPageUp", mode = "Vi" },          # Scroll page up in Vi mode
+  { key = "PageDown", mods = "Shift",         action = "ScrollPageDown", mode = "Vi" },        # Scroll page down in Vi mode
+  { key = "Escape",   mods = "Alt",           action = "ClearSelection", mode = "Vi" },        # Clear selection in Vi mode
+  { key = "I",        mods = "Alt",           action = "ScrollToBottom", mode = "Vi" },        # Scroll to bottom in Vi mode
+  { key = "Y",        mods = "Alt",           action = "Copy", mode = "Vi" },                  # Copy in Vi mode
+  { key = "V",        mods = "Alt",           action = "ToggleNormalSelection", mode = "Vi" }, # Toggle normal selection in Vi mode
+  { key = "V",        mods = "Shift",         action = "ToggleLineSelection", mode = "Vi" },   # Toggle line selection in Vi mode
+  { key = "V",        mods = "Control",       action = "ToggleBlockSelection", mode = "Vi" },  # Toggle block selection in Vi mode
+
+  # Tab Management
+  { key = "T",        mods = "Command",       action = "CreateNewTab" },              # Create a new tab
+  { key = "Right",    mods = "Command",       action = "SelectNextTab" },             # Select next tab
+  { key = "Left",     mods = "Command",       action = "SelectPreviousTab" },         # Select previous tab
+  { key = "]",        mods = "Command|Shift", action = "SelectNextTab" },             # Select next tab
+  { key = "[",        mods = "Command|Shift", action = "SelectPreviousTab" },         # Select previous tab
+  { key = "1",        mods = "Command",       action = "SelectTab1" },                # Select tab 1
+  { key = "9",        mods = "Command",       action = "SelectLastTab" },             # Select last tab
+
+  # Search
+  { key = "F",        mods = "Control|Shift", action = "SearchForward" },             # Search forward
+  { key = "B",        mods = "Control|Shift", action = "SearchBackward" },            # Search backward
+
+  # macOS Specific
+  { key = "Q",        mods = "Command",       action = "Quit" },                      # Quit Alacritty
+  { key = "K",        mods = "Command",       action = "ClearHistory" },              # Clear history
+  { key = "H",        mods = "Command",       action = "Hide" },                      # Hide window
+  { key = "M",        mods = "Command",       action = "Minimize" },                  # Minimize window
+  { key = "N",        mods = "Command",       action = "CreateNewWindow" },           # Create a new window
+  { key = "Return",   mods = "Command",       action = "SpawnNewInstance" },          # Start new terminal instance
+
+  # Move between workspaces (requires external tools like yabai or i3)
+  { key = "1",        mods = "Command",       command = { program = "yabai", args = ["-m", "space", "--focus", "1"] } }, # Move to workspace 1 (macOS with yabai)
+  { key = "2",        mods = "Command",       command = { program = "yabai", args = ["-m", "space", "--focus", "2"] } }, # Move to workspace 2 (macOS with yabai)
+
+  # Font Size Adjustment
+  { key = "Plus",     mods = "Command",       action = "IncreaseFontSize" },          # Increase font size
+  { key = "Minus",    mods = "Command",       action = "DecreaseFontSize" },          # Decrease font size
+  { key = "0",        mods = "Command",       action = "ResetFontSize" },             # Reset font size
+
+  # Fullscreen and Maximized Mode
+  { key = "M",      mods = "Command",          action = "ToggleFullscreen" },           # Toggle fullscreen mode
+  { key = ".",      mods = "Command",          action = "ToggleSimpleFullscreen" },    # Toggle simple fullscreen (macOS only)
+  { key = ",",      mods = "Command",          action = "ToggleMaximized" },           # Toggle maximized
+  { key = "/",      mods = "Command",          action = "ToggleMaximized" },           # Toggle maximized mode
+]
+
+# MOUSE SETTINGS
+[mouse]
+hide_when_typing = false                        	              # Hide cursor when typing
+bindings  = [
+{ mouse = "Right", mods = "Control", action = "Paste" },  	      # Right-click paste
+]
+
+# COLORS (CYBERPUNK THEME)
+
+[colors]
+transparent_background_colors = false
+
+# Primary colors
+[colors.primary] 
+foreground        = "#f8f8f2"            # Light gray
+background        = "#000000"            # Dark black
+dim_foreground    = "#828482"            # Dimmed foreground
+bright_foreground = "#ffffff"            # Bright foreground
+
+# SELECTION COLORS
+[colors.selection]
+text = "CellForeground" 		   # Use the cell's foreground color for selected text
+background = "#2a2b36"  		   # Dark gray for the background of selected text
+
+# Normal colors
+[colors.normal]
+black = "#1e1e2e"                          # Dark blue
+red = "#ff5555"                            # Bright red
+green = "#50fa7b"                          # Neon green
+yellow = "#f1fa8c"                         # Yellow
+blue = "#6272a4"                           # Light blue
+magenta = "#bd93f9"                        # Purple
+cyan = "#8be9fd"                           # Cyan
+white = "#f8f8f2"                          # Light gray
+
+# Bright colors
+[colors.bright]
+black = "#44475a"                          # Dark gray
+red = "#ff6e6e"                            # Bright red
+green = "#69ff94"                          # Neon green
+yellow = "#ffffa5"                         # Bright yellow
+blue = "#6272a4"                           # Light blue
+magenta = "#d6acff"                        # Bright purple
+cyan = "#a4ffff"                           # Bright cyan
+white = "#ffffff"                          # White
+
+# Cursor colors
+[colors.cursor]
+text   = "#1e1e2e"                       # Background color
+cursor = "#00FF00"                       # Green cursor color
+
+# VI MODE CURSOR COLORS
+[colors.vi_mode_cursor]
+text   = "CellBackground"  	           # Use the cell's background color for the text
+cursor = "CellForeground"  		   # Use the cell's foreground color for the cursor
+
+# SEARCH MATCH COLORS
+[colors.search.matches]
+foreground = "#1a1b26" 			   # Dark blue-gray for the text of matched search results
+background = "#73daca" 			   # Teal for the background of matched search results
+
+# FOCUSED SEARCH MATCH COLORS
+[colors.search.focused_match]
+foreground = "#1a1b26"  		   # Dark blue-gray for the text of the focused match
+background = "#ff9e64" 			   # Orange for the background of the focused match
+	
+# FOOTER BAR COLORS
+[colors.footer_bar]
+background = "#1a1b26"  	           # Dark blue-gray for the footer bar background
+foreground = "#00ff9f" 			   # Bright green for the footer bar text
+
+# LINE INDICATOR COLORS
+[colors.line_indicator]
+foreground = "None" 			   # Use the default foreground color (no override)
+background = "None" 			   # Use the default background color (no override)
+
+# Dim colors
+[colors.dim]
+black = "#0f0f0f"                          # Dim black
+red = "#712b2b"                            # Dim red
+green = "#5f6f3a"                          # Dim green
+yellow = "#a17e4d"                         # Dim yellow
+blue = "#456877"                           # Dim blue
+magenta = "#704d68"                        # Dim magenta
+cyan = "#4d7770"                           # Dim cyan
+white = "#8e8e8e"                          # Dim white
+
+
+# COLORS (Cyberdream theme for alacritty)
+# [colors.primary]
+# background = "0x16181a"
+# foreground = "0xffffff"
+
+# [colors.selection]
+# background = "0x3c4048"
+# foreground = "0xffffff"
+
+# [[colors.indexed_colors]]
+# color = "0xffbd5e"
+# index = 16
+
+# [[colors.indexed_colors]]
+# color = "0xff6e5e"
+# index = 17
+
+# [colors.bright]
+# black = "0x3c4048"
+# blue = "0x5ea1ff"
+# cyan = "0x5ef1ff"
+# green = "0x5eff6c"
+# magenta = "0xbd5eff"
+# red = "0xff6e5e"
+# white = "0xffffff"
+# yellow = "0xf1ff5e"
+
+# [colors.normal]
+# black = "0x16181a"
+# blue = "0x5ea1ff"
+# cyan = "0x5ef1ff"
+# green = "0x5eff6c"
+# magenta = "0xbd5eff"
+# red = "0xff6e5e"
+# white = "0xffffff"
+# yellow = "0xf1ff5e"
+
+# DEBUG SETTINGS
+[debug]
+log_level          = "Warn"                # Log level (Off, Error, Warn, etc.)
+renderer           = "None"                # Use highest available renderer
+render_timer       = false                 # Disable render timer
+print_events       = false                 # Disable event logging
+prefer_egl         = false                 # Disable EGL (macOS)
+highlight_damage   = false                 # Disable damage highlighting
+persistent_logging = false                 # Disable persistent logging
+
+

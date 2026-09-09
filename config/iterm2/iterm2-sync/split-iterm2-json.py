@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""
+Сортирует экспорт iTerm2 (JSON) на отдельные файлы:
+- General.json (глобальные настройки)
+- Profiles.json (профили)
+- Keys.json (горячие клавиши)
+- Colors.json (цветовые схемы)
+- Advanced.json (внутренние/системные ключи)
+"""
+import json, sys, os
+from pathlib import Path
+
+# ── Настройки ──
+INPUT = os.path.expanduser("~/.config/iterm2/iterm2-sync/iterm2-settings.json")
+OUTPUT_DIR = os.path.expanduser("~/.config/iterm2-sync/sorted")
+
+# ── Ключи для General.json (читаемые глобальные настройки) ──
+GENERAL_KEYS = {
+    "Hotkey", "HotkeyCode", "HotkeyModifiers", "HotkeyChar",
+    "Default Bookmark Guid", "SoundForEsc", "VisualIndicatorForEsc",
+    "HapticFeedbackForEsc", "FlashBell", "VisualBell", "SilenceBell",
+    "UseLionStyleFullscreen", "ShowFullScreenTabBar", "HideTabNumber",
+    "TabViewType", "TabStyleWithAutomaticOption", "WindowNumber",
+    "ShowPaneTitles", "SplitPaneDimmingAmount", "DimInactiveSplitPanes",
+    "HideScrollbar", "HideActivityIndicator", "ShowNewOutputIndicator",
+    "ApplePressAndHoldEnabled", "AppleAntiAliasingThreshold",
+    "AppleScrollAnimationEnabled", "AppleWindowTabbingMode",
+    "SUEnableAutomaticChecks", "SUFeedURL", "iTerm Version",
+    "LoadSettingsFromCustomFolder", "CustomFolderForSettings",
+    "OpenNoWindowsAtStartup", "OpenArrangementAtStartup",
+    "EnterCopyModeAutomatically", "TmuxSyncClipboard",
+    "AutoHideTmuxClientSession", "TmuxUnpauseAutomatically",
+    "TmuxPauseModeAgeLimit", "OpenTmuxWindowsIn",
+    "StatusBarPosition", "EnableDivisionView", "UseMetal",
+    "disableMetalWhenUnplugged", "disableMetalInLowPowerMode",
+    "preferIntegratedGPU", "metalMaximizeThroughput",
+    "AllowClipboardAccess", "PerPaneBackgroundImage",
+    "TabsHaveCloseButton", "AIFeatureHostedWebSearch",
+    "AIFeatureStreamingResponses", "AIFeatureHostedCodeInterpeter",
+    "AIFeatureHostedFileSearch", "AIFeatureFunctionCalling",
+    "AI Safety Check", "AiModel", "AiMaxTokens", "AiResponseMaxTokens",
+    "AIVectorStore", "AITermAPI", "AitermURL", "AIVendor"
+}
+
+# ── Ключи для Advanced.json (всё, что не вошло в другие категории) ──
+ADVANCED_PREFIXES = ("NoSync", "NS", "Apple", "SU", "IR", "Ai", "AI")
+
+def is_advanced(key: str) -> bool:
+    return any(key.startswith(p) for p in ADVANCED_PREFIXES) or key not in GENERAL_KEYS
+
+def save_json(data: dict, filename: str):
+    path = Path(OUTPUT_DIR) / filename
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print(f"✅ {filename}: {len(data) if isinstance(data, dict) else len(data) if isinstance(data, list) else 1} записей")
+
+def main():
+    if not os.path.exists(INPUT):
+        print(f"❌ Файл не найден: {INPUT}")
+        print("💡 Сначала выполните экспорт через Python-скрипт из предыдущего ответа")
+        sys.exit(1)
+    
+    with open(INPUT, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    # 1. Профили (массив "New Bookmarks")
+    profiles = data.get("New Bookmarks", [])
+    if profiles:
+        # Оставляем только нужные поля профиля для читаемости
+        clean_profiles = []
+        for p in profiles:
+            clean = {k: v for k, v in p.items() if not k.startswith("Ansi") or "Color" in k}
+            clean_profiles.append(clean)
+        save_json({"profiles": clean_profiles}, "Profiles.json")
+    
+    # 2. Цветовые пресеты
+    colors = data.get("Custom Color Presets", {})
+    if colors:
+        save_json(colors, "Colors.json")
+    
+    # 3. Горячие клавиши (глобальные + из профилей)
+    keys = {}
+    if "Global Key Bindings" in data:
+        keys["global"] = data["Global Key Bindings"]
+    # Собираем клавиши из профилей
+    profile_keys = {}
+    for p in profiles:
+        if "Keyboard Map" in p and p.get("Keyboard Map"):
+            profile_keys[p.get("Name", "Unknown")] = p["Keyboard Map"]
+    if profile_keys:
+        keys["profiles"] = profile_keys
+    if keys:
+        save_json(keys, "Keys.json")
+    
+    # 4. General (глобальные читаемые настройки)
+    general = {k: v for k, v in data.items() if k in GENERAL_KEYS}
+    if general:
+        save_json(general, "General.json")
+    
+    # 5. Advanced (всё остальное)
+    advanced = {k: v for k, v in data.items() 
+                if k not in GENERAL_KEYS 
+                and k not in ("New Bookmarks", "Custom Color Presets", "Global Key Bindings")
+                and is_advanced(k)}
+    if advanced:
+        save_json(advanced, "Advanced.json")
+    
+    print(f"\n📁 Готово: {OUTPUT_DIR}/")
+    print("💡 Для восстановления: ⌘+, → General → Import Settings → выбери iterm2-settings.json")
+
+if __name__ == "__main__":
+    main()
