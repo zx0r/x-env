@@ -6,13 +6,36 @@ responsibility: Tracks structural changes, metadata schema migrations, and confi
 dependencies: []
 backlinks: [.agents/AGENTS.md]
 created_at: 2026-06-25
-updated_at: 2026-09-09
+updated_at: 2026-09-10
 tags: [changelog, history, mdd, audit]
 ---
 
 # Meta-Driven Design Chronology & Changelog
 
 This log tracks structural modifications, metadata updates, and relationship updates across the workstation configuration nodes, serving as a chronological audit trail for parser agents.
+
+---
+
+## Commit: pending
+**Author:** Antigravity <antigravity@google.com>  
+**Date:** Thu Sep 10 00:03:00 2026 +0700  
+**Subject:** feat(disk): extract native diskcheck function and align spaceaudit/spaceclean workflows
+
+### I. Modified Modules & Scope of Impact
+*   [`functions/diskcheck.fish`](file:///Users/x0r/.config/fish/functions/diskcheck.fish) (Functions) - Created lazy-loaded macOS volume inspector function wrapping `diskutil info /` and `df -h / /System/Volumes/Data`.
+*   [`conf.d/20-abbr.fish`](file:///Users/x0r/.config/fish/conf.d/20-abbr.fish) (Commands (20-29)) - Removed unexpandable `diskcheck` abbreviation in favor of native function; updated `spaceaudit` with complete dry-run inspection and `spaceclean` with mutation execution.
+*   [`MAP_OF_CONTENT.md`](file:///Users/x0r/.config/fish/.meta/MAP_OF_CONTENT.md) (Meta / MoC) - Registered `functions/diskcheck.fish` in semantic node registry.
+
+### II. Metadata Integration & State Transitions
+*   **Front-matter Update:** Created node for `functions/diskcheck.fish` with backlink to `conf.d/20-abbr.fish`. Updated `updated_at: "2026-09-10"` in `conf.d/20-abbr.fish`.
+*   **Dependency Changes:** Added `functions/diskcheck.fish` to `dependencies` of `conf.d/20-abbr.fish`.
+
+### III. Architectural Changes & Systems Optimization
+*   **Zero-Fork Lazy Loading:** Leveraged Fish's native autoloading mechanism for `functions/diskcheck.fish`, preventing startup latency spikes.
+*   **Non-Recursive Abbreviation Elimination:** Resolved `Unknown command: diskcheck` runtime failure caused by Fish shell preventing nested abbreviation expansions within pipelines.
+
+### IV. Empirical Validation & Performance Metrics
+*   **Syntax Check:** `fish -n conf.d/20-abbr.fish functions/diskcheck.fish` executed with code 0.
 
 ---
 

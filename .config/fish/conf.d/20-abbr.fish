@@ -4,10 +4,10 @@
 # title: "Command Abbreviations Registry"
 # layer: "Commands (20-29)"
 # responsibility: "Registers user command abbreviations for quick workspace and tool navigation"
-# dependencies: []
+# dependencies: ["functions/diskcheck.fish"]
 # backlinks: ["config.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-09-09"
+# updated_at: "2026-09-10"
 # last_commit: "pending"
 # tags: ["abbreviations", "shortcuts", "productivity", "x-workspace"]
 # ---
@@ -116,7 +116,6 @@ abbr -a pkgclean 'brew autoremove; brew cleanup --prune=all; mise prune; npm cac
 
 # disk: essential macOS disk space toolkit
 abbr -a diskfree 'df -h / /System/Volumes/Data'
-abbr -a diskcheck 'diskutil info /; echo; df -h / /System/Volumes/Data'
 abbr -a disktop 'dust -d 2 <path>'
 
 # mole: safety-first macOS cleanup workflows
@@ -134,8 +133,8 @@ abbr -a mohist 'mo history'
 abbr -a mostatus 'mo status'
 
 # composition: explicit disk workflows
-abbr -a spaceaudit 'diskcheck; echo; dust -d 2 $HOME; echo; mo clean --dry-run; echo; mo purge --dry-run'
-abbr -a spaceclean 'mo clean --dry-run; mo purge --dry-run; mo installer --dry-run'
+abbr -a spaceaudit 'diskcheck; echo; dust -d 2 $HOME; echo; mo clean --dry-run; echo; mo purge --dry-run; echo; mo installer --dry-run'
+abbr -a spaceclean 'mo clean; mo purge; mo installer'
 
 # --------------------------------------------------------------------- #
 
