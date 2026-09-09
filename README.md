@@ -1,8 +1,8 @@
 # The Environment of X
 
-> **Paradigm:** Workstation as Code (WaC)
+> **Paradigm:** Workstation as Code (WaC)  
 > **Author:** [zx0r](https://github.com/zx0r)  
-> **License:** MIT
+> **License:** MIT  
 > **Platform:** macOS · Apple Silicon (arm64)  
 > **Shell SLA:** < 25 ms cold startup · **Achieved:** 9.5 ms base / 21.0 ms full interactive
 
