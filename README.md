@@ -1,5 +1,9 @@
 # The Environment of X
 
+[![Taxonomy](https://img.shields.io/badge/Taxonomy-Meta--Workspace_v1.0-blue.svg)](#meta-workspace-taxonomy)
+[![Compliance](https://img.shields.io/badge/Compliance-XDG_Base_Directory-green.svg)](#xdg-specification)
+[![Architecture](https://img.shields.io/badge/Architecture-4--Zone_Model-orange.svg)](#4-zone-architecture)
+
 > **Paradigm:** Workstation as Code (WaC)  
 > **Author:** [zx0r](https://github.com/zx0r)  
 > **License:** MIT  
@@ -10,8 +14,9 @@
 
 ## Abstract
 
-**x-env** is the configuration repository and reference implementation of the **Workstation as Code (WaC)** paradigm within the **`~/x` (`X-MADE`) Meta-Workspace**. 
-It manages the declarative configuration state of the user space, enforcing idempotency, portability, and version-controlled reproducibility.
+**`x-env`** is a system substrate (Environment Substrate) and a foundational layer for declarative workspace management (**Workspace as Code / WaC**) within the **Meta-Workspace (`~/x (X-MADE) Meta-Workspace`)** ecosystem.
+
+The module is responsible for the idempotent initialization of the system environment, deterministic configuration of the CLI stack, strict isolation of XDG paths, and the provision of a base platform for interaction between humans and AI agents.
 
 Targeting macOS on Apple Silicon hardware, the repository structures user configurations
 under a centralized namespace (`config/`), designed for symlink projection into the host
@@ -286,11 +291,15 @@ The `00-xdg.fish` layer establishes a strict XDG Base Directory specification al
 
 ```fish
 # Meta-Workspace Taxonomy (~/x Human-Agent Ecosystem)
-X_ROOT → "$HOME/x"
-X_AGY  → "$X_ROOT/agy"  # AI Agent Hub (Skills, Rules, MCP)
-X_DEV  → "$X_ROOT/dev"  # Engineering & Development Space
-X_ENV  → "$X_ROOT/env"  # WaC / Dotfiles / Environment Substrate
-X_MIND → "$X_ROOT/mind" # Knowledge Base / Cognitive Graph / Obsidian
+$X_ROOT → "$HOME/x"      # Meta-Workspace    
+$X_MIND → "$X_ROOT/mind" # Knowledge Base / Cognitive Graph / Obsidian
+$X_AGY  → "$X_ROOT/agy"  # AI Agent Hub (Skills, Rules, MCP)
+$X_DEV  → "$X_ROOT/dev"  # Engineering & Development Space
+$X_ENV  → "$X_ROOT/env"  # WaC / Dotfiles / Environment Substrate
+├── config/              # (cfg) Utility configurations: kitty, tmux, fish, starship, nvim
+├── scripts/             # Idempotent bootstrap, symlinkers, validators
+├── vendor/              # Git submodules, external dependencies, mSCP
+└── build/               # Generated artifacts, temporary builds, state
 
 # Standard XDG directories
 XDG_CONFIG_HOME   → "~/.config"
