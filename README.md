@@ -290,16 +290,23 @@ The `10-runtimes.fish` layer implements a parallel cache regeneration engine. Fo
 The `00-xdg.fish` layer establishes a strict XDG Base Directory specification alongside a workstation-specific directory taxonomy:
 
 ```fish
-# Meta-Workspace Taxonomy (~/x Human-Agent Ecosystem)
-$X_ROOT → "$HOME/x"      # Meta-Workspace    
-$X_MIND → "$X_ROOT/mind" # Knowledge Base / Cognitive Graph / Obsidian
-$X_AGY  → "$X_ROOT/agy"  # AI Agent Hub (Skills, Rules, MCP)
-$X_DEV  → "$X_ROOT/dev"  # Engineering & Development Space
-$X_ENV  → "$X_ROOT/env"  # WaC / Dotfiles / Environment Substrate
-├── config/              # (cfg) Utility configurations: kitty, tmux, fish, starship, nvim
-├── scripts/             # Idempotent bootstrap, symlinkers, validators
-├── vendor/              # Git submodules, external dependencies, mSCP
-└── build/               # Generated artifacts, temporary builds, state
+# META-WORKSPACE TAXONOMY (~/x Human-Agent Ecosystem)
+You operate inside the following strictly isolated directory hierarchy. Never cross these boundary lines:
+
+* $X_ROOT → "$HOME/x"      # Meta-Workspace Root Boundary
+* $X_MIND → "$X_ROOT/mind" # Knowledge Base / Cognitive Graph / Obsidian Vault
+* $X_AGY  → "$X_ROOT/agy"  # AI Agent Hub (Daemon, MCP Servers, Agent Skills, Agent Rules, Agent Scripts)
+  - $X_AGY/src/            # Core Daemon (PID 1 Event Loop) & MCP Implementation
+  - $X_AGY/scripts/        # Agent-specific operational scripts & pre-flight checks
+  - $X_AGY/config/         # Agent schemas (Zod), metacognitive prompts, policies
+* $X_DEV  → "$X_ROOT/dev"  # Software Engineering & Development Space
+* $X_ENV  → "$X_ROOT/env"  # Environment Substrate / Workspace as Code (WaC) / OS Dotfiles
+  - $X_ENV/config/         # (cfg) Utility configurations: kitty, tmux, fish, starship, nvim (Packer/Lazy, LSP)
+  - $X_ENV/scripts/        # System bootstrap, symlinkers, mSCP security enforcers
+  - $X_ENV/vendor/         # System Git submodules & external vendor tools
+  - $X_ENV/build/          # Generated artifacts, temporary builds, state
+```
+```
 
 # Standard XDG directories
 XDG_CONFIG_HOME   → "~/.config"
