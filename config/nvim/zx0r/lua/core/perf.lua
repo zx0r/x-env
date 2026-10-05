@@ -38,41 +38,6 @@ for _, mason_bin in ipairs(mason_bins) do
   end
 end
 
--- ---------------------------------------------------------------------------
--- Built-in legacy runtime plugins (Ring 0 complete pre-emptive suppression)
--- ---------------------------------------------------------------------------
--- Prevent Neovim C-core from probing runtimepath for obsolete builtin plugins.
-
-local disabled_builtins = {
-  "2html_plugin",
-  "editorconfig",
-  "getscript",
-  "getscriptPlugin",
-  "gzip",
-  "logipat",
-  "man",
-  "matchit",
-  "matchparen",
-  "net",
-  "netrw",
-  "netrwPlugin",
-  "nvim_net_plugin",
-  "osc52",
-  "rplugin",
-  "rrhelper",
-  "spellfile",
-  "spellfile_plugin",
-  "tarPlugin",
-  "tohtml",
-  "tutor",
-  "vimball",
-  "vimballPlugin",
-  "zipPlugin",
-}
-
-for _, plugin in ipairs(disabled_builtins) do
-  vim.g["loaded_" .. plugin] = 1
-end
 
 -- ---------------------------------------------------------------------------
 -- Startup message & GC tuning
