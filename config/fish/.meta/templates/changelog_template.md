@@ -1,6 +1,6 @@
 # Changelog Entry Template (Meta-Driven Design Schema)
 
-This template defines the exact formatting that must be followed by any AI agent or developer when appending a new entry to [changelog.md](file:///Users/x0r/.config/fish/.meta/log/changelog.md).
+This template defines the exact formatting that must be followed by any AI agent or developer when appending a new entry to [changelog.md](../log/changelog.md).
 
 ---
 

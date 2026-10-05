@@ -7,7 +7,7 @@
 # dependencies: []
 # backlinks: []
 # created_at: "2026-07-12"
-# updated_at: "2026-07-12"
+# updated_at: "2026-10-04"
 # tags: ["micromamba", "conda", "lazy-load", "performance"]
 # ---
 
@@ -16,7 +16,7 @@ function micromamba --description "Wrapper for micromamba to lazily set environm
     if not set -q MAMBA_SHLVL
         set -gx MAMBA_SHLVL "0"
         set -gx MAMBA_ROOT_PREFIX "$HOME/.local/share/mamba"
-        set -gx MAMBA_EXE "/Users/x0r/.local/share/mise/installs/micromamba/latest/bin/micromamba"
+        set -gx MAMBA_EXE "$HOME/.local/share/mise/installs/micromamba/latest/bin/micromamba"
         fish_add_path --move $MAMBA_ROOT_PREFIX/condabin
     end
 

@@ -1,68 +1,81 @@
+command_timeout = 1000
+# ==============================================================================
+#
+#  ████████╗██╗  ██╗███████╗    ███████╗███╗   ██╗██╗   ██╗
+#  ╚══██╔══╝██║  ██║██╔════╝    ██╔════╝████╗  ██║██║   ██║
+#     ██║   ███████║█████╗      █████╗  ██╔██╗ ██║██║   ██║
+#     ██║   ██╔══██║██╔══╝      ██╔══╝  ██║╚██╗██║╚██╗ ██╔╝
+#     ██║   ██║  ██║███████╗    ███████╗██║ ╚████║ ╚████╔╝
+#     ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═══╝  ╚═══╝
+#
+#                       ██████╗ ███████╗    ██╗  ██╗
+#                      ██╔═══██╗██╔════╝    ╚██╗██╔╝
+#                      ██║   ██║█████╗       ╚███╔╝
+#                      ██║   ██║██╔══╝       ██╔██╗
+#                      ╚██████╔╝██║         ██╔╝ ██╗
+#                       ╚═════╝ ╚═╝         ╚═╝  ╚═╝
+#
+#  T H E   E N V I R O N M E N T   O F   X
+#  Declarative. Immutable. High-Performance.
+# ==============================================================================
+
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Inserts a blank line between shell prompts
 add_newline = true
+palette = "cyberpunk_neon"
+format = "$os$sudo$direnv$directory$git_branch$git_commit$git_status$git_metrics$fill$golang$lua$nodejs$python$rust$swift$terraform$docker_context$jobs$custom$cmd_duration$line_break$character"
 
-# Line Break Module
 [line_break]
 format = "\n"
 
-# Wait 10 milliseconds for starship to check files under the current directory.
-scan_timeout = 10
-
-palette = "cyberpunk_neon"
-
-# Replace the '❯' symbol in the prompt with '➜'
-[character] # The name of the module we are configuring is 'character'
+[fill]
 disabled = false
-success_symbol = '[ ](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
-error_symbol = "[ ](bold red)"
-vicmd_symbol = "[ ](bold yellow)"
+symbol = ' '
+style = 'fg:surface2'
+
+[character]
+disabled = false
+success_symbol = '[❯](bold fg:green)'
+error_symbol = "[❯](bold fg:red)"
+vicmd_symbol = "[❮](bold fg:purple)"
 
 [time]
 disabled = true
-format = '[ $time](bold fg:#6c7086)'
+format = '[ $time](bold fg:overlay2)'
 time_format = '%T'
 
 [cmd_duration]
-show_milliseconds = true
-min_time = 100
-format = "[󰔟 $duration ](bold cyan)"
 disabled = true
+show_milliseconds = false
+min_time = 2000
+format = "[󰔟 $duration ](bold fg:peach)"
 
 [os]
 disabled = true
-format = "(fg:#89b4fa)[$symbol]($style)(fg:#89b4fa)"
-style = "fg:#00ff00 bg:#00000000"
+format = "([$symbol]($style))"
+style = "fg:green bg:base"
 
 [sudo]
 disabled = false
 symbol = ' 󰿆 sudo'
-format = "(fg:#eba0ac)[$symbol]($style)(fg:#eba0ac)"
-style = "bold fg:#313244 bg:#eba0ac "
-
-[custom.venv]
-disabled = true
-command = "basename \"$VIRTUAL_ENV\""
-when = "test -n \"$VIRTUAL_ENV\""
-format = "(fg:#cba6f7)[$output]($style)(fg:#cba6f7)"
-style = "bold fg:#313244 bg:#cba6f7"
+format = "[$symbol]($style)"
+style = "bold fg:crust bg:maroon"
 
 [direnv]
 disabled = false
-format = "(fg:#89dceb)[$symbol$allowed]($style)(fg:#89dceb)"
-style = "bold fg:#313244 bg:#000000"
+format = "[$symbol$allowed]($style)"
+style = "bold fg:sky"
 
 [directory]
 disabled = false
 read_only = " 󰌾 "
 home_symbol = "  ~"
-truncation_length = 6
+truncation_length = 3
+truncate_to_repo = true
 truncation_symbol = ' '
-truncate_to_repo = false
-format = "[$path]($style)[$read_only]($read_only_style) "
-style = 'bold fg:#494949 bg:#000000'
-read_only_style = 'bold fg:#313244 bg:#000000'
+format = " [$path]($style)[$read_only]($read_only_style) "
+style = 'bold fg:overlay2 bg:base'
+read_only_style = 'bold fg:surface2 bg:base'
 
 [directory.substitutions]
 "Music" = " "
@@ -71,16 +84,8 @@ read_only_style = 'bold fg:#313244 bg:#000000'
 "Pictures" = " "
 "Documents" = "󰈙 "
 "Downloads" = " "
-"obsidianVault" = "󰏪 󰠮 "
+"obsidianVault" = "󰏪 "
 ".config" = " "
-
-[git_branch]
-disabled = false
-symbol = '  '
-truncation_length = 4
-truncation_symbol = ''
-style = 'bold fg:#ff00ff bg:#000000'
-format = "(fg:#ff00ff)[$symbol$branch(:$remote_branch)]($style) "
 
 [hg_branch]
 symbol = " "
@@ -88,33 +93,49 @@ symbol = " "
 [fossil_branch]
 symbol = " "
 
+[git_branch]
+disabled = true
+symbol = ' '
+truncation_length = 32
+truncation_symbol = ''
+style = 'bold fg:sapphire bg:base'
+format = "[$symbol$branch(:$remote_branch)]($style) "
+
+[git_commit]
+disabled = true
+commit_hash_length = 7
+only_detached = false
+style = "bold fg:mauve bg:base"
+format = "[\\($hash$tag\\)]($style) "
+
 [git_status]
 disabled = true
-ahead = '[ $count](bold green) '
-conflicted = '[󱡂 ](bold red) '
-untracked = '[ $count](bold purple) '
-staged = '[ $count](bold green) '
-stashed = '[ $count](cyan) '
-deleted = '[$count](bold red) '
-modified = '[ $count](bold yellow) '
-behind = '[ $count](bold yellow) '
-renamed = '[󰬴 $count](bold blue) '
-up_to_date = '[ ](bold green) '
-diverged = '[ $ahead_count  $behind_count ](red) '
-style = 'fg:#eba0ac bg:#000000'
-format = " (fg:#89dceb bg:#000000)[$all_status$ahead_behind]($style)"
+ignore_submodules = true
+conflicted = "[✖${count}](bold fg:red) "
+ahead = "[⇡${count}](bold fg:sapphire) "
+behind = "[⇣${count}](bold fg:sapphire) "
+diverged = "[⇕${count}](bold fg:mauve) "
+untracked = "[?${count}](bold fg:sky) "
+stashed = "[⚑${count}](bold fg:teal) "
+modified = "[✚${count}](bold fg:peach) "
+staged = "[●${count}](bold fg:green) "
+renamed = "[»${count}](bold fg:blue) "
+deleted = "[✘${count}](bold fg:red) "
+format = "[$all_status$ahead_behind]($style)"
+style = "bold fg:yellow"
 
 [git_metrics]
 disabled = true
-added_style = 'fg:#a6e3a1 bg:#000000'
-deleted_style = 'fg:#89b4fa bg:#000000'
-format = " (fg:#89dceb bg:#000000)[+$added]($added_style)[-$deleted]($deleted_style)(fg:#45475a)"
+ignore_submodules = true
+added_style = 'bold fg:green bg:base'
+deleted_style = 'bold fg:red bg:base'
+format = "([▴$added]($added_style)[▾$deleted]($deleted_style)) "
 
 [aws]
 format = 'on [$symbol($profile )(\($region\) )]($style)'
-style = 'bold blue'
+style = 'bold fg:blue'
 symbol = "  "
-disabled = false
+disabled = true
 
 [buf]
 symbol = " "
@@ -126,16 +147,20 @@ disabled = true
 
 [conda]
 symbol = " "
+disabled = false
 
 [crystal]
 symbol = " "
+disabled = true
 
 [dart]
 symbol = " "
+disabled = true
 
 [docker_context]
-symbol = " "
-disabled = true
+disabled = false
+format = "[🐳 $context]($style) "
+style = "bold fg:blue bg:base"
 
 [elixir]
 symbol = " "
@@ -150,15 +175,16 @@ symbol = " "
 disabled = true
 
 [gcloud]
-disabled = false
+disabled = true
 symbol = "☁️"
-style = 'bold fg:#334455 bg:#000000'
+style = 'bold fg:overlay0 bg:base'
 format = '[$symbol$account(\($project\))]($style) '
 
 [golang]
 symbol = " "
-style = 'bold fg:#eba0ac bg:#000000'
-format = '[[$symbol($version)](fg:#769ff0 bg:#000000)]($style)'
+style = 'bold fg:peach'
+format = '[$symbol($version)]($style)'
+disabled = false
 
 [guix_shell]
 symbol = " "
@@ -174,10 +200,17 @@ disabled = true
 
 [hostname]
 ssh_symbol = " "
+disabled = true
 
 [java]
 symbol = " "
 disabled = true
+
+[jobs]
+disabled = true
+symbol = "⚙ "
+style = "bold fg:blue bg:base"
+format = "[$symbol$number]($style) "
 
 [julia]
 symbol = " "
@@ -189,12 +222,13 @@ disabled = true
 
 [lua]
 symbol = " "
-format = '(fg:#89b4fa)[ ${symbol}(${version})]($style) '
-style = 'bold fg:#ffff00 bg:#000000'
+format = '[ ${symbol}(${version})]($style) '
+style = 'bold fg:yellow'
 disabled = false
 
 [memory_usage]
 symbol = "󰍛 "
+disabled = false
 
 [meson]
 symbol = "󰔷 "
@@ -211,7 +245,7 @@ disabled = true
 [nodejs]
 symbol = " "
 format = '[$symbol($version)]($style) '
-style = 'bold fg:#769ff0 bg:#000000'
+style = 'bold fg:green'
 disabled = false
 
 [ocaml]
@@ -264,13 +298,16 @@ Void = " "
 Windows = "󰍲 "
 
 [package]
-symbol = "󰏗 "
+symbol = "📦 "
+disabled = true
 
 [perl]
 symbol = " "
+disabled = true
 
 [php]
 symbol = " "
+disabled = true
 
 [pijul_channel]
 symbol = " "
@@ -279,8 +316,8 @@ disabled = true
 [python]
 pyenv_version_name = false
 symbol = ' '
-format = '(fg:#8093fd)[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style) '
-style = 'bold fg:#313244 bg:#000000'
+format = '[${symbol}${pyenv_prefix}(${version})]($style) '
+style = 'bold fg:sky'
 disabled = false
 
 [rlang]
@@ -292,9 +329,9 @@ symbol = " "
 disabled = true
 
 [rust]
-symbol = "󱘗 "
-format = '(fg:#eba0ac)[ ${symbol}(${version})]($style)(fg:#eba0ac)'
-style = 'bold fg:#313244 bg:#000000'
+symbol = "🦀"
+format = '[ ${symbol}(${version})]($style) '
+style = 'bold fg:maroon'
 disabled = false
 
 [scala]
@@ -302,17 +339,66 @@ symbol = " "
 disabled = true
 
 [swift]
-symbol = " "
-disabled = true
+disabled = false
+format = "[ $version]($style) "
+style = "bold fg:peach bg:base"
+
+[terraform]
+disabled = false
+format = "[󱁢 $workspace]($style) "
+style = "bold fg:lavender bg:base"
 
 [zig]
 symbol = " "
 disabled = true
 
-[fill]
-disabled = true
-symbol = '─'
-style = 'fg:#89b4fa bg:none'
+[custom.ansible]
+command = "ansible --version | awk 'NR==1{print $3}' | tr -d ']'"
+when = "test -f ansible.cfg -o -f playbook.yml -o -d roles"
+style = "bold fg:blue bg:base"
+format = "[󱂚 $output]($style) "
+shell = ["sh", "-c"]
+disabled = false
+
+[custom.venv]
+disabled = false
+command = "basename \"${VIRTUAL_ENV:-$CONDA_PREFIX}\""
+when = "test -n \"$VIRTUAL_ENV\" -o -n \"$CONDA_PREFIX\""
+format = "[  $output ]($style)"
+style = "bold fg:crust bg:mauve"
+shell = ["bash", "-c"]
+use_stdin = false
+
+[custom.neovim]
+use_stdin = false
+ignore_timeout = false
+command = 'bob ls | awk "/Used/ {print \$2}"'
+detect_folders = ["lua"]
+style = "bold fg:flamingo"
+format = "[ $output ]($style)"
+shell = ["bash", "-c"]
+
+[custom.xcode]
+command = "xcodebuild -version | head -n1 | awk '{print $2}'"
+when = "ls -1d *.xcodeproj *.xcworkspace 2>/dev/null | grep -q '.'"
+style = "bold fg:sapphire bg:base"
+format = "[🛠 $output]($style) "
+shell = ["bash", "-c"]
+disabled = false
+
+[custom.docker_compose]
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
+style = "bold fg:teal bg:base"
+format = "[🐙]($style) "
+disabled = false
+
+[custom.fish_config]
+command = "echo ''"
+directories = ["~/.config/fish"]
+when = "true"
+style = "bold fg:teal bg:base"
+format = "[󰈺]($style) "
+disabled = false
 
 [palettes.cyberpunk_neon]
 # Base colors
@@ -383,94 +469,4 @@ surface0 = "#181818" # Dark surface
 base = "#161616"   # Primary background
 mantle = "#0c0c0c" # Darker background
 crust = "#080808"  # Darkest background
-
-[custom.neovim]
-ignore_timeout = true
-command = 'bob ls | rg used | awk "{print \$2}"' # shows output of command
-detect_folders = ["lua"]
-style = "#ff00ff"
-format = "[ $output ]($style)"
-shell = ["bash"]
-
-# [custom.yazi]
-# description = "Indicate the shell was launched by `yazi`"
-# command = "test -n \"$YAZI_LEVEL\""
-# when = true
-# ignore_timeout = true
-
-# [custom.is_private_label_right]
-# description = "Indicates when in ZSH is running without $HISTFILE"
-# command = 'echo "󰗹 PRIVATE"'
-# when = '[ -n "$NOHISTFILE" ] && [ "$STARSHIP_SHELL" == "ssh" ]'
-# shell = ["sh", "--norc"]                                           # for fastest performance
-# format = '[ $output ](bg:purple black) '
-#
-# [custom.is_private_icon]
-# description = "Indicates when in ZSH is running without $HISTFILE"
-# command = 'echo "󰗹"'
-# when = '[ -n "$NOHISTFILE" ] && [ "$STARSHIP_SHELL" == "ssh" ]'
-# shell = ["sh", "--norc"]                                           # for fastest performance
-# format = '[ $output ](bg:purple black) '
-
-# [custom.cpp]
-# format = "via [$symbol]($style)[clang++ v$output]($style) "
-# symbol = "  "
-# detect_extensions = ["cpp", "hpp"]
-# style = "bold #417AB1"
-# command = "clang++ --version | head -1 | awk '{ print $3 }'"
-
-# [custom.c]
-# format = "via [$symbol]($style)[clang v$output]($style) "
-# symbol = "  "
-# detect_extensions = ["c", "h"]
-# style = "bold #6876C5"
-# command = "clang --version | head -1 | awk '{ print $3 }'"
-
-# [custom.git_ghost]
-# description = "Indicates when a Git Repo contains in ZSH is running without $HISTFILE"
-# command = 'echo "󱙝"'
-# when = '[ -d .git ] && git ghosted >& /dev/null'
-# shell = ["sh", "--norc"]                                                               # for fastest performance
-# format = '[ $output ](blue bold) '
-
-# [custom.git_wip]
-# description = "Indicates when a Git Repo contains latest commit is WIP"
-# command = 'echo "WIP  "'
-# when = '[ -d .git ] && git log -1 --pretty=%B | rg --line-regexp "WIP" >& /dev/null'
-# shell = ["sh", "--norc"]                                                             # for fastest performance
-# format = '[ $output ](yellow bold) '
-
-# [custom.is_fish]
-# description = "Indicates when in FISH shell"
-# when = 'test "$STARSHIP_SHELL" = "fish"'
-# shell = ["bash", "--norc"]
-# command = 'echo "👽"'
-# format = '[ $output ](black) '
-
-# [custom.is_bash]
-# description = "Indicates when in BASH shell"
-# command = "echo ' '"
-# shell = ["bash", "--norc"]                   # for fastest performance
-# when = 'test "$STARSHIP_SHELL" = "bash"'
-# format = '[ $output ](bg:white black) '
-
-# [custom.hypr]
-# style = "blue"
-# format = "[ ]($style)"
-# detect_files = ["hyprland.conf"]
-
-# [custom.ebuild]
-# format = "via $symbol [$output]($style) "
-# symbol = "📦"
-# detect_extensions = ["ebuild"]
-# style = "bold #FF8700"
-# command = "ebuild --version"
-
-
-
-
-
-
-
-
 

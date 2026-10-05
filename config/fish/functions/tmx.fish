@@ -38,7 +38,7 @@ function __tmx_help
     set_color normal
     echo "  tmx                     - 🌟 Open interactive menu (fzf)"
     echo "  tmx new [options]       - ➕ Create a new session"
-    echo "  tmx daily               - 🚀 Launch Everyday Workspace (3 windows, 2 panes)"
+    echo "  tmx daily               - 🚀 Launch Everyday Dev Session (3 windows, 2 panes)"
     echo "  tmx switch | s          - 🔄 Switch to a session (fzf)"
     echo "  tmx kill | k            - ❌ Kill a session (fzf)"
     echo "  tmx rename | rs[name]   - ✏️  Rename current/selected session"
@@ -210,13 +210,13 @@ function __tmx_create
 end
 
 function __tmx_daily_template
-    set -l session_name Workspace
+    set -l session_name Dev
     set -l w_names Dev Ops Run
     set -l layout tiled
 
     if tmux has-session -t "$session_name" 2>/dev/null
         set_color yellow
-        echo "Daily Workspace already running. Attaching..."
+        echo "Dev Session already running. Attaching..."
         set_color normal
 
         if test -n "$TMUX"
@@ -229,7 +229,7 @@ function __tmx_daily_template
     end
 
     set_color cyan
-    echo "🚀 Booting Daily Workspace..."
+    echo "🚀 Booting Dev Session..."
     set_color normal
 
     # DEV -> editor / coding
@@ -250,10 +250,14 @@ function __tmx_daily_template
     tmux split-window -v -t "$session_name:".1
 
     tmux select-layout -t "$session_name:" "$layout"
+    
+    # Create extra 6 windows to complete the 9 hieroglyphs (一 to 九)
+    for i in (seq 3 8)
+        tmux new-window -t "$session_name:"
+    end
 
     # Focus DEV
-    tmux select-window -t "$session_name:1" 2>/dev/null
-    or tmux select-window -t "$session_name:0" 2>/dev/null
+    tmux select-window -t "$session_name:0" 2>/dev/null
 
     if test -n "$TMUX"
         tmux switch-client -t "$session_name"

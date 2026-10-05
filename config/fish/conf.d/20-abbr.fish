@@ -4,12 +4,12 @@
 # title: "Command Abbreviations Registry"
 # layer: "Commands (20-29)"
 # responsibility: "Registers user command abbreviations for quick workspace and tool navigation"
-# dependencies: ["functions/diskcheck.fish"]
+# dependencies: ["functions/trash.fish", "functions/storage_audit.fish", "functions/storage_clean.fish"]
 # backlinks: ["config.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-09-10"
+# updated_at: "2026-10-04"
 # last_commit: "pending"
-# tags: ["abbreviations", "shortcuts", "productivity", "x-workspace"]
+# tags: ["abbreviations", "shortcuts", "productivity", "x-workspace", "trash", "storage"]
 # ---
 
 # Defensive check: Abbreviations are only relevant for interactive shell usage
@@ -17,6 +17,8 @@ status is-interactive; or return
 
 # --------------------------------------------------------------------- #
 
+# JIT Loader: Defers 120+ abbreviation registrations (~2ms parsing) to the first prompt
+function __lazy_register_abbrs --on-event fish_prompt
 # System maintenance architecture:
 # - Boundary: each adapter owns one macOS subsystem: net, dns, ui.
 # - Naming grammar: <subsystem><operation>.
@@ -69,19 +71,20 @@ abbr -a uireset 'killall Dock; killall Finder; killall SystemUIServer'
 
 # brew: macOS packages, casks, native system tools
 abbr -a brewget 'brew --cache'
-abbr -a brewcheck 'brew update; brew outdated'
-abbr -a brewup 'brew update; brew upgrade'
+abbr -a brewcheck 'brew update; brew outdated --greedy-latest'
+abbr -a brewup 'brew update; brew upgrade --greedy-latest'
 abbr -a brewclean 'brew autoremove; brew cleanup --prune=all'
 abbr -a brewdry 'brew cleanup --prune=all --dry-run'
 abbr -a brewdoc 'brew doctor'
+abbr -a brewmissing 'brew missing'
+abbr -a brewmaintain 'brew_maintain'
 
 # dua-cli,mole,dut,ncdu
 abbr -a brewdu 'dua (brew --cache)'
 
-# Homebrew: update -> upgrade -> autoremove -> cleanup
-# Updates Homebrew metadata, upgrades installed formulae/casks, removes unused dependencies, then prunes old cache artifacts.
-# 0 10 * * 0 /opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade && /opt/homebrew/bin/brew autoremove && /opt/homebrew/bin/brew cleanup --prune=all >> "$HOME/Library/Logs/brew-maintenance.log" 2>&1
-abbr -a brewcron 'brew update && brew upgrade && brew autoremove && brew cleanup --prune=all'
+# Homebrew Automated Maintenance Engine (update -> greedy upgrade -> missing audit -> doctor -> autoremove -> cleanup)
+# Background scheduling is managed by launchd (~/Library/LaunchAgents/com.user.brew-maintenance.plist)
+abbr -a brewcron 'brew_maintain'
 
 # mise: runtime/tool version manager
 abbr -a miseget 'set -q MISE_DATA_DIR; and echo "$MISE_DATA_DIR"; or echo "$HOME/.local/share/mise"'
@@ -94,7 +97,7 @@ abbr -a misedu 'dua (set -q MISE_DATA_DIR; and echo "$MISE_DATA_DIR"; or echo "$
 abbr -a bunget 'set -q XDG_CACHE_HOME; and echo "$XDG_CACHE_HOME/.bun"; or echo "$HOME/.cache/.bun"'
 abbr -a buncheck 'bun --version; which bun; mise where bun'
 abbr -a bundu 'dua (set -q XDG_CACHE_HOME; and echo "$XDG_CACHE_HOME/.bun"; or echo "$HOME/.cache/.bun")'
-abbr -a bunclean 'rm -ri (set -q XDG_CACHE_HOME; and echo "$XDG_CACHE_HOME/.bun"; or echo "$HOME/.cache/.bun")'
+abbr -a bunclean 'bun pm cache rm'
 
 # npm: legacy/global npm cache
 abbr -a npmget 'npm config get cache'
@@ -113,10 +116,28 @@ abbr -a pkgclean 'brew autoremove; brew cleanup --prune=all; mise prune; npm cac
 
 # --------------------------------------------------------------------- #
 # Disk space tooling contract:
+abbr -a doprune "docker system prune -a --volumes -f"
 
 # disk: essential macOS disk space toolkit
 abbr -a diskfree 'df -h / /System/Volumes/Data'
 abbr -a disktop 'dust -d 2 <path>'
+
+# --------------------------------------------------------------------- #
+# Workspace Artifact Sweepers (kondo, npkill)
+# - Boundary: scoped to developer workspaces, targeting build artifacts (target/, node_modules/).
+# - Safety: default to interactive TUI; npkill strictly excludes hidden dirs to protect app caches.
+
+if type -q kondo
+    abbr -a kondodry 'kondo --dry-run'
+    abbr -a kondox 'kondo ~/x'
+    abbr -a kondodev 'kondo $X_DEV'
+end
+
+if type -q npkill
+    abbr -a npkilldry 'npkill --dry-run'
+    abbr -a npkillx 'npkill -d ~/x --sort size --exclude-hidden-directories'
+    abbr -a npkilldev 'npkill -d $X_DEV --sort size --exclude-hidden-directories'
+end
 
 # mole: safety-first macOS cleanup workflows
 abbr -a mohome 'mo analyze $HOME'
@@ -132,9 +153,11 @@ abbr -a moinstaller 'mo installer'
 abbr -a mohist 'mo history'
 abbr -a mostatus 'mo status'
 
-# composition: explicit disk workflows
-abbr -a spaceaudit 'diskcheck; echo; dust -d 2 $HOME; echo; mo clean --dry-run; echo; mo purge --dry-run; echo; mo installer --dry-run'
-abbr -a spaceclean 'mo clean; mo purge; mo installer'
+# composition: workstation storage lifecycle (audit, clean & safety governor)
+abbr -a saudit storage_audit
+abbr -a sclean storage_clean
+abbr -a tlist 'trash -l'
+abbr -a tempty 'trash -e'
 
 # --------------------------------------------------------------------- #
 
@@ -142,11 +165,11 @@ abbr -a spaceclean 'mo clean; mo purge; mo installer'
 abbr -a c clear
 abbr -a n nvim
 
-# 4. File Management Utilities
+# 4. File Management Utilities (Protected Deletion via trash Governor)
 abbr -a ln 'ln -sfv'
 abbr -a cp 'cp -priv'
 abbr -a mv 'mv -iv'
-abbr -a rm 'rm -riv'
+abbr -a rm trash
 abbr -a mkdir 'mkdir -pv'
 abbr -a mkdir-app 'mkdir -pv {src,public,tests}/{api,components,lib,utils}'
 
@@ -170,9 +193,9 @@ abbr -a ea "nvim $XDG_CONFIG_HOME/fish/conf.d/20-abbr.fish"
 abbr -a et "nvim $XDG_CONFIG_HOME/tmux/tmux.conf"
 abbr -a ef "nvim $XDG_CONFIG_HOME/fish/config.fish"
 
-abbr -a sa "source $HOME/.config/fish/conf.d/20-abbr.fish"
-abbr -a sf "source $HOME/.config/fish/config.fish"
-abbr -a st "tmux source-file $HOME/.config/tmux/tmux.conf"
+abbr -a sa "source $XDG_CONFIG_HOME/fish/conf.d/20-abbr.fish"
+abbr -a sf "source $XDG_CONFIG_HOME/fish/config.fish"
+abbr -a st "tmux source-file $XDG_CONFIG_HOME/tmux/tmux.conf"
 
 # 7. File Permissions Shortcuts
 abbr -a 000 'chmod -R 000' # No permissions for owner, group, or others
@@ -190,7 +213,7 @@ abbr -a chmod+ 'chmod ug+x'
 # 8. Dynamic eza / ls Setup (Avoids duplicate 'l' definition clashing)
 if type -q eza
     abbr -a l "clear; and ll"
-    abbr -a l. "eza -a | egrep '^\.'"
+    abbr -a l. "eza -a | grep -E '^\\.'"
     abbr -a ls "eza -al --color=always --group-directories-first"
     abbr -a la "eza -a --color=always --group-directories-first"
     abbr -a ll "eza -abghilmu --icons=auto --color=always --group-directories-first"
@@ -310,22 +333,13 @@ if type -q kubectl
 end
 
 # System Monitoring
-abbr -a meminfo 'free -m -l -t' # Show free and used memory
-abbr -a psgrep 'ps aux | grep -v grep | grep -i -e VSZ -e {argv}' # Custom ps grep command
 abbr -a memhog 'ps -eo pid,ppid,cmd,%mem --sort=-%mem | head' # Processes consuming most memory
 abbr -a cpuhog 'ps -eo pid,ppid,cmd,%cpu --sort=-%cpu | head' # Processes consuming most CPU
-abbr -a cpuinfo lscpu # Show CPU info
-abbr -a cpu "cpuid -i | grep uarch | head -n 1" # Show CPU microarchitecture
-abbr -a distro 'cat /etc/*-release' # Show OS info
-abbr -a ports 'netstat -tulanp' # Show open ports
+abbr -a psgrep --set-cursor 'ps aux | grep -v grep | grep -i -e VSZ -e %' # Custom ps grep (% = cursor)
 
-# Copy / pasting
-abbr -a cpwd 'pwd | wl-copy' # Copy current path
-abbr -a pa wl-paste # Paste clipboard contents
-
-# Block devices
-abbr -a lsblk "lsblk --output=NAME,FSTYPE,FSVER,MOUNTPOINT,LABEL,PARTLABEL,UUID,PARTUUID,FSAVAIL,FSUSE%" # Show block devices with filesystem usage
-abbr -a dmesg 'dmesg -wH || dmesg | less' # Follow kernel messages or open dmesg in pager
+# Copy / pasting (macOS)
+abbr -a cpwd 'pwd | pbcopy' # Copy current path
+abbr -a pa pbpaste # Paste clipboard contents
 
 # SSH and file transfer commands
 abbr -a ssh256 "set -gx TERM xterm-256color command ssh"
@@ -343,12 +357,17 @@ abbr -a scp_port 'scp -P {port} ...' # Copy file to remote host specifying port
 
 abbr -a valid_json 'python -m json.tool settings.json > /dev/null && echo "✅ Valid JSON"'
 
+
 # ━━━━━━━━━━━━━━ Meta-Workspace (~/x) Navigation ━━━━━━━━━━━━━━
-abbr -a x   'cd $X_ROOT'
-abbr -a xd  'cd $X_DEV'
-abbr -a xdn 'cd $X_DEV/nda'
-abbr -a xdo 'cd $X_DEV/own'
-abbr -a xdb 'cd $X_DEV/box'
-abbr -a xa  'cd $X_AGY'
-abbr -a xe  'cd $X_ENV'
-abbr -a xm  'cd $X_MIND'
+abbr -a xx 'cd $X_ROOT'
+abbr -a xa 'cd $X_AGENTS'
+abbr -a xb 'cd $X_BRAIN'
+abbr -a xc 'cd $X_CONFIG'
+abbr -a xd 'cd $X_DEV'
+abbr -a xn 'cd $X_DEV/nda'
+abbr -a xo 'cd $X_DEV/own'
+abbr -a xt 'x_toggle'
+
+# Self-destruct hook to ensure it only runs once
+functions -e __lazy_register_abbrs
+end

@@ -7,8 +7,7 @@
 # dependencies: []
 # backlinks: []
 # created_at: "2026-06-24"
-# updated_at: "2026-07-12"
-# last_commit: "pending"
+# updated_at: "2026-10-04"
 # tags: ["profiling", "performance", "benchmark"]
 # ---
 
@@ -30,7 +29,7 @@ function profile_startup -d "Profiles fish shell startup latency, lists hotspots
     echo (set_color -o yellow)"[2/4] Cache & Security Topology Status"(set_color normal)
     set -l cache_dir "$XDG_CACHE_HOME/fish/static_init"
     if test -d "$cache_dir"
-        set -l cache_files atuin.fish fzf.fish starship.fish zoxide.fish
+        set -l cache_files frontend.fish path.fish atuin.fish fzf.fish starship.fish zoxide.fish
         for file in $cache_files
             set -l path "$cache_dir/$file"
             if test -f "$path"
@@ -42,7 +41,7 @@ function profile_startup -d "Profiles fish shell startup latency, lists hotspots
             end
         end
     else
-        echo "  ✗ Cache Directory: "(set_color red)"Not Found"(set_color normal)" (Run 'refresh_shell_cache' to bootstrap)"
+        echo "  ✗ Cache Directory: "(set_color red)"Not Found"(set_color normal)" (Auto-generated on interactive startup or run 'x_runtimes_build')"
     end
 
     # Check Secure SSH Infrastructure

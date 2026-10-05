@@ -7,8 +7,8 @@
 # dependencies: ["conf.d/*"]
 # backlinks: []
 # created_at: "2026-06-24"
-# updated_at: "2026-07-05"
-# last_commit: "4a88e01116ee306d32c5739ebe70316c29791cbf"
+# updated_at: "2026-10-04"
+# last_commit: "pending"
 # tags: ["entrypoint", "lifecycle", "bootstrap", "orchestration"]
 # ---
 
@@ -36,61 +36,39 @@
 # sequence, a decade-spaced (decimal) modular topology is enforced:
 #
 #   1.  00–09  | Foundation Layer
-#       • 00-xdg.fish       -> Bootstraps XDG Base Directory variables and paths.
-#       • 01-path.fish      -> In-memory sanitization and normalization of $PATH.
-#       • 01-variables.fish -> Core environment variables, locale, and telemetry opt-outs.
-#       • 02-brew.fish      -> Static Homebrew prefix mapping (bypasses Ruby shellenv fork).
+#       • 00-xdg.fish            -> Bootstraps XDG Base Directory variables and paths.
+#       • 01-variables.fish      -> Core environment variables, locale, and telemetry opt-outs.
+#       • 02-brew.fish           -> Static Homebrew prefix mapping (bypasses Ruby shellenv fork).
+#       • 03-path.fish           -> In-memory sanitization, mise shims prepend, and AOT cache.
 #
 #   2.  10–19  | Infrastructure Layer
-#       • 10-runtimes.fish  -> Compiled static caching for Mise, Starship, Zoxide, and Atuin.
-#       • 11-ssh-gpg.fish   -> SSH/GPG daemon caching and Tmux socket redirection.
+#       • 10-runtimes.fish       -> SWR cache engine for Mise, Starship, Zoxide, and Atuin.
+#       • 11-identity-agent.fish -> Tier 1 Cryptographic Identity (Secretive SEP / SSH agent).
 #
 #   3.  20–29  | Commands Layer
-#       • 20-abbr.fish      -> Workspace abbreviations and system command shortcuts.
+#       • 20-abbr.fish           -> Workspace abbreviations and system command shortcuts (lazy prompt).
 #
 #   4.  30–39  | UX & Styling Layer
-#       • 30-ux.fish        -> Asynchronous prompt rendering, greetings, and Vi-cursor states.
+#       • 30-ux.fish             -> Palette, prompt styling, theme bypass stub, and Vi-cursor states.
 #
 #   5.  40–49  | Input & Mappings Layer
-#       • 40-keymaps.fish   -> Vi-mode keybindings and CLI widget integrations.
+#       • 40-keymaps.fish        -> Vi-mode keybindings and CLI widget integrations.
 #
 #   6.  50–59  | Tooling Layer
-#       • 50-utils.fish     -> Tool-specific configurations (FZF options, Bat, Neovim).
+#       • 50-fzf.fish            -> FZF preview/search options and tree-sitter completion bootstrap.
 #
-#   7.  90–99  | Extension Layer
-#       • 99-local.fish     -> Machine-specific secret overrides (git-ignored).
+#   (Tier 2/3 Secrets: get-secret, add-secret, with-secret are on-demand autoloaded from functions/)
 #
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ━━━ 2. Login-Specific Tasks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Sourced once per login shell. All variables are exported (-gx) so they are
-# inherited by all subsequent nested subshells without redundant disk I/O.
 if status is-login
-    # Load GNU ls colors (in-process read bypasses external cat command fork)
-    #
-    # Generated/compiled via trapd00r/LS_COLORS upstream:
-    #   curl -fsSL https://raw.githubusercontent.com/trapd00r/LS_COLORS/refs/heads/master/lscolors.csh -o /tmp/lscolors.csh
-    #   sed -n "s/^setenv LS_COLORS '\(.*\)'/\1/p" /tmp/lscolors.csh > ~/.config/ls_colors
-    #
-    if test -f "$XDG_CONFIG_HOME/ls_colors"
-        read -z LS_COLORS <"$XDG_CONFIG_HOME/ls_colors"
-        set -gx LS_COLORS (string trim $LS_COLORS)
-    end
-
-    # Load Eza custom colors (in-process read bypasses external cat command fork)
-    if test -f "$XDG_CONFIG_HOME/eza_colors"
-        read -z EZA_COLORS <"$XDG_CONFIG_HOME/eza_colors"
-        set -gx EZA_COLORS (string trim $EZA_COLORS)
-    end
+    # (Other interactive tasks can go here)
 end
 
 # ━━━ 3. Interactive-Specific Tasks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Load interactive color theme configuration if present
 if status is-interactive
-    set -l theme_path "$XDG_CONFIG_HOME/fish/themes/colorscheme.fish"
-    if test -f "$theme_path"
-        source "$theme_path"
-    end
+    # (Other interactive tasks can go here)
 end
 
 # ━━━ 4. Configuration Performance Profiling ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -99,5 +77,5 @@ end
 #   - fish --profile-startup /tmp/fish.prof -ic exit
 #   - sort -nrk2 /tmp/fish.prof | head -20
 #
-# Current Target: Startup Latency < 50ms (Current Performance: ~40ms)
+# Current Target: Startup Latency < 12ms (Empirical Baseline: 11.0ms ± 0.7ms, Target: 8–10ms)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

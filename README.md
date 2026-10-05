@@ -8,7 +8,7 @@
 > **Author:** [zx0r](https://github.com/zx0r)  
 > **License:** MIT  
 > **Platform:** macOS · Apple Silicon (arm64)  
-> **Shell SLA:** < 25 ms cold startup · **Achieved:** 9.5 ms base / 21.0 ms full interactive
+> **Shell SLA:** < 10.0 ms cold startup · **Achieved:** 7.4 ms bare metal / 10.8 ms full interactive
 
 ---
 
@@ -24,7 +24,7 @@ system in strict adherence to the **XDG Base Directory Specification** (`~/.conf
 
 The core of the environment is a layered, decade-spaced modular architecture (`00–59`)
 within the Fish interactive shell. All shell initialisation routines are governed by a
-**Zero-Fork SLA (< 25 ms)**, achieved through static cache pre-compilation, vectorized C++
+**Zero-Fork SLA (< 10.0 ms)**, achieved through static cache pre-compilation, vectorized C++
 in-memory PATH sanitisation, In-Memory Sentinel Guards, and lazy cryptographic TTY bindings.
 The configuration suite encompasses terminal emulation (Kitty, Alacritty, iTerm2), session
 multiplexing (Tmux), shell history (Atuin), syntax-highlighted tooling (Bat, Ripgrep), and

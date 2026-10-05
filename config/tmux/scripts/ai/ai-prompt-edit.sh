@@ -160,7 +160,3 @@ else
 fi
 
 exit 0
-
-main() {
-addad
-}

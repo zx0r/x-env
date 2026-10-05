@@ -7,16 +7,18 @@
 # dependencies: []
 # backlinks: []
 # created_at: "2026-06-24"
-# updated_at: "2026-06-25"
+# updated_at: "2026-10-04"
 # last_commit: "f4adbd9652c78a01f562b7194602f3fa10eeea80"
 # tags: ["navigation", "yazi"]
 # ---
 
 function y
-    set tmp (mktemp -t "yazi-cwd.XXXXXX")
+    set -l tmp (mktemp -t "yazi-cwd.XXXXXX")
     yazi $argv --cwd-file="$tmp"
-    if set cwd (command cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
-        builtin cd -- "$cwd"
+    if test -f "$tmp"
+        if set cwd (command cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
+            builtin cd -- "$cwd"
+        end
+        command rm -f -- "$tmp"
     end
-    rm -f -- "$tmp"
 end

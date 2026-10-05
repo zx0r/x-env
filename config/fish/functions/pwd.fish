@@ -16,7 +16,7 @@ function pwd --description "Print working directory with syntax coloring"
     # Execute the built-in pwd with all arguments passed
     set -l path (builtin pwd $argv)
     if test $status -eq 0
-        set_color 00ffff # Neon Cyan
+        set_color cccccc # Light Gray
         echo $path
         set_color normal
     else

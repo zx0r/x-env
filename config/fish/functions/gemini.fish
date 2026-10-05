@@ -12,7 +12,9 @@
 # tags: ["terminal", "utility"]
 # ---
 
-function gemini --description "Wrap Gemini CLI with terminal colors"
+function gemini --wraps=gemini --description "Gemini CLI with JIT SOPS token and truecolor"
+    set -lx GEMINI_API_KEY (get-secret GEMINI_API_KEY)
+    or begin; echo "✗ GEMINI_API_KEY not found. Run: add-secret --ram GEMINI_API_KEY" >&2; return 1; end
     set -lx TERM xterm-256color
     set -lx COLORTERM truecolor
     command gemini $argv

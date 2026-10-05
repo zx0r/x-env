@@ -30,7 +30,7 @@ function rgfont --description "Search for fonts and copy selection to clipboard"
         if command -sq wl-copy
             set copy_cmd wl-copy
         else if command -sq xclip
-            set copy_cmd "xclip -selection clipboard"
+            set copy_cmd xclip -selection clipboard
         else
             set copy_cmd cat
         end
@@ -44,7 +44,7 @@ function rgfont --description "Search for fonts and copy selection to clipboard"
     end
 
     if test -n "$selected"
-        echo -n "$selected" | eval "$copy_cmd"
+        echo -n "$selected" | $copy_cmd
         echo "✅ Copied to clipboard: $selected"
     end
 end

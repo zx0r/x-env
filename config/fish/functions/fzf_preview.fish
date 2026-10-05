@@ -7,7 +7,7 @@
 # dependencies: ["fzf"]
 # backlinks: ["conf.d/50-fzf.fish"]
 # created_at: "2026-07-12"
-# updated_at: "2026-07-12"
+# updated_at: "2026-10-04"
 # tags: ["fzf", "preview", "browser"]
 # ---
 
@@ -68,11 +68,11 @@ function fzf_preview
 
         switch $search_mode
             case fzf
-                set -l selection (eval "$search_cmd" | fzf --preview="/Users/x0r/.config/fish/bin/fzf-preview.sh {1}")
+                set -l selection (eval "$search_cmd" | fzf --preview="$__fish_config_dir/bin/fzf-preview.sh {1}")
             case rg
-                set -l selection (rg --files | fzf --preview="/Users/x0r/.config/fish/bin/fzf-preview.sh {1}")
+                set -l selection (rg --files | fzf --preview="$__fish_config_dir/bin/fzf-preview.sh {1}")
             case ag
-                set -l selection (ag --files | fzf --preview="/Users/x0r/.config/fish/bin/fzf-preview.sh {1}")
+                set -l selection (ag --files | fzf --preview="$__fish_config_dir/bin/fzf-preview.sh {1}")
         end
 
         if test -n "$selection"

@@ -1,3 +1,19 @@
 .DS_Store
 fish_variables
 
+# Local knowledge base & workspace scratch
+brain/
+
+# Diagnostics & profile dumps
+*.prof
+*.tmp
+*.bak
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Secrets & local overrides
+*.local.fish
+.env

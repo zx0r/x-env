@@ -34,7 +34,7 @@ function mise --description "Static wrapper for mise-en-place runtime manager"
     else if contains -- --help $argv
       command /opt/homebrew/bin/mise "$command" $argv
     else
-      source (command /opt/homebrew/bin/mise "$command" $argv |psub)
+      command /opt/homebrew/bin/mise "$command" $argv | source
     end
   case '*'
     command /opt/homebrew/bin/mise "$command" $argv
