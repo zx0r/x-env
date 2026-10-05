@@ -1,10 +1,9 @@
 -- ============================================================================
--- colors/x.lua — The Environment X Ultra-Fast AOT Theme Loader
+-- colors/x.lua
 --
 -- Ring 0 Execution: SLA < 0.05 ms via pre-compiled AOT Bytecode Chunk
 -- Fallback: Dynamic spec compilation via lua/theme/master.lua
---
--- Architect: zx0r & DeepMind Advanced Agentic Systems Engineering
+
 -- ============================================================================
 
 local active_style = vim.g.theme_style or vim.env.X_THEME or "dark"
