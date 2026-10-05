@@ -1,0 +1,8 @@
+# AI Context Exclusion — files that should never be sent to AI models
+*.shada
+*.swp
+*.swo
+lazy-lock.json
+.git/
+undodir/
+spell/

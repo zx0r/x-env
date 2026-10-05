@@ -1,0 +1,194 @@
+name: x0r/nvim — SLA Benchmark & Audit CI
+
+on:
+  push:
+    branches: [ "feat/x0r-nvim-v2", "main" ]
+    paths:
+      - "x0r/**"
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    # Daily benchmark at 03:00 UTC
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Benchmark suite to run (blank = all)"
+        required: false
+        default: ""
+
+jobs:
+  # ── Job 1: Startup SLA benchmark ────────────────────────────────────────
+  startup-benchmark:
+    name: "D1 — Startup SLA (<20ms)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim nightly
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      - name: Install hyperfine
+        run: |
+          wget -qO- https://github.com/sharkdp/hyperfine/releases/latest/download/hyperfine-x86_64-unknown-linux-musl.tar.gz \
+            | tar -xz --strip-components=1 hyperfine-x86_64-unknown-linux-musl/hyperfine
+          sudo mv hyperfine /usr/local/bin/
+
+      - name: Install fd and ripgrep
+        run: sudo apt-get install -y fd-find ripgrep && sudo ln -sf /usr/bin/fdfind /usr/local/bin/fd
+
+      - name: Run startup benchmark
+        run: |
+          cd x0r
+          python3 benchmark.py --suite startup --format json --output /tmp/startup_report.json --ci
+        env:
+          XDG_CONFIG_HOME: ${{ runner.temp }}/config
+
+      - name: Upload startup report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: startup-report
+          path: /tmp/startup_report.json
+          retention-days: 30
+
+  # ── Job 2: Anti-pattern static analysis ──────────────────────────────────
+  antipattern-audit:
+    name: "D2 — Anti-Pattern Audit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: sudo apt-get install -y ripgrep
+
+      - name: Run anti-pattern scan
+        run: |
+          cd x0r
+          python3 benchmark.py --suite antipatterns structure --format json \
+            --output /tmp/antipattern_report.json --ci
+
+      - name: Verify zero synchronous shell calls
+        run: |
+          rg "vim\.fn\.system\s*\(|io\.popen\s*\(|os\.execute\s*\(" \
+            x0r/lua/ --include="*.lua" && \
+            (echo "FAIL: Synchronous shell calls detected" && exit 1) || \
+            echo "PASS: Zero synchronous shell calls"
+
+      - name: Upload anti-pattern report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: antipattern-report
+          path: /tmp/antipattern_report.json
+
+  # ── Job 3: Config structure completeness ─────────────────────────────────
+  structure-audit:
+    name: "D3 — Config Completeness"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run structure audit
+        run: |
+          cd x0r
+          python3 benchmark.py --suite structure plugins sla --format text --ci
+
+  # ── Job 4: Lua lint ──────────────────────────────────────────────────────
+  lua-lint:
+    name: "Lua Lint (selene + stylua)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install selene
+        run: |
+          curl -sL https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux-x86_64.zip -o selene.zip
+          unzip -q selene.zip && chmod +x selene && sudo mv selene /usr/local/bin/
+
+      - name: Install stylua
+        run: |
+          curl -sL https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip -o stylua.zip
+          unzip -q stylua.zip && chmod +x stylua && sudo mv stylua /usr/local/bin/
+
+      - name: Lua lint (selene)
+        run: |
+          if [ -f x0r/selene.toml ]; then
+            selene x0r/lua/
+          else
+            echo "No selene.toml — skipping selene lint"
+          fi
+
+      - name: Lua format check (stylua)
+        run: |
+          if [ -f x0r/.stylua.toml ] || [ -f x0r/stylua.toml ]; then
+            stylua --check x0r/lua/
+          else
+            echo "No stylua config found — skipping format check"
+          fi
+
+  # ── Job 5: Full audit report (matrix: roles) ─────────────────────────────
+  full-audit:
+    name: "Full Audit — Role: ${{ matrix.role }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [startup-benchmark, antipattern-audit]
+    strategy:
+      matrix:
+        role: [architect, scientist, platform, datascience]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim nightly
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      - name: Run full audit (role=${{ matrix.role }})
+        run: |
+          cd x0r
+          NVIM_ROLE=${{ matrix.role }} \
+          python3 benchmark.py --format json \
+            --output /tmp/full_audit_${{ matrix.role }}.json
+        continue-on-error: true
+
+      - name: Upload full audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-audit-${{ matrix.role }}
+          path: /tmp/full_audit_${{ matrix.role }}.json
+
+  # ── Job 6: Aggregate results + badge ─────────────────────────────────────
+  aggregate:
+    name: "Aggregate Results"
+    runs-on: ubuntu-latest
+    needs: [full-audit, lua-lint, structure-audit]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/reports
+
+      - name: Aggregate and summarize
+        run: |
+          echo "=== x0r/nvim Benchmark Summary ===" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Domain | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          for f in /tmp/reports/**/*.json; do
+            if [ -f "$f" ]; then
+              score=$(python3 -c "import json; d=json.load(open('$f')); print(d.get('overall_score', 'N/A'))" 2>/dev/null || echo "N/A")
+              echo "| $(basename $f .json) | Score: ${score}% |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
