@@ -2,9 +2,6 @@
 .playwright-mcp/
 .DS_Store
 
-# ── Reference configs (separate repos, not submodules) ────────────────────
-folke/
-lazyvim/
 
 # ── Neovim runtime artifacts ─────────────────────────────────────────────
 *.swp
