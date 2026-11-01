@@ -36,6 +36,7 @@
 /config/ssh/ssh_auth_sock
 /config/ssh/known_hosts.old
 /config/ssh/conf.d/*local*.conf
+/config/ssh/allowed_signers
 
 # GnuPG / age / SOPS / 1Password
 *.age
@@ -66,6 +67,7 @@ secrets.json
 # 4. VERSION CONTROL & GIT IDENTITY OVERRIDES
 # ==============================================================================
 # Private Git Profiles (Enterprise / NDA inclusions)
+/config/git/allowed_signers
 /config/git/profiles/*.inc
 *.inc
 !*.example
