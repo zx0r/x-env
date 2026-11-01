@@ -1,0 +1,23 @@
+# Snakemake Workflow Pipeline Fixture
+configfile: "config.yaml"
+
+rule all:
+    input:
+        "results/final_model.onnx"
+
+rule train_model:
+    input:
+        data="data/processed.parquet"
+    output:
+        model="results/model.pt"
+    threads: 8
+    shell:
+        "python3 src/train.py --input {input.data} --output {output.model}"
+
+rule export_onnx:
+    input:
+        "results/model.pt"
+    output:
+        "results/final_model.onnx"
+    shell:
+        "python3 src/export.py --model {input} --out {output}"

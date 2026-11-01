@@ -1,0 +1,212 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+# ==============================================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# DECLARATIVE ZERO-TRUST JUJUTSU (JJ) ARCHITECTURE
+# Platform : macOS 27+ (Apple Silicon / aarch64 Darwin 27.2+)
+# Toolchain: Jujutsu 0.46+ | Git 2.56+ | Delta 0.20+ | Difftastic 0.71+ |
+#            Mergiraf 0.20+ | Secretive (SEP) 4.0+ | Touch ID | Neovim 0.12+
+# Target   : ~/.config/jj/config.toml
+# Standards: RFC 8308, OpenSSH PROTOCOL.sshsig, Strict XDG Base Directory Spec,
+#            FIPS 186-4 (ECDSA P-256 / Secure Enclave), TOML v1.0.0
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. CORE IDENTITY GOVERNANCE & ZERO-LEAK INVARIANT
+# ------------------------------------------------------------------------------
+# ZERO-LEAK INVARIANT: Global [user] identity is deliberately omitted here.
+# By leaving user.name and user.email unconfigured at the global root level,
+# Jujutsu refuses to push commits to any remote repository unless an explicit,
+# directory-scoped profile is activated.
+#
+# Domain-driven profiles are modularized in ~/.config/jj/conf.d/:
+#   • 10-own.toml  --> Scoped to ~/x (Personal / Open Source)
+#   • 20-nda.toml  --> Scoped to ~/x/dev/nda (Commercial / Client NDA)
+
+# ------------------------------------------------------------------------------
+# 2. CRYPTOGRAPHIC PROVENANCE & SECURE ENCLAVE SIGNING
+# ------------------------------------------------------------------------------
+# Enforces OpenSSH PROTOCOL.sshsig signatures backed by Apple Silicon Secure
+# Enclave Processor (SEP) via Secretive agent with interactive Touch ID verification.
+# Private keys remain physically non-exportable from hardware.
+[signing]
+behavior = "own"
+backend = "ssh"
+
+[signing.backends.ssh]
+program = "/usr/bin/ssh-keygen"
+allowed-signers = "~/.config/git/allowed_signers"
+
+# ------------------------------------------------------------------------------
+# 3. HIGH-DENSITY TERMINAL UX & VISUAL DELTA PAGER
+# ------------------------------------------------------------------------------
+[ui]
+editor = "nvim"
+merge-editor = "nvim-diff"
+pager = "delta"
+diff-editor = ":builtin"
+diff-formatter = ":color-words"
+graph.style = "curved"
+show-cryptographic-signatures = true
+# 'git' style conflict markers ensure git-conflict.nvim and diffview.nvim work seamlessly
+conflict-marker-style = "git"
+color = "auto"
+paginate = "auto"
+log-synthetic-elided-nodes = true
+
+# ------------------------------------------------------------------------------
+# 3.1 DRACULA PALETTE HARMONIZATION (ALIGNED WITH DELTA / GIT CONFIG)
+# ------------------------------------------------------------------------------
+[colors]
+"commit_id prefix" = { fg = "#ffb86c", bold = true }
+"change_id prefix" = { fg = "#8be9fd", bold = true }
+"bookmark" = { fg = "#bd93f9", bold = true }
+"working_copy" = { fg = "#50fa7b", bold = true }
+"conflict" = { fg = "#ff5555", bold = true }
+
+# ------------------------------------------------------------------------------
+# 4. STRUCTURAL AST DIFF & 3-WAY MERGE ENGINES
+# ------------------------------------------------------------------------------
+[merge-tools.delta]
+program = "delta"
+diff-args = ["$left", "$right"]
+
+[merge-tools.delta-sbs]
+program = "delta"
+diff-args = ["--side-by-side", "$left", "$right"]
+
+[merge-tools.difft]
+program = "difft"
+diff-args = ["--color=always", "--width=$width", "$left", "$right"]
+
+[merge-tools.mergiraf]
+program = "mergiraf"
+merge-args = ["merge", "$base", "$left", "$right", "-o", "$output", "-l", "$marker_length", "-p", "$path", "--fast"]
+merge-conflict-exit-codes = [1]
+
+[merge-tools.nvim-diff]
+program = "nvim"
+merge-args = ["-d", "$output", "$left", "$base", "$right"]
+merge-conflict-exit-codes = [0]
+
+# ------------------------------------------------------------------------------
+# 5. APFS & APPLE SILICON PERFORMANCE ENGINE
+# ------------------------------------------------------------------------------
+[snapshot]
+max-new-file-size = "10MiB"
+auto-track = "all()"
+
+# ------------------------------------------------------------------------------
+# 6. GIT INTEROPERABILITY & CO-LOCATED REPO GOVERNANCE
+# ------------------------------------------------------------------------------
+[git]
+auto-local-bookmark = true
+sign-on-push = false
+abandon-unreachable-commits = true
+executable-path = "git"
+write-change-id-header = true
+# Zero-Leak Invariant: prevent pushing WIP or private changes to any remote
+private-commits = "description(glob:'exact:wip:*') | description(glob:'exact:private:*') | bookmark(glob:'wip/*')"
+
+# ------------------------------------------------------------------------------
+# 7. CONVENTIONAL COMMITS DRAFT TEMPLATE (ALIGNED WITH GIT TEMPLATE)
+# ------------------------------------------------------------------------------
+[templates]
+draft_commit_description = '''
+concat(
+  description,
+  "\n",
+  "JJ: -------------------------------------------------------------------------\n",
+  "JJ: <type>(scope): short summary\n",
+  "JJ: Types: feat, fix, refactor, docs, style, perf, test, chore, remove, wip\n",
+  "JJ: -------------------------------------------------------------------------\n",
+  "JJ: Change ID: " ++ format_short_change_id(change_id),
+  "\n",
+  surround(
+    "JJ: This commit contains the following changes:\n", "",
+    indent("JJ:     ", diff.summary()),
+  ),
+)
+'''
+
+# ------------------------------------------------------------------------------
+# 7.1 ISO-STRICT CHRONOLOGICAL PROVENANCE (ALIGNED WITH GIT LOG.DATE)
+# ------------------------------------------------------------------------------
+[template-aliases]
+'format_timestamp(timestamp)' = 'timestamp.local().format("%Y-%m-%d %H:%M:%S")'
+
+# ------------------------------------------------------------------------------
+# 8. REVSETS & STACKED CHANGE NAVIGATION
+# ------------------------------------------------------------------------------
+[revsets]
+short-prefixes = "all()"
+
+[revset-aliases]
+"unpushed()" = "remote_bookmarks()..@ & mutable()"
+"wip()" = "heads(::@ ~ description(''))::"
+"mine()" = "author(exact:'zx0r')"
+"immutable_heads()" = "builtin_immutable_heads() | (trunk().. & ~mine())"
+
+# ------------------------------------------------------------------------------
+# 9. HIGH-VELOCITY WORKFLOW ALIASES & ECOSYSTEM ORCHESTRATION
+# ------------------------------------------------------------------------------
+[aliases]
+# Inspection & Diffing (Mirroring Git delta & difftastic)
+d = ["diff"]
+ds = ["diff", "--tool", "delta-sbs"]
+dshow = ["show", "--tool", "delta-sbs"]
+dft = ["diff", "--tool", "difft"]
+dft-show = ["show", "--tool", "difft"]
+dft-log = ["log", "-p", "--tool", "difft"]
+blame = ["file", "annotate"]
+dblame = ["file", "annotate"]
+
+# Navigation & Logging
+l = ["log"]
+s = ["status"]
+
+# Mutation & VCS Ergonomics
+b = ["bookmark"]
+c = ["commit"]
+sq = ["squash"]
+rb = ["rebase"]
+n = ["new"]
+e = ["edit"]
+ab = ["abandon"]
+sp = ["split"]
+desc = ["describe"]
+
+# Worktree Ergonomics (Git worktree -> Jujutsu workspace)
+wt = ["workspace"]
+wtl = ["workspace", "list"]
+
+# Terminal UI Orchestrators
+lg = ["util", "exec", "--", "lazygit"]
+gui = ["util", "exec", "--", "gitui"]
+tig = ["util", "exec", "--", "tig"]
+
+# AST Merge Resolution & Structural Inspection
+mrev = ["util", "exec", "--", "mergiraf", "review"]
+
+# Security, Hooks & Release Toolchain
+gitleaks = ["util", "exec", "--", "gitleaks", "detect"]
+cog = ["util", "exec", "--", "cog"]
+hook = ["util", "exec", "--", "lefthook", "run"]
+
+# Graph Visualizations (git-graph x alignment)
+graph = ["util", "exec", "--", "git-graph", "-s", "round", "-m", "x", "--wrap", "auto"]
+graph-flow = ["util", "exec", "--", "git-graph", "-s", "round", "-m", "git-flow", "--wrap", "auto"]
+graph-all = ["util", "exec", "--", "git-graph", "-s", "round", "-m", "x", "--wrap", "auto", "-n", "50"]
+graph-simple = ["util", "exec", "--", "git-graph", "-s", "round", "-m", "simple", "--wrap", "auto"]
+graph-svg = ["util", "exec", "--", "git-graph", "-s", "round", "-m", "x", "--svg"]
+
+# Hunk Diff Inspector
+hunk = ["util", "exec", "--", "hunk", "diff"]
+hunks = ["util", "exec", "--", "hunk", "diff"]
+
+# Neovim Integrations (Diffview)
+dv = ["util", "exec", "--", "nvim", "-c", "DiffviewOpen"]

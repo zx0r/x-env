@@ -5,9 +5,9 @@
 # layer: "Functions"
 # responsibility: "Performs comprehensive, read-only multi-tier inspection of workstation disk consumption across projects, runtimes, system caches, media, and trash with single-pass I/O telemetry and interactive TUI dashboard"
 # dependencies: ["functions/__tui_engine.fish"]
-# backlinks: ["conf.d/20-abbr.fish", "functions/storage_clean.fish"]
+# backlinks: ["conf.d/20_abbrs.fish", "functions/storage_clean.fish"]
 # created_at: "2026-10-03"
-# updated_at: "2026-10-05"
+# updated_at: "2026-10-10"
 # tags: ["storage", "audit", "disk", "diagnostics", "kondo", "dust", "macos", "tui", "spinner"]
 # ---
 

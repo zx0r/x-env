@@ -1,0 +1,8 @@
+set quiet := true
+
+format-main-bibliography:
+    #!/usr/bin/env zsh
+    npx bibtex-tidy ./main-bibliography.bib --modify \
+        --tab --curly --no-align --no-wrap --drop-all-caps --enclosing-braces \
+        --numeric --trailing-commas --duplicates --sort-fields \
+        --remove-empty-fields --omit=month,issn,abstract

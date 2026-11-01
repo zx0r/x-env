@@ -1,0 +1,1 @@
+/Users/x0r/.config/gh/completions/gh.fish

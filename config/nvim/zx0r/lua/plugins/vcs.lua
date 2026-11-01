@@ -202,13 +202,11 @@ return {
         -- Diff / preview
         ------------------------------------------------------------------------
 
+        ------------------------------------------------------------------------
+        -- Diff / preview
+        ------------------------------------------------------------------------
+
         map("n", "<leader>gp", gs.preview_hunk, "Git: Preview hunk")
-
-        map("n", "<leader>gd", gs.diffthis, "Git: Diff buffer")
-
-        map("n", "<leader>gD", function()
-          gs.diffthis("~")
-        end, "Git: Diff HEAD~1")
 
         ------------------------------------------------------------------------
         -- Blame
@@ -220,7 +218,11 @@ return {
           })
         end, "Git: Blame line")
 
-        map("n", "<leader>gl", gs.toggle_current_line_blame, "Git: Toggle line blame")
+        map("n", "<leader>gB", function()
+          gs.blame()
+        end, "Git: Blame buffer")
+
+        map("n", "<leader>uB", gs.toggle_current_line_blame, "Git: Toggle line blame")
 
         ------------------------------------------------------------------------
         -- Hunk text object
@@ -242,6 +244,7 @@ return {
 
   {
     "sindrets/diffview.nvim",
+    dependencies = { { "echasnovski/mini.icons", lazy = true } },
 
     cmd = {
       "DiffviewOpen",
@@ -253,56 +256,88 @@ return {
 
     keys = {
       {
-        "<leader>gO",
+        "<leader>gd",
         "<cmd>DiffviewOpen<CR>",
         desc = "Git: Open diffview",
       },
-
+      {
+        "<leader>gD",
+        "<cmd>DiffviewFileHistory<CR>",
+        desc = "Git: Repo history",
+      },
+      {
+        "<leader>gO",
+        "<cmd>DiffviewOpen<CR>",
+        desc = "Git: Open diffview (alias)",
+      },
       {
         "<leader>gL",
         "<cmd>DiffviewFileHistory %<CR>",
         desc = "Git: File history",
       },
-
       {
-        "<leader>gC",
+        "<leader>gq",
         "<cmd>DiffviewClose<CR>",
         desc = "Git: Close diffview",
       },
     },
 
-    opts = {
-      diff_binaries = false,
+    opts = function(_, opts)
+      local actions = require("diffview.actions")
+      local prefix = "<leader>gC"
 
-      enhanced_diff_hl = true,
-
-      git_cmd = {
+      opts = opts or {}
+      opts.diff_binaries = false
+      opts.enhanced_diff_hl = true
+      opts.git_cmd = {
         "git",
-      },
+        "-c",
+        "log.showSignature=false",
+        "-c",
+        "diff.external=",
+      }
+      opts.use_icons = true
+      opts.show_help_hints = true
+      opts.watch_index = true
 
-      use_icons = true,
+      opts.view = {
+        default = { winbar_info = true },
+        file_history = { winbar_info = true },
+      }
 
-      show_help_hints = true,
+      opts.hooks = {
+        diff_buf_read = function(bufnr)
+          vim.b[bufnr].view_activated = false
+        end,
+      }
 
-      watch_index = true,
-
-      keymaps = {
+      opts.keymaps = {
         disable_defaults = false,
-
         view = {
-          {
-            "n",
-            "q",
-            "<cmd>DiffviewClose<CR>",
-            {
-              desc = "Git: Close diffview",
-            },
-          },
+          { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Git: Close diffview" } },
+          { "n", prefix .. "o", actions.conflict_choose("ours"), { desc = "Choose the OURS version of a conflict" } },
+          { "n", prefix .. "t", actions.conflict_choose("theirs"), { desc = "Choose the THEIRS version of a conflict" } },
+          { "n", prefix .. "b", actions.conflict_choose("base"), { desc = "Choose the BASE version of a conflict" } },
+          { "n", prefix .. "a", actions.conflict_choose("all"), { desc = "Choose all the versions of a conflict" } },
+          { "n", prefix .. "x", actions.conflict_choose("none"), { desc = "Delete the conflict region" } },
+          { "n", prefix .. "O", actions.conflict_choose_all("ours"), { desc = "Choose the OURS version of a conflict for the whole file" } },
+          { "n", prefix .. "T", actions.conflict_choose_all("theirs"), { desc = "Choose the THEIRS version of a conflict for the whole file" } },
+          { "n", prefix .. "B", actions.conflict_choose_all("base"), { desc = "Choose the BASE version of a conflict for the whole file" } },
+          { "n", prefix .. "A", actions.conflict_choose_all("all"), { desc = "Choose all the versions of a conflict for the whole file" } },
+          { "n", prefix .. "X", actions.conflict_choose_all("none"), { desc = "Delete the conflict region for the whole file" } },
         },
-      },
+        file_panel = {
+          { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Git: Close diffview" } },
+          { "n", prefix .. "O", actions.conflict_choose_all("ours"), { desc = "Choose the OURS version of a conflict for the whole file" } },
+          { "n", prefix .. "T", actions.conflict_choose_all("theirs"), { desc = "Choose the THEIRS version of a conflict for the whole file" } },
+          { "n", prefix .. "B", actions.conflict_choose_all("base"), { desc = "Choose the BASE version of a conflict for the whole file" } },
+          { "n", prefix .. "A", actions.conflict_choose_all("all"), { desc = "Choose all the versions of a conflict for the whole file" } },
+          { "n", prefix .. "X", actions.conflict_choose_all("none"), { desc = "Delete the conflict region for the whole file" } },
+        },
+      }
 
-      hooks = {},
-    },
+      return opts
+    end,
   },
 
   -- ==========================================================================
@@ -357,7 +392,108 @@ return {
     keys = {
       { "<leader>gg", function() Snacks.lazygit() end, desc = "Git: Lazygit" },
       { "<leader>gf", function() Snacks.lazygit.log_file() end, desc = "Git: Lazygit file history" },
-      { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git: Browse repository" },
+      {
+        "<leader>gy",
+        function()
+          Snacks.gitbrowse()
+        end,
+        desc = "Git: Browse in web (remote)",
+      },
     },
+  },
+
+  -- ==========================================================================
+  -- Git Conflict: Inline merge conflict resolution
+  -- ==========================================================================
+  {
+    "akinsho/git-conflict.nvim",
+    cmd = {
+      "GitConflictChooseOurs",
+      "GitConflictChooseTheirs",
+      "GitConflictChooseBoth",
+      "GitConflictChooseNone",
+      "GitConflictNextConflict",
+      "GitConflictPrevConflict",
+      "GitConflictListQf",
+      "GitConflictRefresh",
+    },
+    opts = {
+      default_mappings = {
+        ours = "<leader>gCo",
+        theirs = "<leader>gCt",
+        none = "<leader>gCn",
+        both = "<leader>gCb",
+        next = "]g",
+        prev = "[g",
+      },
+    },
+    keys = {
+      { "]g", "<cmd>GitConflictNextConflict<cr>", desc = "Git: Next conflict" },
+      { "[g", "<cmd>GitConflictPrevConflict<cr>", desc = "Git: Prev conflict" },
+      { "<leader>gCo", "<cmd>GitConflictChooseOurs<cr>", desc = "Git Conflict: Choose ours" },
+      { "<leader>gCt", "<cmd>GitConflictChooseTheirs<cr>", desc = "Git Conflict: Choose theirs" },
+      { "<leader>gCb", "<cmd>GitConflictChooseBoth<cr>", desc = "Git Conflict: Choose both" },
+      { "<leader>gCn", "<cmd>GitConflictChooseNone<cr>", desc = "Git Conflict: Choose none" },
+      { "<leader>gCl", "<cmd>GitConflictListQf<cr>", desc = "Git Conflict: List conflicts" },
+      { "<leader>gCr", "<cmd>GitConflictRefresh<cr>", desc = "Git Conflict: Refresh" },
+    },
+    config = function(_, opts)
+      require("git-conflict").setup(opts)
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "GitConflictDetected",
+        callback = function()
+          vim.notify("Conflict detected in " .. vim.fn.expand("<afile>"), vim.log.levels.WARN)
+        end,
+      })
+    end,
+  },
+
+  -- ==========================================================================
+  -- Git Graph: Interactive Unicode commit graph with Diffview integration
+  -- ==========================================================================
+  {
+    "isakbm/gitgraph.nvim",
+    cmd = { "GitGraph" },
+    keys = {
+      {
+        "<leader>gl",
+        function()
+          require("gitgraph").draw({}, { all = true, max_count = 5000 })
+        end,
+        desc = "Git: Interactive commit graph",
+      },
+      {
+        "<leader>gG",
+        function()
+          require("gitgraph").draw({}, { all = true, max_count = 5000 })
+        end,
+        desc = "Git: Interactive commit graph (alias)",
+      },
+    },
+    opts = {
+      git_cmd = "git -c log.showSignature=false",
+      symbols = {
+        merge_commit = "",
+        commit = "",
+      },
+      format = {
+        timestamp = "%H:%M:%S %d-%m-%Y",
+        fields = { "hash", "timestamp", "author", "branch_name", "tag" },
+      },
+      hooks = {
+        on_select_commit = function(commit)
+          vim.cmd(":DiffviewOpen " .. commit.hash .. "^!")
+        end,
+        on_select_range_commit = function(from, to)
+          vim.cmd(":DiffviewOpen " .. from.hash .. "~1.." .. to.hash)
+        end,
+      },
+    },
+    config = function(_, opts)
+      require("gitgraph").setup(opts)
+      vim.api.nvim_create_user_command("GitGraph", function()
+        require("gitgraph").draw({}, { all = true, max_count = 5000 })
+      end, { desc = "Git: Draw interactive commit graph" })
+    end,
   },
 }

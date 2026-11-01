@@ -1,88 +1,163 @@
-# Tmux Configuration Guide
+# Tmux Configuration
 
-To achieve a clean, maintainable, and modular structure for your Tmux configuration, it's important to organize your files in a logical way, separating concerns while allowing for easy updates and readability. Here are some best practices and guidelines you can follow when organizing configuration files (themes, plugins, keybindings, hooks) and custom scripts in the /tmux directory.
+Modular, declarative configuration for Tmux with zero-fork Neovim split navigation, floating modal
+popups, and isolated runtime scripts.
 
-## ⚠️ Status
+---
 
-**This project is in active development**
+## Environment Baseline
 
-> The current version should be considered a reference implementation rather than a complete system.Planned features, including AI-assisted tooling, are not yet finalized and will be integrated in future revisions.
+All platform and runtime assumptions are consolidated here.
+
+| Component         | Target / Tested                            | Notes                                                   |
+| ----------------- | ------------------------------------------ | ------------------------------------------------------- |
+| **OS**            | macOS 15+ (Apple Silicon)                  | Compatible with Linux x86_64/arm64                      |
+| **Shell**         | Fish 3.7+                                  | Default shell at `/opt/homebrew/bin/fish`               |
+| **Terminal**      | Kitty / Ghostty / Alacritty                | Requires 24-bit TrueColor (`RGB`) & CSI u extended keys |
+| **Multiplexer**   | Tmux 3.7+                                  | Requires `display-popup` support                        |
+| **CLI Utilities** | `fzf`, `zoxide`, `yazi`, `lazygit`, `btop` | Used by floating modal overlays                         |
+
+---
 
 ## Directory Structure
 
-A good directory structure helps maintain a separation of concerns and modularity.
-Here's an ideal structure for organizing your Tmux configuration:
+In accordance with XDG Base Directory specification, configuration is strictly decoupled from
+executable runtime files.
 
 ```plaintext
- ~/.config/tmux/ 🥷
-├── config
-│   ├── binds.conf
-│   ├── core.conf
-│   ├── hooks.conf
-│   ├── plugins.conf
-│   └── theme.conf
-├── modes
-│   ├── agent.tmux
-│   └── human.tmux
-├── README.md
-├── scripts
-│   ├── ai
-│   │   └── ai-prompt-edit.sh
-│   └── fzf-panes.sh
-├── stages
-│   ├── dev.tmux
-│   ├── prod.tmux
-│   └── staging.tmux
-├── theme
-│   ├── dark.tmux
-│   └── light.tmux
-└── tmux.conf
+~/.config/tmux/                     # Static Declarative Configuration Root
+├── config/                         # Modular Subsystem Configurations
+│   ├── binds.conf                  # Keybindings & Navigation Engine
+│   ├── core.conf                   # Server, Terminal Features, Mouse, Buffer Settings
+│   ├── hooks.conf                  # Pane Border Hooks & Session Lifecycle Events
+│   ├── plugins.conf                # TPM Plugins & External Tool Binds
+│   └── theme.conf                  # Status Bar Layout & Color Definitions
+├── docs/                           # Documentation
+│   └── NAVIGATION_ARCHITECTURE.md  # Detailed Navigation Specification
+├── modes/                          # Context Modes (loaded via $X_MODE)
+│   ├── agent.tmux                  # Agentic / PTY Mode
+│   └── human.tmux                  # Interactive Terminal Mode
+├── stages/                         # Environmental Stages (loaded via $X_STAGE)
+│   ├── dev.tmux                    # Development Stage
+│   ├── staging.tmux                # Staging Stage
+│   └── prod.tmux                   # Production Stage
+├── theme/                          # Color Palettes
+│   ├── dark.tmux                   # Dark Color Tokens
+│   └── light.tmux                  # Light Color Tokens
+├── README.md                       # System Documentation
+└── tmux.conf                       # Main Orchestrator & Bootloader
+
+~/.local/bin/tmux/                  # Executable Runtime Infrastructure ($XDG_BIN_HOME/tmux)
+├── fzf-panes.sh                    # Optional Legacy Pane Selector Script
+└── ai/
+    └── ai-prompt-edit.sh           # Prompt Editor Launcher (Neovim/fzf)
 ```
 
+---
 
-## Main Configuration File (tmux.conf):
+## Initialization Layers
 
-Your main tmux.conf acts as the orchestrator, loading configuration files through a multi-layered initialization process:
+The main entry point [`tmux.conf`](file:///Users/x0r/.config/tmux/tmux.conf) executes four
+initialization steps:
 
-- **Layer I (Bootstrap):** Resolves paths relative to XDG specifications and sets format-expanded path variables.
-- **Layer II (Module Router):** Sequentially sources configuration subsystems from the `config/` directory.
-- **Layer III (Environment Sync):** Synchronizes critical environment variables with the active terminal state.
-- **Layer IV (Operational Stage Router):** Loads deployment-specific configuration overrides (e.g., dev, prod) from the `stages/` directory based on the current `X_STAGE`.
+1. **Layer I (Bootstrap):** Resolves `$XDG_CONFIG_HOME` and `$XDG_BIN_HOME`. Injects format-expanded
+   path variables (`@config`, `@scripts`).
+2. **Layer II (Module Router):** Sequentially sources `core.conf`, `binds.conf`, `hooks.conf`,
+   `theme.conf`, and `plugins.conf`.
+3. **Layer III (Environment Sync):** Synchronizes terminal and tool variables (`COLORTERM`,
+   `TERM_PROGRAM`, `KITTY_PID`, `NVIM_NOTTYFAST`, etc.).
+4. **Layer IV (Operational Router):**
+   - Injects `modes/$X_MODE.tmux` (defaults to `modes/human.tmux`).
+   - Injects `stages/$X_STAGE.tmux` (defaults to `stages/dev.tmux`).
 
-### Contextual Routing: Stages & Modes
+---
 
-The configuration dynamically adapts to external context via targeted environment injection:
+## Key Bindings Reference
 
-- **Stages (`stages/`):** Controls environmental behavior. Loading `stages/prod.tmux` versus `stages/dev.tmux` enforces strict visual or functional overrides (e.g., changing border colors to signal danger in production environments).
-- **Modes (`modes/`):** Defines interaction schemas. `modes/human.tmux` provides standard interactive keybindings, while `modes/agent.tmux` adjusts the interface for programmatic and AI-assisted manipulation.
+The prefix key is `Ctrl+a`. To send literal `Ctrl+a` to the shell, press `Ctrl+a Ctrl+a`.
 
-## Workspace Paradigm: Cognitive Load Minimization
+### Panes & Splits
 
-Recent software engineering research highlights that unplanned context switching and workspace clutter significantly degrade developer throughput by introducing "attention residue"—a state where cognitive capacity remains anchored to previous tasks (Leroy, 2009). 
+| Action                  | Root (No Prefix) | Prefix (`Ctrl+a`)        | Behavior                                        |
+| ----------------------- | ---------------- | ------------------------ | ----------------------------------------------- |
+| **Neovim / Tmux Left**  | `Ctrl + h`       | `prefix h`               | Focuses left split; passes to Neovim if active  |
+| **Neovim / Tmux Down**  | `Ctrl + j`       | `prefix j`               | Focuses down split; passes to Neovim if active  |
+| **Neovim / Tmux Up**    | `Ctrl + k`       | `prefix k`               | Focuses up split; passes to Neovim if active    |
+| **Neovim / Tmux Right** | `Ctrl + l`       | `prefix l`               | Focuses right split; passes to Neovim if active |
+| **Previous Split**      | `Ctrl + \`       | `prefix ;`               | Selects previously active pane                  |
+| **Split Horizontal**    | —                | `prefix -` / `prefix s`  | Splits pane top/bottom in current path          |
+| **Split Vertical**      | —                | `prefix \|` / `prefix v` | Splits pane left/right in current path          |
+| **Full Edge Splits**    | —                | `prefix \` / `prefix _`  | Full-height column or full-width row split      |
+| **Toggle Zoom**         | —                | `prefix z` / `prefix /`  | Toggles full-screen pane zoom                   |
+| **Micro Resize**        | `Alt + Arrows`   | —                        | Resizes active pane by 3–5 cells                |
+| **Macro Resize**        | —                | `prefix H / J / K / L`   | Repeatable pane resize steps                    |
+| **Equalize Layout**     | —                | `prefix =` / `prefix E`  | Balances panes evenly                           |
+| **Break / Join Pane**   | —                | `prefix !` / `prefix @`  | Break to new window / join from target          |
+| **Kill Pane**           | —                | `prefix x`               | Closes active pane                              |
+| **Clear Screen**        | —                | `prefix C-l`             | Sends literal `Ctrl+L` to shell                 |
 
-To systematically mitigate this, the configuration enforces a strict 3-window multiplexing paradigm per session. These windows are mapped to specific operational domains using traditional Chinese numerals as visual anchors, ensuring topological isolation of workflows:
+### Windows
 
-- **Window 一 (Dev): Active Development**
-  Dedicated exclusively to code synthesis. This environment remains a distraction-free interface restricted to the primary editor (e.g., Neovim).
-  
-- **Window 二 (Ops): Operations & Meta-management**
-  The control zone. Responsible for version control operations (Git), system monitoring, ad-hoc shell execution, deployment pipelines, and structural file management.
-  
-- **Window 三 (Run): Runtime Environment**
-  The execution zone. Hosts the active application infrastructure, including Next.js servers, backend APIs, frontend compilation processes, Docker containers, and database connections.
+| Action                     | Root (No Prefix)      | Prefix (`Ctrl+a`)       | Behavior                                     |
+| -------------------------- | --------------------- | ----------------------- | -------------------------------------------- |
+| **Previous / Next Window** | `Alt + h` / `Alt + l` | `prefix p` / `prefix n` | Switches tab (auto-creates if only 1 window) |
+| **Direct Jump (1–9)**      | `Alt + 1 .. 9`        | `prefix 1 .. 9`         | Switches directly to window 1–9              |
+| **Last Active Window**     | `Alt + w`             | `prefix BSpace`         | Toggles back to previously focused window    |
+| **New Window (Adjacent)**  | —                     | `prefix c`              | Creates window after current in working dir  |
+| **New Window (At End)**    | —                     | `prefix C`              | Creates window at end in working dir         |
+| **Swap Window Position**   | —                     | `prefix <` / `prefix >` | Moves window left/right, keeps focus         |
+| **Rename Window**          | —                     | `prefix ,` / `prefix A` | Renames active window                        |
+| **Kill Window**            | —                     | `prefix &`              | Closes window (prompts confirmation)         |
 
-This topological isolation guarantees that domain-specific mental models remain intact, ensuring zero collision between development context, operational control, and runtime monitoring.
+### Sessions & Workspaces
 
-## Implementation Guidelines:
+| Action                   | Root (No Prefix) | Prefix (`Ctrl+a`)           | Behavior                                             |
+| ------------------------ | ---------------- | --------------------------- | ---------------------------------------------------- |
+| **Workspace Selector**   | `Alt + s`        | `prefix Space` / `prefix s` | Opens `tmx` fuzzy session manager in popup           |
+| **Toggle Last Session**  | `Alt + Tab`      | `prefix Tab`                | Switches to previously active session                |
+| **Cycle Sessions**       | —                | `prefix (` / `prefix )`     | Cycles previous/next session                         |
+| **Session Tree**         | —                | `prefix S`                  | Interactive session tree (`choose-tree -Zs`)         |
+| **New Session**          | —                | `prefix C-c`                | Prompts for new session name                         |
+| **Rename Session**       | —                | `prefix R`                  | Renames current session                              |
+| **Kill Current Session** | —                | `prefix X`                  | Terminates active session (prompts confirmation)     |
+| **Kill Other Sessions**  | —                | `prefix Q`                  | Terminates all other sessions (prompts confirmation) |
 
-**Descriptive Filenames**: Filenames must explicitly indicate their operational domain (e.g., `binds.conf`, `hooks.conf`) to facilitate efficient navigation and targeted modifications.
+### Floating Modal Overlays (Popups)
 
-**Component Isolation**: Configuration logic must be strictly separated. Each file is restricted to a single functional scope (e.g., rendering logic is isolated from keybindings). This prevents the operational complexity typical of monolithic configuration architectures.
+Modals run in centered floating popups without altering the 2D pane layout.
 
-**Version Control**: Track state changes and configuration revisions via Git. This ensures reproducibility, deployment safety, and reliable rollback capabilities.
+| Tool                   | Root (No Prefix) | Prefix (`Ctrl+a`) | Command / Behavior                             |
+| ---------------------- | ---------------- | ----------------- | ---------------------------------------------- |
+| **FZF Pane Navigator** | `Alt + f`        | `prefix w`        | Interactive pane search with live ANSI preview |
+| **Lazygit**            | `Alt + g`        | `prefix g`        | Git TUI in current pane path                   |
+| **Yazi**               | `Alt + y`        | `prefix y`        | File manager in current pane path              |
+| **Btop**               | `Alt + b`        | `prefix b`        | Process and system monitor                     |
+| **AI Workspace**       | `Alt + a`        | `prefix a`        | AI CLI selector (`tmx-ai --internal`)          |
+| **AI Prompt Editor**   | `Ctrl + e`       | `prefix M-e`      | Author prompt in Neovim, paste to pane         |
+| **Scratchpad Shell**   | `Alt + '`        | `prefix '`        | Dedicated persistent floating shell            |
 
-**Documentation**: Inline comments must be maintained for all routing logic, hook executions, and variable definitions.
+### Copy Mode & Buffers
 
-## Conclusion:
+| Action                   | Shortcut                        | Behavior                                               |
+| ------------------------ | ------------------------------- | ------------------------------------------------------ |
+| **Enter Copy Mode**      | `prefix Enter` or `prefix [`    | Enters Vi copy mode                                    |
+| **Begin Selection**      | `v` (in copy mode)              | Starts character selection                             |
+| **Line Selection**       | `V` (in copy mode)              | Starts line selection                                  |
+| **Block Selection**      | `Ctrl + v` or `Alt + MouseDrag` | Toggles rectangle selection                            |
+| **Yank to Clipboard**    | `y` or `MouseDragEnd`           | Copies to system clipboard via `pbcopy` and OSC 52     |
+| **Word Search**          | `*` / `#` (in copy mode)        | Searches forward/backward for word under cursor        |
+| **Paste Buffer**         | `prefix p`                      | Pastes top buffer                                      |
+| **Scrollback in Neovim** | `prefix M-c`                    | Dumps 100k lines of scrollback into Neovim             |
+| **Session Telemetry**    | `prefix i`                      | Displays session uptime, window count, and client info |
+| **Command Palette**      | `prefix C-p`                    | Categorized interactive action menu                    |
+| **Reload Config**        | `prefix r`                      | Reloads `tmux.conf` without closing sessions           |
 
-The implemented architecture relies on deterministic routing and strict separation of concerns, ensuring predictable execution and simplified debugging across different operational environments.
+---
+
+## Window Workflow Pattern
+
+Project sessions follow a 3-window:
+
+- **Window 1 (Dev):**
+- **Window 2 (Ops):**
+- **Window 3 (Run):**

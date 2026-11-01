@@ -215,7 +215,7 @@ local function get_master_specs()
     -- ── Core Editor & Windowing ──
     Normal       = { fg = T.fg, bg = T.bg },
     NormalNC     = { fg = T.fg, bg = T.bg },
-    NormalFloat  = { bg = T.surface_0 },
+    NormalFloat  = { bg = T.bg },
     FloatBorder  = { fg = T.border, bg = T.bg },
     FloatTitle   = { fg = T.accent2, bg = NONE, bold = true },
     FloatFooter  = { fg = T.muted, bg = T.bg },
@@ -1093,11 +1093,39 @@ local function apply_dynamic()
 end
 
 local function load_theme()
-  local master_file = vim.fs.joinpath(vim.fs.dirname(debug.getinfo(1, "S").source:sub(2)), "master.lua")
+  local this_dir = vim.fs.dirname(debug.getinfo(1, "S").source:sub(2))
+  local master_file = vim.fs.joinpath(this_dir, "master.lua")
+  local engine_file = vim.fs.joinpath(this_dir, "engine.lua")
+  local palettes_dir = vim.fs.joinpath(this_dir, "palettes")
   local cache_stat = vim.uv.fs_stat(compiled_file)
-  local master_stat = vim.uv.fs_stat(master_file)
 
-  if cache_stat and master_stat and cache_stat.mtime.sec >= master_stat.mtime.sec then
+  local is_fresh = false
+  if cache_stat then
+    local master_stat = vim.uv.fs_stat(master_file)
+    local engine_stat = vim.uv.fs_stat(engine_file)
+    is_fresh = master_stat and (cache_stat.mtime.sec >= master_stat.mtime.sec)
+    if is_fresh and engine_stat and engine_stat.mtime.sec > cache_stat.mtime.sec then
+      is_fresh = false
+    end
+    if is_fresh and vim.uv.fs_stat(palettes_dir) then
+      local handle = vim.uv.fs_scandir(palettes_dir)
+      if handle then
+        while true do
+          local name, ftype = vim.uv.fs_scandir_next(handle)
+          if not name then break end
+          if ftype == "file" and name:match("%.lua$") then
+            local p_stat = vim.uv.fs_stat(vim.fs.joinpath(palettes_dir, name))
+            if p_stat and p_stat.mtime.sec > cache_stat.mtime.sec then
+              is_fresh = false
+              break
+            end
+          end
+        end
+      end
+    end
+  end
+
+  if is_fresh then
     local chunk = loadfile(compiled_file)
     if chunk then
       local ok = pcall(chunk)

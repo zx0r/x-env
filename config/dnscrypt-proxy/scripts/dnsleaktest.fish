@@ -1,11 +1,10 @@
-# Optimized for Elite DNS Architecture (127.0.0.2)
-# PhD Level Security Audit with sigfail triangulation
-function dnsleaktest --description 'Ultimate DNS security and privacy audit'
-    echo "━━━ Deep DNS Security Audit (Elite Architecture) ━━━"
+# DNS Leak, DNSSEC & Resolver Security Audit (127.0.0.1)
+function dnsleaktest --description 'DNS leak, DNSSEC and resolver audit'
+    echo "━━━ DNS Security & Privacy Audit ━━━"
 
-    # 0. Auto-detect target IP (prefer 127.0.0.2, fallback to current system resolver)
-    set -l target "127.0.0.2"
-    if not ping -c 1 -t 1 $target >/dev/null 2>&1
+    # 0. Target resolver address (localhost dnscrypt-proxy or active system resolver)
+    set -l target "127.0.0.1"
+    if not nc -z -w 1 $target 53 >/dev/null 2>&1
         set target (scutil --dns | awk '/nameserver\[0\]/ {print $3; exit}' | head -n 1)
     end
 

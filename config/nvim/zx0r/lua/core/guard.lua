@@ -21,13 +21,9 @@ function M.setup(ctx)
 
   -- Use libuv fs_stat — strictly async-safe, never spawns a shell process
   local stat = vim.uv.fs_stat(fname)
-  local size = stat and stat.size or (1024 * 1024 + 1)
+  if not stat or not stat.size then return end
 
-  if size > TIER2_BYTES then
-    M._apply_tier2(buf, size, ctx.ft)
-  elseif size > TIER1_BYTES then
-    M._apply_tier1(buf, size, ctx.ft)
-  end
+  M._apply_by_size(buf, stat.size, ctx.ft)
 end
 
 --- Apply large-file protections to a buffer (manual/fallback entrypoint)
@@ -39,11 +35,24 @@ function M.check(buf)
   local fname = vim.api.nvim_buf_get_name(buf)
   if fname == "" then return end
 
+  -- Single fs_stat — reuse result to avoid duplicate syscall (was M-02)
   local stat = vim.uv.fs_stat(fname)
-  if not stat or stat.size <= TIER1_BYTES then return end
+  if not stat or not stat.size or stat.size <= TIER1_BYTES then return end
 
   local ft = vim.bo[buf].filetype
-  M.setup({ buf = buf, ft = ft })
+  M._apply_by_size(buf, stat.size, ft)
+end
+
+--- Route to appropriate tier based on resolved file size
+---@param buf integer
+---@param size integer
+---@param ft string|nil
+function M._apply_by_size(buf, size, ft)
+  if size > TIER2_BYTES then
+    M._apply_tier2(buf, size, ft)
+  elseif size > TIER1_BYTES then
+    M._apply_tier1(buf, size, ft)
+  end
 end
 
 --- Tier 1: >1MB — disable expensive AST/LSP features, keep basic editing
@@ -51,7 +60,7 @@ end
 ---@param size integer
 ---@param ft string|nil
 function M._apply_tier1(buf, size, ft)
-  local mb = string.format("%.1f", size / (1024 * 1024))
+  local mb = size / (1024 * 1024)
   vim.notify(
     string.format("Large file (%.1fMB) — Treesitter/LSP/completion disabled", mb),
     vim.log.levels.WARN,
@@ -59,11 +68,13 @@ function M._apply_tier1(buf, size, ft)
   )
 
   vim.api.nvim_buf_call(buf, function()
-    pcall(vim.cmd, "silent! NoMatchParen")
+    if vim.fn.exists(":NoMatchParen") == 2 then
+      pcall(vim.cmd, "NoMatchParen")
+    end
 
     -- Disable Treesitter highlighting
-    local ok_ts = pcall(vim.treesitter.stop, buf)
-    if not ok_ts then
+    local ts_stopped = pcall(vim.treesitter.stop, buf)
+    if not ts_stopped then
       vim.bo[buf].syntax = "off"
     end
 
@@ -72,6 +83,9 @@ function M._apply_tier1(buf, size, ft)
     vim.b[buf].completion = false
     vim.b[buf].minianimate_disable = true
     vim.b[buf].minihipatterns_disable = true
+    vim.b[buf].snacks_scope = false
+    vim.b[buf].snacks_indent = false
+    vim.b[buf].snacks_scroll = false
 
     -- Performance settings
     vim.opt_local.foldmethod   = "manual"
@@ -87,14 +101,22 @@ function M._apply_tier1(buf, size, ft)
 
   -- Detach any LSP clients already attached
   for _, client in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
-    vim.lsp.buf_detach_client(buf, client.id)
+    if client.detach then
+      client:detach(buf)
+    end
   end
 
-  -- Restore standard regex syntax since Snacks bigfile intercepted the original ft
+  -- M-04 fix: Restore regex syntax only if TS highlighter is confirmed inactive
   if ft and ft ~= "" then
     vim.schedule(function()
       if vim.api.nvim_buf_is_valid(buf) then
-        vim.bo[buf].syntax = ft
+        -- Verify TS highlighter is not active before setting regex syntax
+        local ts_active = pcall(function()
+          return vim.treesitter.highlighter.active[buf] ~= nil
+        end)
+        if not ts_active then
+          vim.bo[buf].syntax = ft
+        end
       end
     end)
   end
@@ -107,7 +129,7 @@ end
 function M._apply_tier2(buf, size, ft)
   M._apply_tier1(buf, size, "") -- All tier-1 protections first (no syntax restore)
 
-  local mb = string.format("%.1f", size / (1024 * 1024))
+  local mb = size / (1024 * 1024)
   vim.notify(
     string.format("Very large file (%.1fMB) — Read-only minimal mode", mb),
     vim.log.levels.ERROR,

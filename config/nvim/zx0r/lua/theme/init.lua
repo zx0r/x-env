@@ -31,6 +31,7 @@ local THEME_METADATA = {
   x_cyber    = { name = "Cyberpunk Glow",  desc = "High-contrast neon magenta & cobalt" },
   x_forest   = { name = "Deep Forest",     desc = "Emerald matrix & botanical shadows" },
   x_lavender = { name = "Soft Lavender",   desc = "Ethereal violet mist & dusk quartz" },
+  x_markdown = { name = "Scientific Markdown", desc = "Calibrated typographical spectrum for knowledge and math" },
   x_oled     = { name = "OLED Black",      desc = "Pure 0x000000 void with high-contrast" },
   x_pastel   = { name = "Soft Pastel",     desc = "Calibrated gentle pastel differential" },
   x_sand     = { name = "Warm Sand",       desc = "Desert neutral baseline & dune tones" },
@@ -66,6 +67,8 @@ M.language_themes = {
   sql        = "x_wood",     -- Natural Dark Wood (deep amber / timber)
   dockerfile = "x_steel",    -- Cold Industrial Steel (anodized metals)
   gitcommit  = "x_pastel",   -- Soft Pastel (calibrated differential)
+  markdown   = "x_markdown", -- Scientific Markdown (high-contrast magenta, cyan, cobalt, pink math)
+  quarto     = "x_markdown", -- Scientific Quarto (scientific document spectrum)
   query      = "x_forest",   -- Treesitter Queries (.scm) — Deep Emerald Matrix
   treesitter = "x_forest",   -- Treesitter Tree Inspector — Deep Emerald Matrix
 }

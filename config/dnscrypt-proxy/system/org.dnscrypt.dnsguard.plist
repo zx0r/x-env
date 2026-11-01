@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.dnscrypt.dnsguard</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>USER_HOME=$(eval echo ~$(stat -f "%Su" /dev/console)); exec "${USER_HOME}/.local/bin/dnscrypt-proxy/enforce-state.sh"</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>WatchPaths</key>
+    <array>
+        <string>/Library/Preferences/SystemConfiguration/NetworkInterfaces.plist</string>
+        <string>/Library/Preferences/SystemConfiguration/com.apple.nat.plist</string>
+        <string>/var/run/resolv.conf</string>
+    </array>
+    <key>StandardOutPath</key>
+    <string>/opt/homebrew/var/log/dnscrypt-proxy/dnsguard.log</string>
+    <key>StandardErrorPath</key>
+    <string>/opt/homebrew/var/log/dnscrypt-proxy/dnsguard.log</string>
+</dict>
+</plist>

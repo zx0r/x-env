@@ -4,10 +4,10 @@
 # title: "Meta-Workspace Context Router (Execution <-> Brain)"
 # layer: "Functions"
 # responsibility: "Performs bidirectional isomorphic path translation between physical execution spaces (~/x) and cognitive knowledge spaces (~/x/brain)"
-# dependencies: ["conf.d/00-xdg.fish"]
-# backlinks: ["conf.d/20-abbr.fish"]
+# dependencies: ["conf.d/00_bootstrap.fish"]
+# backlinks: ["conf.d/20_abbrs.fish"]
 # created_at: "2026-10-05"
-# updated_at: "2026-10-05"
+# updated_at: "2026-10-10"
 # tags: ["workspace", "isomorphism", "navigation", "brain", "router", "zero-fork"]
 # ---
 

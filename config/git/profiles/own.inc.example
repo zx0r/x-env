@@ -1,0 +1,22 @@
+# ==============================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Git Profile Template: Own / Open Source / Personal (~/x/dev/own)
+# Copy this file to own.inc and fill in your personal identity values:
+#   cp own.inc.example own.inc
+# ==============================================================
+[user]
+    name = <your-github-username>
+    email = <your-github-id>+<username>@users.noreply.github.com
+    signingkey = ~/.ssh/<your-secure-enclave-public-key>.pub
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgSign = true
+    forceSignAnnotated = true

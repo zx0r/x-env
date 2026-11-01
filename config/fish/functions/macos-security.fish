@@ -1,0 +1,1 @@
+/Users/x0r/x/dev/own/macos-security/shell/functions/macos-security.fish

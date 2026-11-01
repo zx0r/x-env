@@ -1,0 +1,21 @@
+[theme]
+name = "x_synth"
+parent = "default"
+
+[colors]
+Base = "#BCC4DD"
+Title = "#7B8496"
+Annotation = "#646B84"
+Muted = "#4A5168"
+Guidance = "#00FFFF"
+Important = "#CD00F7"
+AlertInfo = "#0A84FF"
+AlertWarn = "#FFFF00"
+AlertError = "#646B84"
+
+SyntaxCommand = "#2FFC1D"
+SyntaxFlag = "#FD8902"
+SyntaxString = "#F71394"
+SyntaxVariable = "#E047C5"
+SyntaxOperator = "#AAAAAA"
+SyntaxComment = "#4E83FD"

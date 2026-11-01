@@ -1,0 +1,54 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Cocogitto (cog) Configuration
+# Target : macOS (Darwin arm64) | XDG Base Directory
+# Path   : ~/.config/cocogitto/cog.toml
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+from_latest_tag = true
+ignore_merge_commits = true
+ignore_fixup_commits = true
+disable_changelog = false
+disable_bump_commit = false
+branch_whitelist = ["main", "master", "release/*"]
+tag_prefix = "v"
+skip_ci = "[skip ci]"
+skip_untracked = false
+pre = "alpha.*"
+
+scopes = [
+  "auth",
+  "api",
+  "core",
+  "crypto",
+  "cli",
+  "infra",
+  "deps",
+  "security",
+  "ui",
+]
+
+[commit_types]
+feat = { changelog_title = "Features", order = 1 }
+fix = { changelog_title = "Bug Fixes", order = 2 }
+perf = { changelog_title = "Performance Improvements", order = 3 }
+refactor = { changelog_title = "Refactoring", order = 4 }
+docs = { changelog_title = "Documentation", order = 5 }
+style = { changelog_title = "Styling", order = 6 }
+test = { changelog_title = "Tests", order = 7 }
+build = { changelog_title = "Build System", order = 8 }
+ci = { changelog_title = "CI/CD", order = 9 }
+chore = { changelog_title = "Maintenance", order = 10, omit_from_changelog = false }
+revert = { changelog_title = "Reverts", order = 11 }
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+owner = "zx0r"
+repository = "repo"

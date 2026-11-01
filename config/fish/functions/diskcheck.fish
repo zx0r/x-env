@@ -5,9 +5,9 @@
 # layer: "Functions"
 # responsibility: "Inspects macOS disk volume mount status, APFS container details, and capacity usage"
 # dependencies: []
-# backlinks: ["conf.d/20-abbr.fish"]
+# backlinks: ["conf.d/20_abbrs.fish"]
 # created_at: "2026-09-10"
-# updated_at: "2026-09-10"
+# updated_at: "2026-10-10"
 # tags: ["disk", "storage", "macos", "inspection"]
 # ---
 

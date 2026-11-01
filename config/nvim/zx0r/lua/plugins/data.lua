@@ -33,8 +33,7 @@ return {
     build = ":UpdateRemotePlugins",
 
     dependencies = {
-      {
-        "3rd/image.nvim",
+      { "3rd/image.nvim", lazy = true,
         enabled = function()
           local term = vim.env.TERM or ""
           local term_program = vim.env.TERM_PROGRAM or ""
@@ -76,7 +75,7 @@ return {
       },
     },
 
-    init = function()
+    config = function()
       -- These are global Molten options and must exist before the
       -- remote-plugin initialization takes place.
       vim.g.molten_output_win_max_height = 20
@@ -161,10 +160,20 @@ return {
     },
 
     dependencies = {
-      "tpope/vim-dadbod",
+      { "tpope/vim-dadbod", lazy = true },
     },
 
     lazy = true,
+  },
+
+  -- ── SQL uppercase keywords ───────────────────────────────────────────────
+  {
+    "jsborjesson/vim-uppercase-sql",
+    ft = {
+      "sql",
+      "mysql",
+      "plsql",
+    },
   },
 
   -- ── Dadbod UI: Database explorer ─────────────────────────────────────────
@@ -187,11 +196,11 @@ return {
     },
 
     dependencies = {
-      "tpope/vim-dadbod",
-      "kristijanhusak/vim-dadbod-completion",
+      { "tpope/vim-dadbod", lazy = true },
+      { "kristijanhusak/vim-dadbod-completion", lazy = true },
     },
 
-    init = function()
+    config = function()
       -- Dadbod UI global configuration.
       vim.g.db_ui_use_nerd_fonts = 1
       vim.g.db_ui_show_database_icon = 1
@@ -200,5 +209,36 @@ return {
       vim.g.db_ui_win_position = "right"
       vim.g.db_ui_winwidth = 40
     end,
+  },
+
+  -- ── JQX: Interactive JSON/YAML querying ──────────────────────────────────
+  {
+    "gennaro-tedesco/nvim-jqx",
+    cmd = { "JqxList", "JqxQuery" },
+    keys = {
+      { "<leader>cj", "<cmd>JqxList<cr>", desc = "Jqx List" },
+    },
+  },
+
+  -- ── Kulala: Minimal REST / HTTP Client ───────────────────────────────────
+  {
+    "mistweaverco/kulala.nvim",
+    ft = { "http", "rest" },
+    keys = {
+      { "<leader>rr", function() require("kulala").run() end, desc = "HTTP: Send request" },
+      { "<leader>rt", function() require("kulala").toggle_view() end, desc = "HTTP: Toggle headers/body" },
+      { "<leader>ri", function() require("kulala").inspect() end, desc = "HTTP: Inspect request" },
+      { "<leader>rc", function() require("kulala").copy() end, desc = "HTTP: Copy as cURL" },
+    },
+    opts = {
+      icons = {
+        inlay = {
+          loading = "󰔟",
+          done = " ",
+          error = " ",
+        },
+        lualine = " ",
+      },
+    },
   },
 }

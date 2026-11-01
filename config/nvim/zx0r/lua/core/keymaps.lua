@@ -77,8 +77,8 @@ map("n", "<leader>/", "gcc", { desc = "Toggle comment line", remap = true })
 map("v", "<leader>/", "gc",  { desc = "Toggle comment block", remap = true })
 
 -- ── Block Navigation & Indentation — Tab / Shift-Tab ─────────────────────────
-map("n", "<Tab>",          "}",     { desc = "Next block",          silent = true })
-map("n", "<S-Tab>",        "{",     { desc = "Previous block",      silent = true })
+map("n", "<Tab>",          "m'}",   { desc = "Next block",          silent = true })
+map("n", "<S-Tab>",        "m'{",   { desc = "Previous block",      silent = true })
 map("v", "<Tab>",          ">gv",   { desc = "Indent selection",    silent = true })
 map("v", "<S-Tab>",        "<gv",   { desc = "Unindent selection",  silent = true })
 map("i", "<S-Tab>",        "<C-d>", { desc = "Dedent (insert)",     silent = true })
@@ -134,8 +134,6 @@ map("n", "<C-x>", "dd",      { desc = "Cut line",        silent = true })
 map("n", "<C-c>", "yy",      { desc = "Copy line",       silent = true })
 map("v", "<C-c>", '"+y',     { desc = "Copy to clipboard", silent = true })
 map("v", "<C-x>", '"+x',     { desc = "Cut to clipboard",  silent = true })
-map({ "n", "v" }, "<C-v>", '"+p',   { desc = "Paste from clipboard", silent = true })
-map("i",          "<C-v>", '<C-r>+', { desc = "Paste from clipboard (insert)", silent = true })
 
 -- Guard middle-click / wheel click from pasting into unmodifiable buffers (avoids E21: Cannot make changes, 'modifiable' is off)
 map({ "n", "v" }, "<MiddleMouse>", function()
@@ -242,12 +240,12 @@ end, { desc = "Toggle quickfix" })
 -- §7  DIAGNOSTIC NAVIGATION
 -- ═══════════════════════════════════════════════════════════════════════════
 
-map("n", "]d", function() vim.diagnostic.goto_next() end,  { desc = "Next diagnostic" })
-map("n", "[d", function() vim.diagnostic.goto_prev() end,  { desc = "Prev diagnostic" })
-map("n", "]e", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Next error" })
-map("n", "[e", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Prev error" })
-map("n", "]w", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN }) end,  { desc = "Next warning" })
-map("n", "[w", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN }) end,  { desc = "Prev warning" })
+map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end,  { desc = "Next diagnostic" })
+map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Prev diagnostic" })
+map("n", "]e", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR, float = true }) end, { desc = "Next error" })
+map("n", "[e", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR, float = true }) end, { desc = "Prev error" })
+map("n", "]w", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.WARN, float = true }) end,  { desc = "Next warning" })
+map("n", "[w", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.WARN, float = true }) end,  { desc = "Prev warning" })
 map("n", "<leader>cd", function() vim.diagnostic.open_float() end, { desc = "Line diagnostics" })
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -293,5 +291,5 @@ map("n", "<leader>L",  "<cmd>Lazy<cr>",        { desc = "Lazy plugin manager" })
 map("n", "<leader>M",  "<cmd>Mason<cr>",       { desc = "Mason tool manager" })
 
 -- ── Search & Replace ────────────────────────────────────────────────────────
-map("n", "<leader>sr", ":%s/\\<<C-r><C-w>\\>//g<Left><Left>", { desc = "Replace word under cursor" })
+map("n", "<leader>sR", ":%s/\\<<C-r><C-w>\\>//g<Left><Left>", { desc = "Replace word under cursor (native :%s)" })
 

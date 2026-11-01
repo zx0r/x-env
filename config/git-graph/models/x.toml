@@ -1,0 +1,115 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Branch group persistence from highest to lowest lifespan (used to back-trace branches)
+persistence = [
+  "^(master|main|trunk|production)$",
+  "^(develop|dev|staging)$",
+  "^feature.*$",
+  "^release.*$",
+  "^hotfix.*$",
+  "^bugfix.*$",
+  "^refactor.*$",
+  "^experiment.*$",
+]
+
+# Visual ordering of branches from left to right across terminal columns
+order = [
+  "^(master|main|trunk|production)$",
+  "^(hotfix|bugfix).*$",
+  "^(release|staging).*$",
+  "^(develop|dev)$",
+  "^(feature|refactor).*$",
+]
+
+# Terminal colors using ANSI high-intensity tokens (Cyberpunk Neon Palette)
+[terminal_colors]
+matches = [
+  [
+    "^(master|main|trunk|production)$",
+    [
+      "bright_cyan",
+    ],
+  ],
+  [
+    "^(develop|dev|staging)$",
+    [
+      "bright_magenta",
+    ],
+  ],
+  [
+    "^(feature|fork/).*$",
+    [
+      "bright_magenta",
+      "bright_cyan",
+    ],
+  ],
+  [
+    "^release.*$",
+    [
+      "bright_green",
+    ],
+  ],
+  [
+    "^(bugfix|hotfix).*$",
+    [
+      "bright_red",
+    ],
+  ],
+  [
+    "^tags/.*$",
+    [
+      "bright_yellow",
+    ],
+  ],
+]
+unknown = ["bright_white"]
+
+# SVG vector colors using 24-bit TrueColor hex codes (Cyberpunk Neon Palette)
+[svg_colors]
+matches = [
+  [
+    "^(master|main|trunk|production)$",
+    [
+      "#00ffff",
+    ],
+  ],
+  [
+    "^(develop|dev|staging)$",
+    [
+      "#ff00ff",
+    ],
+  ],
+  [
+    "^(feature|fork/).*$",
+    [
+      "#ff00ff",
+      "#00ffff",
+    ],
+  ],
+  [
+    "^release.*$",
+    [
+      "#00ff88",
+    ],
+  ],
+  [
+    "^(bugfix|hotfix).*$",
+    [
+      "#ff0055",
+    ],
+  ],
+  [
+    "^tags/.*$",
+    [
+      "#f1fa8c",
+    ],
+  ],
+]
+unknown = ["#f8f8f2"]

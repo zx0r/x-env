@@ -1,0 +1,142 @@
+# =============================================================================
+# KEYBOARD MATRIX & BINDINGS: GHOSTTY
+# Parity: Kitty 0.49.2 Architecture + alacritty.BAK Verified Bindings
+# Zero Cognitive Friction | Apple Silicon macOS Pipeline
+# =============================================================================
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# GHOSTTY ↔ TMUX / ENVIRONMENT X INTEGRATION MATRIX (macOS)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Release Alt + Arrows from Ghostty Internal Defaults
+# Unbinds default Ghostty handlers (word jumps / native splits)
+keybind = alt+up=unbind
+keybind = alt+down=unbind
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+
+# Release Shift + Arrows (Tmux Tab/Window Cycling S-Left / S-Right)
+keybind = shift+left=unbind
+keybind = shift+right=unbind
+keybind = shift+up=unbind
+keybind = shift+down=unbind
+
+# Neutralize Conflicting Ghostty Native Splits & Window Controls
+# Releases native GUI shortcuts so Tmux retains sole multiplexing authority:
+keybind = super+d=unbind
+keybind = super+shift+d=unbind
+keybind = ctrl+shift+enter=unbind
+
+# ── [ 01 ] GLOBAL HUD QUAKE TERMINAL ─────────────────────────────────────────
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+
+# ── [ 02 ] WINDOW MODES & DISPLAY GEOMETRY SWITCHING ────────────────────────
+# Full-Perimeter Notch Canvas (Zero-Latency Non-Native Fullscreen Toggle):
+# Bypasses macOS Spaces letterbox & renders around notch without black bars.
+keybind = cmd+ctrl+f=toggle_fullscreen
+keybind = cmd+enter=toggle_fullscreen
+
+# Window Maximization & Desktop Geometry (Non-fullscreen maximized state):
+keybind = cmd+ctrl+m=toggle_maximize
+keybind = cmd+alt+m=toggle_maximize
+keybind = cmd+shift+m=toggle_maximize
+
+# Dynamic Window Chrome & Frame Decoration Toggle:
+keybind = cmd+alt+d=toggle_window_decorations
+
+# Standard Surface & App Lifecycle:
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard
+keybind = shift+insert=paste_from_selection
+keybind = cmd+t=new_tab
+keybind = cmd+w=close_surface
+keybind = cmd+q=quit
+keybind = cmd+n=new_window
+
+# ── [ 03 ] TYPOGRAPHY SCALING ────────────────────────────────────────────────
+keybind = cmd+equal=increase_font_size:1
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+zero=reset_font_size
+keybind = cmd+alt+backspace=reset_font_size
+
+# ── [ 04 ] WINDOW SPLITS ARCHITECTURE (KITTY PARITY) ─────────────────────────
+keybind = cmd+alt+enter=new_split:right
+keybind = cmd+alt+backslash=new_split:down
+keybind = cmd+alt+w=close_surface
+keybind = cmd+alt+z=toggle_split_zoom
+keybind = cmd+shift+enter=toggle_split_zoom
+keybind = cmd+alt+equal=equalize_splits
+
+# Split Directional & Sequential Navigation
+keybind = cmd+alt+right_bracket=goto_split:next
+keybind = cmd+alt+left_bracket=goto_split:previous
+keybind = cmd+alt+h=goto_split:left
+keybind = cmd+alt+j=goto_split:down
+keybind = cmd+alt+k=goto_split:up
+keybind = cmd+alt+l=goto_split:right
+keybind = cmd+alt+arrow_left=goto_split:left
+keybind = cmd+alt+arrow_down=goto_split:down
+keybind = cmd+alt+arrow_up=goto_split:up
+keybind = cmd+alt+arrow_right=goto_split:right
+
+# ── [ 05 ] TAB NAVIGATION (ARROWS, BRACKETS, 1-9 & CTRL+TAB) ─────────────────
+keybind = cmd+arrow_right=next_tab
+keybind = cmd+arrow_left=previous_tab
+keybind = cmd+right_bracket=next_tab
+keybind = cmd+left_bracket=previous_tab
+keybind = ctrl+tab=next_tab
+keybind = ctrl+shift+tab=previous_tab
+keybind = cmd+shift+right_bracket=move_tab:1
+keybind = cmd+shift+left_bracket=move_tab:-1
+keybind = cmd+1=goto_tab:1
+keybind = cmd+2=goto_tab:2
+keybind = cmd+3=goto_tab:3
+keybind = cmd+4=goto_tab:4
+keybind = cmd+5=goto_tab:5
+keybind = cmd+6=goto_tab:6
+keybind = cmd+7=goto_tab:7
+keybind = cmd+8=goto_tab:8
+keybind = cmd+9=goto_tab:9
+
+# ── [ 06 ] PROMPT JUMPING (OSC 133 SHELL INTEGRATION) ────────────────────────
+keybind = cmd+shift+arrow_up=jump_to_prompt:-1
+keybind = cmd+shift+arrow_down=jump_to_prompt:1
+
+# ── [ 07 ] SCROLLBACK & SEARCH (ALACRITTY.BAK & KITTY PARITY) ────────────────
+keybind = cmd+f=start_search
+keybind = ctrl+shift+f=start_search
+keybind = cmd+g=navigate_search:next
+keybind = cmd+shift+g=navigate_search:previous
+keybind = cmd+alt+page_up=scroll_page_up
+keybind = cmd+alt+page_down=scroll_page_down
+keybind = cmd+alt+home=scroll_to_top
+keybind = cmd+alt+end=scroll_to_bottom
+keybind = shift+page_up=scroll_page_up
+keybind = shift+page_down=scroll_page_down
+keybind = shift+home=scroll_to_top
+keybind = shift+end=scroll_to_bottom
+keybind = cmd+k=clear_screen
+keybind = ctrl+l=clear_screen
+
+# ── [ 08 ] INTERACTIVE WORKFLOW UTILITIES ────────────────────────────────────
+keybind = cmd+shift+g=text:lazygit\r
+keybind = cmd+alt+g=text:lazygit\r
+keybind = cmd+shift+t=text:tmx new\r
+keybind = cmd+alt+t=text:tmx\r
+
+# ── [ 09 ] SHELL WORD NAVIGATION & LINE EDITING (MACOS ERGONOMICS) ───────────
+keybind = alt+backspace=text:\x17
+keybind = alt+delete=text:\x1bd
+keybind = cmd+backspace=text:\x15
+
+# ── [ 10 ] SYSTEM UTILITIES & DIAGNOSTICS ────────────────────────────────────
+keybind = cmd+comma=open_config
+keybind = cmd+shift+comma=reload_config
+keybind = cmd+ctrl+comma=reload_config
+keybind = cmd+alt+f2=open_config
+keybind = cmd+alt+s=toggle_secure_input
+keybind = cmd+alt+delete=reset
+keybind = cmd+alt+i=inspector:toggle
+keybind = cmd+shift+p=toggle_command_palette
+keybind = cmd+ctrl+0=toggle_background_opacity

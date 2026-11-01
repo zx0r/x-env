@@ -1,0 +1,182 @@
+# : Manager {{{
+
+[mgr]
+cwd = { fg = "#EBDBB2" }
+
+# Find
+find_keyword  = { fg = "#2A9D8F", bold = true, italic = true, underline = true }
+find_position = { fg = "#2A9D8F",  bold = true, italic = true }
+
+# Marker
+marker_copied   = { fg = "#83A598",    bg = "#83A598" }
+marker_cut      = { fg = "#E76551",    bg = "#e76551" }
+marker_marked   = { fg = "#2A9D8F",    bg = "#2A9D8F" }
+marker_selected = { fg = "#264653",    bg = "#264653" }
+
+# Count
+count_copied   = { fg = "#12202B", bg = "#83A598" }
+count_cut      = { fg = "#EBDBB2", bg = "#264653" }
+count_selected = { fg = "#12202B", bg = "#E76551" }
+
+# : }}}
+
+
+# : Tabs {{{
+
+[tabs]
+active = { fg = "#12202B", bg = "#E9C46A", bold = true}
+inactive = { fg = "#E9C46A", bg = "#504945"}
+
+# : }}}
+
+
+# : Mode {{{
+
+[mode]
+# mode_normal = { bg = "#F4A261", fg ="#08070C", bold = true }
+# mode_select = { bg = "#2A9D8F", fg ="#08070C", bold = true }
+# mode_unset  = { bg = "#E76551", fg ="#08070C" ,bold = true }
+
+normal_main = { bg = "#F4A261", fg ="#08070C", bold = true }
+normal_alt  = { fg = "#08070C", bg = "gray", bold = true }
+
+# Select mode
+select_main = { bg = "#2A9D8F", fg ="#08070C", bold = true }
+select_alt  = { fg = "#08070C", bg = "gray", bold = true }
+
+# Unset mode
+unset_main = { bg = "#E76551", fg ="#08070C" ,bold = true }
+unset_alt  = { fg = "#08070C", bg = "gray", bold = true }
+
+# : }}}
+
+
+# : Status bar {{{
+
+[status]
+# Permissions
+perm_sep   = { fg = "#EBDBB2" }
+perm_type  = { fg = "#E9C48A" }
+perm_read  = { fg = "#264653" }
+perm_write = { fg = "#E76551" }
+perm_exec  = { fg = "#2A9D8F" }
+
+# : }}}
+
+
+# : Which {{{
+
+[which]
+cols            = 3
+mask            = { bg = "#08070C" }
+cand            = { fg = "#E9C46A" }
+rest            = { fg = "#12202B" }
+desc            = { fg = "#EBDBB2" }
+separator       = " ▶ "
+separator_style = { fg = "#EBDBB2" }
+
+# : }}}
+
+
+# : Notification {{{
+
+[notify]
+title_info  = { fg = "#83A598" }
+title_warn  = { fg = "#E9c46a" }
+title_error = { fg = "#E76551" }
+
+# : }}}
+
+
+# : Picker {{{
+
+[pick]
+border   = { fg = "#E9C46A" }
+active   = { fg = "#E76551", bold = true }
+inactive = {}
+
+# : }}}
+
+
+# : Input {{{
+
+[input]
+border   = { fg = "#E9C46A" }
+title    = {}
+value    = { fg = "#EBDBB2" }
+selected = { reversed = true }
+
+# : }}}
+
+
+# : Task manager {{{
+
+[tasks]
+border  = { fg = "#E9C46A" }
+title   = {}
+hovered = { fg = "#264653", underline = true }
+
+# : }}}
+
+
+# : Help menu {{{
+
+[help]
+on      = { fg = "#E9C46A" }
+run     = { fg = "#83A598" }
+desc    = {}
+hovered = { reversed = true, bold = true }
+footer  = { fg = "#08070C", bg = "#EBDBB2" }
+
+# : }}}
+
+
+# : File-specific styles {{{
+
+[filetype]
+rules = [
+	# Image
+	{ mime = "image/*", fg = "#F4A261" },
+	# Media
+	{ mime = "{audio,video}/*", fg = "#264653" },
+	# Archive
+	{ mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#E76551" },
+	# Document
+	{ mime = "application/{pdf,doc,rtf}", fg = "#E76551" },
+	# Virtual file system
+	{ mime = "vfs/{absent,stale}", fg = "#83A588" },
+	# Special file
+	{ url = "*", is = "orphan", bg = "#504945" },
+	{ url = "*", is = "exec"  , fg = "#2a9d8F" },
+	# Dummy file
+	{ url = "*", is = "dummy", bg = "#504945" },
+	{ url = "*/", is = "dummy", bg = "#504950" },
+	# Fallback
+	{ url = "*/", fg = "#e9c461" }
+]
+
+# : }}}
+
+
+# : Icons {{{
+
+[icon]
+globs = []
+dirs  = [
+	{ name = ".config", text = "", fg = "#F4A261" },
+	{ name = ".git", text = "", fg = "#F4A261" },
+	{ name = ".github", text = "", fg = "#F4A261" },
+	{ name = ".npm", text = "", fg = "#F4A261" },
+	{ name = "Desktop", text = "", fg = "#F4A261" },
+	{ name = "Development", text = "", fg = "#F4A261" },
+	{ name = "Documents", text = "", fg = "#F4A261" },
+	{ name = "Downloads", text = "", fg = "#F4A261" },
+	{ name = "Library", text = "", fg = "#F4A261" },
+	{ name = "Movies", text = "", fg = "#F4A261" },
+	{ name = "Music", text = "", fg = "#F4A261" },
+	{ name = "Pictures", text = "", fg = "#F4A261" },
+	{ name = "Public", text = "", fg = "#F4A261" },
+	{ name = "Videos", text = "", fg = "#F4A261" },
+]
+
+# : }}}

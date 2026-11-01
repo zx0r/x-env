@@ -50,10 +50,12 @@ return {
 
         terraform = { "tflint" },
 
-        markdown = { "markdownlint" },
+        markdown = { "markdownlint", "vale" },
         yaml = { "yamllint" },
+        ["yaml.ansible"] = { "ansible_lint" },
+        ansible = { "ansible_lint" },
 
-        nix = { "nix" },
+        nix = { "nix", "statix" },
 
         go = { "golangcilint" },
 
@@ -68,10 +70,27 @@ return {
         end,
       })
 
+      lint.linters.vale = vim.tbl_deep_extend("force", lint.linters.vale or {}, {
+        condition = function(ctx)
+          local path = ctx and ctx.filename or vim.api.nvim_buf_get_name(0)
+          return vim.fs.find({ ".vale.ini", "_vale.ini" }, { path = path, upward = true })[1] ~= nil
+        end,
+      })
+
       local group = vim.api.nvim_create_augroup(
         "coding_lint",
         { clear = true }
       )
+
+      local exe_cache = {}
+      local function is_executable(bin)
+        local cached = exe_cache[bin]
+        if cached == nil then
+          cached = (vim.fn.executable(bin) == 1)
+          exe_cache[bin] = cached
+        end
+        return cached
+      end
 
       local function lint_buffer(bufnr)
         if not vim.api.nvim_buf_is_valid(bufnr) then
@@ -109,7 +128,7 @@ return {
           if cond and type(cond) == "function" then
             allowed = cond(ctx)
           end
-          if allowed and vim.fn.executable(cmd) == 1 then
+          if allowed and is_executable(cmd) then
             table.insert(active, name)
           end
         end

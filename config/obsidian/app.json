@@ -1,0 +1,17 @@
+{
+  "attachmentFolderPath": "_meta/assets",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "00_inbox/quick",
+  "alwaysUpdateLinks": true,
+  "useMarkdownLinks": false,
+  "showLineNumber": true,
+  "strictLineBreaks": false,
+  "trashOption": "local",
+  "promptDelete": false,
+  "livePreview": true,
+  "autoConvertHtml": true,
+  "foldHeading": true,
+  "foldIndent": true,
+  "tabSize": 4,
+  "smartIndentList": true
+}

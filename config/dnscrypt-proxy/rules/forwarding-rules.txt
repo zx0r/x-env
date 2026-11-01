@@ -1,4 +1,5 @@
 # --- Local network zones (RFC 8375 + Legacy) ---
+# NOTE: Set target to local router IP if default gateway differs from 192.168.1.1
 lan              192.168.1.1
 home.arpa        192.168.1.1
 

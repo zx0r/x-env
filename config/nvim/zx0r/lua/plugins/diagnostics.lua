@@ -12,7 +12,13 @@
 -- Neovim >= 0.12
 -- ============================================================================
 
+local _diag_configured = false
 local function setup_diagnostics()
+  if _diag_configured then
+    return
+  end
+  _diag_configured = true
+
   vim.diagnostic.config({
     severity_sort = true,
     float = {
@@ -75,8 +81,9 @@ return {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     event = "VeryLazy",
-    init = function()
+    config = function(_, opts)
       setup_diagnostics()
+      require("todo-comments").setup(opts)
     end,
     opts = {
       signs = true,
@@ -132,6 +139,27 @@ return {
           Snacks.picker.todo_comments()
         end,
         desc = "Find TODOs",
+      },
+    },
+  },
+
+  {
+    "artemave/workspace-diagnostics.nvim",
+    event = "LspAttach",
+    opts = {},
+    config = function(_, opts)
+      setup_diagnostics()
+      require("workspace-diagnostics").setup(opts)
+    end,
+    keys = {
+      {
+        "<leader>cx",
+        function()
+          for _, client in ipairs(vim.lsp.get_clients()) do
+            require("workspace-diagnostics").populate_workspace_diagnostics(client, 0)
+          end
+        end,
+        desc = "Workspace diagnostics: Populate",
       },
     },
   },

@@ -1,0 +1,23 @@
+# ==============================================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Jujutsu Profile Template: Own / Open Source / Personal (~/x)
+# Copy this file to 10-own.toml and fill in your personal values:
+#   cp 10-own.toml.example 10-own.toml
+# Platform : macOS 27+ (Apple Silicon arm64 Darwin)
+# Standard : OpenSSH PROTOCOL.sshsig / Secure Enclave (Touch ID)
+# ==============================================================================
+
+[user]
+name = "<your-github-username>"
+email = "<your-id>+<your-github-username>@users.noreply.github.com"
+
+[signing]
+behavior = "own"
+backend = "ssh"
+key = "~/.ssh/<your-signing-key>.pub"
+backends.ssh.program = "/usr/bin/ssh-keygen"

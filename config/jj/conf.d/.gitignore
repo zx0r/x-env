@@ -1,0 +1,4 @@
+# Ignore private Jujutsu profiles (zero credential/identity leak)
+*.toml
+!*.example
+!.gitignore

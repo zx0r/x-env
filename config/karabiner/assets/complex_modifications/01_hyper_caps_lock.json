@@ -1,0 +1,53 @@
+{
+    "title": "01 - Hyper Key & Dual-Role Caps Lock",
+    "rules": [
+        {
+            "description": "Caps Lock: Hyper Key (Cmd+Opt+Ctrl+Shift) on Hold, Escape on Tap",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "caps_lock",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_shift",
+                            "modifiers": [
+                                "left_command",
+                                "left_control",
+                                "left_option"
+                            ]
+                        },
+                        {
+                            "set_variable": {
+                                "name": "hyper_mode",
+                                "value": 1
+                            }
+                        }
+                    ],
+                    "to_after_key_up": [
+                        {
+                            "set_variable": {
+                                "name": "hyper_mode",
+                                "value": 0
+                            }
+                        }
+                    ],
+                    "to_if_alone": [
+                        {
+                            "key_code": "escape"
+                        }
+                    ],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 250
+                    }
+                }
+            ]
+        }
+    ]
+}

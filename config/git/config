@@ -1,0 +1,398 @@
+# NOTE:==============================================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ZERO-TRUST GIT & CRYPTOGRAPHIC PROVENANCE CONFIGURATION
+# Platform : macOS 27+ (Apple Silicon / aarch64 Darwin 27.2+)
+# Toolchain: Git 2.56+ | Delta 0.20+ | Difftastic 0.71+ | Mergiraf 0.20+ | SOPS 3.13+ |
+#            age 1.3+ | Secretive (SEP) 4.0+ | Jujutsu 0.46+ | Lazygit 0.66+ |
+#            GitUI 0.28+ | Tig 2.6+ | Gitleaks 8.30+ | Cocogitto 7.0+ | Lefthook 2.2+
+# Target   : ~/.config/git/config
+# Standards: OpenSSH 10.5+ PROTOCOL.sshsig, FIPS 186-4 (ECDSA P-256 / Secure Enclave),
+#            RFC 8308, Git Wire Protocol v2, Strict XDG Base Directory Specification
+# ==============================================================================
+
+# 1. CORE REPOSITORY INITIALIZATION & IDENTITY
+[init]
+    # Modern standard default branch naming convention
+    defaultBranch = main
+
+[user]
+    # Zero-Leak Invariant: enforce explicit identity per repo/profile
+    # Refuses commits if user.name or user.email is unset, preventing hostname leaks
+    useConfigOnly = true
+
+# 1.1 IDENTITY PROFILES ORCHESTRATION
+# Primary developer identity across entire ~/x workspace
+[includeIf "gitdir/i:~/x/**"]
+    path = ~/.config/git/profiles/own.inc
+[includeIf "worktree/i:~/**"]
+    path = ~/.config/git/profiles/own.inc
+
+# Contextual override for NDA / commercial client projects (~/x/dev/nda)
+[includeIf "gitdir/i:~/x/dev/nda/**"]
+    path = ~/.config/git/profiles/nda.inc
+[includeIf "worktree/i:~/x/dev/nda/**"]
+    path = ~/.config/git/profiles/nda.inc
+
+# 2. CRYPTOGRAPHIC PROVENANCE & SECURE ENCLAVE COMMIT SIGNING
+# Bypasses fragile legacy GPG daemon stacks (gpg-agent/pinentry) in favor of
+# native OpenSSH sshsig backed by Apple Silicon Secure Enclave Processor (SEP).
+# Private keys are non-exportable from hardware; every signature requires Touch ID.
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    program = /usr/bin/ssh-keygen
+    # Namespace-isolated trust store for commit provenance verification
+    allowedSignersFile = ~/.config/git/allowed_signers
+
+[commit]
+    # Enforce mandatory cryptographic signing for all commits
+    gpgsign = true
+    # Commit message template conforming to conventional commits format
+    template = ~/.config/git/template
+    # Show unified diff of changes in the commit editor for visual verification
+    verbose = true
+
+[tag]
+    # Enforce mandatory cryptographic signing for all release tags
+    gpgSign = true
+    forceSignAnnotated = true
+
+[log]
+    # Display verified signature provenance by default in git log
+    showSignature = true
+    date = iso-strict
+
+# 3. APFS & APPLE SILICON PERFORMANCE ENGINE
+[core]
+    # Strict XDG Base Directory specification compliance
+    excludesFile = ~/.config/git/ignore
+    attributesFile = ~/.config/git/attributes
+
+    # Terminal syntax highlighter & structural pager
+    pager = delta
+
+    # macOS APFS Normalization:
+    # APFS decomposes UTF-8 filenames (NFD) on disk. Without precomposeUnicode,
+    # Git interprets NFC (standard) and NFD representations as distinct files,
+    # leading to ghost modifications and checkout corruption in cross-platform repos.
+    precomposeUnicode = true
+
+    # Note: core.ignoreCase is probed automatically per repo by git-init/git-clone
+    # Avoid setting globally to preserve case-sensitive sparsebundles and Linux mounts
+
+    # Accelerates git status by using directory mtime caching on APFS
+    untrackedCache = true
+
+    # Built-in macOS Darwin FSEvents daemon integration
+    # Replaces slow recursive stat() walks with kernel-level event streaming
+    fsmonitor = true
+
+    # Prevent spurious inode metadata diffs on APFS
+    trustctime = false
+
+    # End-of-line normalization
+    autocrlf = input
+    eol = lf
+
+    # Filesystem security governors against malicious path traversal / collisions
+    protectHFS = true
+    protectNTFS = true
+
+[checkout]
+    # Parallel checkout utilizing all CPU hardware threads on Apple Silicon
+    workers = 0
+    # Disambiguate tracking branch checkouts to primary remote
+    defaultRemote = origin
+
+[index]
+    # Prefix-compressed index format (v4) accelerates I/O on large trees
+    version = 4
+    # Multi-threaded index preload across performance cores during status/diff
+    threads = true
+
+[pack]
+    # Utilize all Apple Silicon cores for packfile compression
+    threads = 0
+
+# 4. HIGH-DENSITY TERMINAL RENDERING & DELTA PAGER
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = principal-core principal-theme line-numbers decorations blame-view merge-conflict-zdiff3
+
+[delta "principal-core"]
+    paging = always
+    true-color = always
+    detect-dark-light = auto
+    diff-indicator = true
+    navigate = true
+    navigate-regex = "^(commit|added:|removed:|renamed:|Δ|•)"
+    hyperlinks = true
+    hyperlinks-file-link-format = "file://{path}#{line}"
+    tabs = 4
+    max-line-length = 4096
+    max-syntax-highlighting-length = 2048
+    line-buffer-size = 64
+    word-diff-regex = "\\w+"
+    right-arrow = " ⟶  "
+    wrap-max-lines = 3
+    wrap-left-symbol = "↵"
+    wrap-right-symbol = "↴"
+    wrap-right-prefix-symbol = "…"
+    diff-stat-align-width = 48
+    keep-plus-minus-markers = false
+
+[delta "principal-theme"]
+    syntax-theme = Dracula
+    zero-style = syntax normal
+    minus-style = syntax "#34121a"
+    minus-non-emph-style = syntax "#34121a"
+    minus-emph-style = syntax bold "#621e2e"
+    minus-empty-line-marker-style = normal "#34121a"
+    plus-style = syntax "#0f2b1d"
+    plus-non-emph-style = syntax "#0f2b1d"
+    plus-emph-style = syntax bold "#1e4d32"
+    plus-empty-line-marker-style = normal "#0f2b1d"
+    whitespace-error-style = "#282a36" reverse
+
+[delta "decorations"]
+    commit-style = bold "#ffb86c"
+    commit-decoration-style = "#ffb86c" box
+    file-style = bold "#8be9fd"
+    file-decoration-style = "#bd93f9" box
+    file-added-label = "added:"
+    file-modified-label = "Δ"
+    file-removed-label = "removed:"
+    file-renamed-label = "renamed:"
+    hunk-header-style = syntax bold italic
+    hunk-header-decoration-style = "#6272a4" box
+
+[delta "line-numbers"]
+    line-numbers = true
+    line-numbers-left-format = "{nm:^4}⋮"
+    line-numbers-right-format = "{np:^4}│"
+    line-numbers-left-style = "#6272a4"
+    line-numbers-right-style = "#6272a4"
+    line-numbers-minus-style = bold "#ff5555"
+    line-numbers-plus-style = bold "#50fa7b"
+    line-numbers-zero-style = "#44475a"
+
+[delta "blame-view"]
+    blame-format = "{author:<18} ({commit:>7}) {timestamp:<16} │ "
+    blame-palette = "#1e1f29" "#282a36" "#383a59" "#44475a"
+    blame-separator-style = "#6272a4"
+    blame-timestamp-format = "%Y-%m-%d %H:%M"
+
+[delta "merge-conflict-zdiff3"]
+    merge-conflict-begin-symbol = "▼"
+    merge-conflict-end-symbol = "▲"
+    merge-conflict-ours-diff-header-style = bold "#8be9fd"
+    merge-conflict-ours-diff-header-decoration-style = "#8be9fd" box
+    merge-conflict-theirs-diff-header-style = bold "#ff79c6"
+    merge-conflict-theirs-diff-header-decoration-style = "#ff79c6" box
+
+[delta "side-by-side-view"]
+    side-by-side = true
+    line-fill-method = ansi
+
+
+# 5. CODE MOVEMENT & STRUCTURAL DIFF ENGINE
+[diff]
+    # Histogram algorithm produces superior diffs for refactored and moved code
+    algorithm = histogram
+    # Visualizes moved blocks of code with distinct colors instead of delete/insert
+    colorMoved = default
+    colorMovedWS = allow-indentation-change
+    # Prefix files with c/ (commit), i/ (index), w/ (worktree)
+    mnemonicPrefix = true
+    # Detect copied files as well as renamed files
+    renames = copies
+    submodule = log
+
+# 6. SOPS TRANSPARENT DECRYPTION (ZERO PLAINTEXT DISK LEAKAGE)
+[diff "sops"]
+    # Pipes encrypted ciphertexts into sops decrypt in-memory. If unencrypted or template, falls back cleanly to cat
+    textconv = "sh -c 'sops decrypt \"$1\" 2>/dev/null || cat \"$1\"' --"
+    # CRITICAL SECURITY GOVERNOR:
+    # cachetextconv MUST be false. Setting to true writes decrypted plaintext
+    # into .git/refs/notes/textconv/ on physical disk, leaking unencrypted secrets!
+    cachetextconv = false
+
+# 7. STRUCTURAL AST DIFF ENGINE (DIFFTASTIC)
+[diff "difftastic"]
+    command = difft
+
+# 7.1 HIGH-FIDELITY HUNK HEADER PATTERNS (JAVASCRIPT / TYPESCRIPT)
+# Supplies contextual function/class/interface headers missing from Git built-in drivers
+[diff "javascript"]
+    xfuncname = "^[ \t]*(function[ \t]*([a-zA-Z_$][a-zA-Z0-9_$]*)?|([a-zA-Z_$][a-zA-Z0-9_$]*)[ \t]*=[ \t]*(function|\\([^)]*\\)[ \t]*=>)|class[ \t]+([a-zA-Z_$][a-zA-Z0-9_$]*))"
+[diff "typescript"]
+    xfuncname = "^[ \t]*(function[ \t]*([a-zA-Z_$][a-zA-Z0-9_$]*)?|([a-zA-Z_$][a-zA-Z0-9_$]*)[ \t]*=[ \t]*(function|\\([^)]*\\)[ \t]*=>)|class[ \t]+([a-zA-Z_$][a-zA-Z0-9_$]*)|(interface|type|enum)[ \t]+([a-zA-Z_$][a-zA-Z0-9_$]*))"
+
+# 8. MERGE CONFLICT RESOLUTION & REBASE GOVERNANCE
+[merge]
+    # zdiff3 provides 3-way conflict view with common ancestor baseline context
+    conflictStyle = zdiff3
+    stat = true
+    # Automatically resolve new file additions into renamed directories
+    directoryRenames = true
+
+# 9. AST-AWARE 3-WAY MERGE RESOLUTION (MERGIRAF)
+# Syntax-aware Tree-sitter merge driver: automatically reconciles non-conflicting
+# AST changes (imports, function lists, structured records) across branches
+[merge "mergiraf"]
+    name = mergiraf
+    driver = mergiraf merge --git %O %A %B -s %S -x %X -y %Y -p %P -l %L
+
+[pull]
+    # Enforces fast-forward only on pull to prevent unwanted diamond merge commits
+    ff = only
+
+[rebase]
+    # Automatically combines fixup! and squash! commits during interactive rebase
+    autoSquash = true
+    # Automatically stashes dirty worktree before rebase and pops upon completion
+    autoStash = true
+    # Automatically updates dependent stacked branch references during rebase
+    updateRefs = true
+    missingCommitsCheck = error
+
+# 10. REUSE RECORDED RESOLUTION (RERERE)
+[rerere]
+    # Automatically records and replays resolved merge conflict hunks during rebases
+    enabled = true
+    # Automatically stages pre-resolved conflict hunks
+    autoUpdate = true
+
+# 11. HOUSEKEEPING & APFS INODE CRUFT PREVENTION
+[gc]
+    # Store unreachable objects in cruft packs instead of polluting APFS inodes
+    cruftPacks = true
+    writeCommitGraph = true
+    autoDetach = true
+
+# 12. ZERO-TRUST INTEGRITY & TRANSPORT SECURITY
+[protocol]
+    # Git Wire Protocol v2: ref prefix filtering and multiplexing
+    version = 2
+
+[push]
+    default = current
+    # Automatically creates upstream tracking branch on first push
+    autoSetupRemote = true
+    # Automatically pushes annotated tags associated with pushed commits
+    followTags = true
+    # Prevent overwriting commits introduced on remote since last fetch
+    useForceIfIncludes = true
+
+[fetch]
+    # Prune stale tracking branches on remote
+    prune = true
+    pruneTags = false
+    # Fetch from all configured remotes automatically
+    all = true
+    # Parallel fetching across remotes on Apple Silicon
+    parallel = 0
+    # Incrementally writes commit graph for accelerated traversal
+    writeCommitGraph = true
+    # Verify cryptographic integrity of all fetched objects
+    fsckObjects = true
+
+[transfer]
+    # Enforces strict object integrity checks across wire transport
+    fsckObjects = true
+    # Defense-in-depth: warn if remote URL embeds plaintext credentials
+    credentialsInUrl = warn
+
+[receive]
+    fsckObjects = true
+
+# 13. SUPPLY-CHAIN ZERO-TRUST GUARDS
+[safe]
+    # Neutralize CVE-2022-39253: disallow automatic traversal into embedded bare repositories
+    bareRepository = explicit
+
+# 14. STRUCTURAL CODE SEARCH (PCRE ENGINE)
+[grep]
+    # Enable Perl-Compatible Regular Expressions (PCRE v2) by default
+    patternType = perl
+    # Always display line numbers in grep results
+    lineNumber = true
+
+# 15. SUBMODULE CONCURRENCY & RECURSIVE DISCIPLINE
+[submodule]
+    # Transparently update submodules on checkout, switch, and rebase
+    recurse = true
+    # Parallel fetching of submodules across all Apple Silicon CPU cores
+    fetchJobs = 0
+
+# 16. REPO NAVIGATION, STATUS CONTEXT & ERGONOMICS
+[status]
+    # Display commit range delta for submodules in git status
+    submoduleSummary = true
+    # Display count of active stashed states in git status
+    showStash = true
+
+[column]
+    # Format branch and tag listings into adaptive terminal columns
+    ui = auto
+
+[branch]
+    # Automatically track parent branch for stacked PRs / stacked diffs
+    autoSetupMerge = always
+    # Sort branches by most recent commit date
+    sort = -committerdate
+
+[tag]
+    # Sort release tags by semantic version in descending order
+    sort = -version:refname
+
+[help]
+    # Prompt before executing autocorrected commands
+    autocorrect = prompt
+
+[credential]
+    # macOS native Keychain credential helper
+    helper = osxkeychain
+
+# 17. HIGH-VELOCITY WORKFLOW ALIASES & ECOSYSTEM ORCHESTRATION
+[alias]
+    # Delta Visual High-Density Diffing
+    d = diff
+    ds = "!git -c delta.side-by-side=true diff"
+    dshow = "!git -c delta.side-by-side=true show"
+    dblame = blame
+
+    # Structural AST Diff (Difftastic)
+    dft = -c diff.external=difft diff
+    dft-show = -c diff.external=difft show --ext-diff
+    dft-log = -c diff.external=difft log -p --ext-diff
+
+    # Terminal UI Orchestrators
+    lg = "!lazygit"
+    gui = "!gitui"
+
+    # Mergiraf review for resolved conflicts
+    mrev = "!mergiraf review"
+
+    # Worktree ergonomics (Multi-Agent Parallelism)
+    wt = worktree
+    wtl = worktree list
+
+    # Graph Visualization (git-graph x)
+    graph = "!git-graph -s round -m x --wrap auto"
+    graph-flow = "!git-graph -s round -m git-flow --wrap auto"
+    graph-all = "!git-graph -s round -m x --wrap auto -n 50"
+    graph-simple = "!git-graph -s round -m simple --wrap auto"
+    graph-svg = "!git-graph -s round -m x --svg"
+
+    # Hunk Desktop-Inspired Diff Inspector
+    hunk = "!hunk diff"
+    hunks = "!hunk diff --staged"

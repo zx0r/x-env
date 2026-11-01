@@ -1,0 +1,60 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+title = "Security & Secret Scanner Configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global exclusions: SOPS, Age public keys, Apple SEP certificates"
+
+paths = [
+  '''(?i)(^|/)(\.sops\.ya?ml|.*\.sops\.ya?ml|.*\.enc\.ya?ml|.*\.sops\.json|.*\.enc\.json|.*\.sops\.env)$''',
+  '''(?i).*\.age$''',
+  '''(?i)(^|/).*secretive.*\.pub$''',
+  '''(?i)(^|/).*_sk\.pub$''',
+  '''(?i)(^|/).*id_ecdsa_sk\.pub$''',
+  '''(?i)(^|/).*id_ed25519_sk\.pub$''',
+  '''(?i).*\.pub$''',
+  '''(?i).*README\.md$''',
+]
+
+regexes = [
+  # Bech32 Age Public Recipient Keys
+  '''age1[0-9a-z]{58}''',
+
+  # Mozilla SOPS MAC & Encrypted Data Placeholders
+  '''ENC\[AES256_GCM,data:[a-zA-Z0-9+/=]+,iv:[a-zA-Z0-9+/=]+,tag:[a-zA-Z0-9+/=]+\]''',
+  '''sops_mac=ENC\[AES256_GCM,data:''',
+
+  # Apple SEP & FIDO2 Security Key Identifiers
+  '''sk-ssh-ed25519@openssh\.com\s+[A-Za-z0-9+/=]+''',
+  '''sk-ecdsa-sha2-nistp256@openssh\.com\s+[A-Za-z0-9+/=]+''',
+  '''ecdsa-sha2-nistp256\s+[A-Za-z0-9+/=]+\s+.*(?:SecureEnclave|secretive)''',
+
+  # SHA-256 Base64 Public Key / Host Key Fingerprints
+  '''SHA256:[A-Za-z0-9+/=]{43,44}''',
+]
+
+stopwords = ["gitleaks:allow", "DUMMY_TOKEN_FOR_TESTING"]
+
+[[rules]]
+id = "generic-service-token"
+description = "High-entropy service account token"
+regex = '''(?i)(?:api|infra|vault)[_-]token\s*[:=]\s*['"]?([a-zA-Z0-9_\-]{32,64})['"]?'''
+secretGroup = 1
+entropy = 3.7
+keywords = [
+  "api_token",
+  "api-token",
+  "infra_token",
+  "infra-token",
+  "vault_token",
+]

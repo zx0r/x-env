@@ -1,0 +1,21 @@
+# ==============================================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Jujutsu Profile: Own / Open Source / Personal (~/x)
+# Platform : macOS 27+ (Apple Silicon arm64 Darwin)
+# Standard : OpenSSH PROTOCOL.sshsig / Secure Enclave (Touch ID)
+# ==============================================================================
+
+[user]
+name = "zx0r"
+email = "117382621+zx0r@users.noreply.github.com"
+
+[signing]
+behavior = "own"
+backend = "ssh"
+key = "~/.ssh/zx0r_ecdsa-sha2-nistp256@github.pub"
+backends.ssh.program = "/usr/bin/ssh-keygen"

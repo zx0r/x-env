@@ -4,10 +4,10 @@
 # title: "Homebrew JIT Wrapper & Brewfile Synchronization"
 # layer: "Functions"
 # responsibility: "Wraps brew command to lazily inject brew-wrap for Brewfile sync without startup latency"
-# dependencies: ["conf.d/02-brew.fish"]
+# dependencies: ["conf.d/02_toolchain.fish"]
 # backlinks: ["MAP_OF_CONTENT.md"]
 # created_at: "2026-10-03"
-# updated_at: "2026-10-03"
+# updated_at: "2026-10-10"
 # tags: ["homebrew", "wrapper", "brewfile", "jit"]
 # ---
 

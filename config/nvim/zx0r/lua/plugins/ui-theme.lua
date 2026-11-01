@@ -32,40 +32,5 @@ return {
       },
     },
   },
-
-  -- ========================================================================
-  -- snacks.nvim — Declarative Visual Styles & Border Policy
-  -- ========================================================================
-  {
-    "folke/snacks.nvim",
-    opts = {
-      styles = {
-        float = {
-          border = "rounded",
-        },
-        input = {
-          border = "rounded",
-        },
-        notification = {
-          border = "rounded",
-          zindex = 100,
-          wo = {
-            winblend = 5,
-            wrap = false,
-            list = false,
-          },
-        },
-        notification_history = {
-          border = "rounded",
-          width = 0.6,
-          height = 0.6,
-          title = " Notification History ",
-          title_pos = "center",
-          wo = {
-            list = false,
-          },
-        },
-      },
-    },
-  },
 }
+

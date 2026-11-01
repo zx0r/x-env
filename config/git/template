@@ -1,0 +1,41 @@
+# ==============================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ==============================================================
+
+# <type>(scope): short summary
+
+# Examples:
+# feat(auth): add OAuth support
+# fix(api): handle timeout error
+
+# Types:
+# feat, fix, refactor, docs, style, perf, test, chore, remove
+
+# Optional emoji:
+# ✨ 🐛 ♻️ 📚 🎨 🚀 🧪 🔧 🗑️ 🚧 🎉 🔖
+
+# Body (optional):
+# Explain WHAT and WHY (not HOW)
+
+# Footer (optional):
+# BREAKING CHANGE: ...
+# Closes #123
+
+
+# ✨ feat:     A new feature
+# 🐛 fix:      A bug fix
+# ♻️ refactor: Code change that neither fixes a bug nor adds a feature
+# 📚 docs:     Documentation only changes
+# 🎨 style:    Formatting, missing semi colons, etc; no code change
+# 🚀 perf:     Performance improvements
+# 🧪 test:     Adding or updating tests
+# 🔧 chore:    Build process, tooling, dependencies
+# 🗑️ remove:  Removing code/files
+# 🚧 wip:      Work in progress (avoid in main branch)
+# 🎉 init:     Initial commit
+# 🔖 release: Version/tag

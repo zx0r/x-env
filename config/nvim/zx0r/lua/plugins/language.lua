@@ -48,7 +48,7 @@ return {
     },
 
     dependencies = {
-      "b0o/schemastore.nvim",
+      { "b0o/schemastore.nvim", lazy = true },
     },
 
     config = function()
@@ -117,7 +117,9 @@ return {
           -- ==================================================================
 
           if vim.b[bufnr].large_file then
-            vim.lsp.buf_detach_client(bufnr, client.id)
+            if client.detach then
+              client:detach(bufnr)
+            end
             return
           end
 
@@ -174,6 +176,23 @@ return {
                 end,
               }
             )
+
+            vim.api.nvim_create_autocmd("LspDetach", {
+              group = highlight_group,
+              buffer = bufnr,
+              callback = function()
+                vim.lsp.buf.clear_references()
+                pcall(vim.api.nvim_del_augroup_by_name, "core_lsp_highlight_" .. bufnr)
+              end,
+            })
+
+            vim.api.nvim_create_autocmd("BufDelete", {
+              group = highlight_group,
+              buffer = bufnr,
+              callback = function()
+                pcall(vim.api.nvim_del_augroup_by_name, "core_lsp_highlight_" .. bufnr)
+              end,
+            })
           end
 
           -- ==================================================================
@@ -220,11 +239,7 @@ return {
             desc = "LSP: Rename",
           })
 
-          map("n", "<leader>ca", vim.lsp.buf.code_action, {
-            buffer = bufnr,
-            silent = true,
-            desc = "LSP: Code action",
-          })
+          -- NOTE: <leader>ca code action is owned by actions-preview.nvim (H-09)
 
           map("n", "<leader>ds", vim.lsp.buf.document_symbol, {
             buffer = bufnr,
@@ -244,10 +259,42 @@ return {
             desc = "LSP: Restart server",
           })
 
+          map("n", "<leader>cls", "<cmd>LspStart<cr>", {
+            buffer = bufnr,
+            silent = true,
+            desc = "LSP: Start server",
+          })
+
+          map("n", "<leader>clS", "<cmd>LspStop<cr>", {
+            buffer = bufnr,
+            silent = true,
+            desc = "LSP: Stop server",
+          })
+
           map("n", "<leader>cli", "<cmd>LspInfo<cr>", {
             buffer = bufnr,
             silent = true,
             desc = "LSP: Server info",
+          })
+
+          map("n", "<leader>cla", vim.lsp.buf.add_workspace_folder, {
+            buffer = bufnr,
+            silent = true,
+            desc = "LSP: Add workspace folder",
+          })
+
+          map("n", "<leader>cld", vim.lsp.buf.remove_workspace_folder, {
+            buffer = bufnr,
+            silent = true,
+            desc = "LSP: Remove workspace folder",
+          })
+
+          map("n", "<leader>clw", function()
+            vim.notify(vim.inspect(vim.lsp.buf.list_workspace_folders()), vim.log.levels.INFO, { title = "LSP Workspaces" })
+          end, {
+            buffer = bufnr,
+            silent = true,
+            desc = "LSP: List workspace folders",
           })
 
           -- IMPORTANT:
@@ -285,28 +332,19 @@ return {
         docker_compose_language_service = "docker-compose-langserver",
         sqls = "sqls",
         marksman = "marksman",
+        ansiblels = "ansible-language-server",
+        graphql = { "graphql-lsp", "graphql-language-service-cli" },
+        htmx = "htmx-lsp",
+        svelte = "svelteserver",
+        astro = "astro-ls",
+        volar = "vue-language-server",
+        lemminx = "lemminx",
+        cssmodules_ls = "cssmodules-language-server",
+        css_variables = "css-variables-language-server",
+        biome = "biome",
       }
 
-      local enabled = {}
-      for server, bins in pairs(servers) do
-        local is_installed = false
-        if type(bins) == "table" then
-          for _, b in ipairs(bins) do
-            if vim.fn.executable(b) == 1 then
-              is_installed = true
-              break
-            end
-          end
-        else
-          is_installed = (vim.fn.executable(bins) == 1)
-        end
-
-        if is_installed then
-          table.insert(enabled, server)
-        end
-      end
-
-      vim.lsp.enable(enabled)
+      vim.lsp.enable(vim.tbl_keys(servers))
 
       -- Post-enable hardening: strip markdown and astro-markdown from tailwindcss
       -- In Neovim >= 0.12, vim.lsp.enable() initializes lsp._enabled_configs[name].
@@ -339,7 +377,7 @@ return {
       "rust",
     },
 
-    init = function()
+    config = function()
       -- Defer configuration evaluation until the rustaceanvim plugin is actually loaded
       vim.g.rustaceanvim = function()
         return {
@@ -474,20 +512,21 @@ return {
   -- ==========================================================================
   {
     "aznhe21/actions-preview.nvim",
-    dependencies = { "nvim-telescope/telescope.nvim" },
     event = "LspAttach",
     opts = {
-      telescope = {
-        sorting_strategy = "ascending",
-        layout_strategy = "vertical",
-        layout_config = {
-          width = 0.6,
-          height = 0.7,
-          prompt_position = "top",
-          preview_cutoff = 20,
-          preview_height = function(_, _, max_lines)
-            return max_lines - 15
-          end,
+      -- Use native diff backend (no telescope dependency)
+      backend = { "nui" },
+      nui = {
+        dir = "col",
+        layout = {
+          position = "50%",
+          size = {
+            width = "60%",
+            height = "70%",
+          },
+        },
+        preview = {
+          size = "60%",
         },
       },
     },
@@ -574,5 +613,54 @@ return {
       notifications = false,
       grace_period = 60 * 10,
     },
+  },
+
+  -- ==========================================================================
+  -- TYPESCRIPT INTELLIGENCE (Asynchronous Type Checking & Error Translator)
+  -- ==========================================================================
+  {
+    "dmmulroy/tsc.nvim",
+    cmd = { "TSC", "TSCOpen", "TSCClose", "TSStop" },
+    keys = {
+      {
+        "<leader>ct",
+        "<cmd>TSC<cr>",
+        ft = { "typescript", "typescriptreact" },
+        desc = "Type Check (TSC)",
+      },
+    },
+    opts = {
+      auto_start_watch_mode = false,
+      use_trouble_qflist = true,
+      flags = {
+        watch = false,
+      },
+    },
+  },
+
+  {
+    "dmmulroy/ts-error-translator.nvim",
+    ft = {
+      "typescript",
+      "typescriptreact",
+      "javascript",
+      "javascriptreact",
+      "vue",
+      "svelte",
+      "astro",
+    },
+    opts = {},
+  },
+
+  -- ==========================================================================
+  -- TAILWIND CSS VALUES
+  -- ==========================================================================
+  {
+    "MaximilianLloyd/tw-values.nvim",
+    cmd = { "TWValues" },
+    keys = {
+      { "<leader>cT", "<cmd>TWValues<cr>", desc = "Tailwind CSS values" },
+    },
+    opts = {},
   },
 }

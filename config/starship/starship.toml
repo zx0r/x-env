@@ -1,28 +1,18 @@
-command_timeout = 1000
-# ==============================================================================
-#
-#  ████████╗██╗  ██╗███████╗    ███████╗███╗   ██╗██╗   ██╗
-#  ╚══██╔══╝██║  ██║██╔════╝    ██╔════╝████╗  ██║██║   ██║
-#     ██║   ███████║█████╗      █████╗  ██╔██╗ ██║██║   ██║
-#     ██║   ██╔══██║██╔══╝      ██╔══╝  ██║╚██╗██║╚██╗ ██╔╝
-#     ██║   ██║  ██║███████╗    ███████╗██║ ╚████║ ╚████╔╝
-#     ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═══╝  ╚═══╝
-#
-#                       ██████╗ ███████╗    ██╗  ██╗
-#                      ██╔═══██╗██╔════╝    ╚██╗██╔╝
-#                      ██║   ██║█████╗       ╚███╔╝
-#                      ██║   ██║██╔══╝       ██╔██╗
-#                      ╚██████╔╝██║         ██╔╝ ██╗
-#                       ╚═════╝ ╚═╝         ╚═╝  ╚═╝
-#
-#  T H E   E N V I R O N M E N T   O F   X
-#  Declarative. Immutable. High-Performance.
-# ==============================================================================
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# command_timeout = 1000
+
 add_newline = true
-palette = "cyberpunk_neon"
+palette = "x"
 format = "$os$sudo$direnv$directory$git_branch$git_commit$git_status$git_metrics$fill$golang$lua$nodejs$python$rust$swift$terraform$docker_context$jobs$custom$cmd_duration$line_break$character"
 
 [line_break]
@@ -53,13 +43,13 @@ format = "[󰔟 $duration ](bold fg:peach)"
 [os]
 disabled = true
 format = "([$symbol]($style))"
-style = "fg:green bg:base"
+style = "fg:green"
 
 [sudo]
 disabled = false
 symbol = ' 󰿆 sudo'
 format = "[$symbol]($style)"
-style = "bold fg:crust bg:maroon"
+style = "bold fg:maroon"
 
 [direnv]
 disabled = false
@@ -68,14 +58,14 @@ style = "bold fg:sky"
 
 [directory]
 disabled = false
-read_only = " 󰌾 "
+read_only = "  "
 home_symbol = "  ~"
 truncation_length = 3
 truncate_to_repo = true
 truncation_symbol = ' '
-format = " [$path]($style)[$read_only]($read_only_style) "
-style = 'bold fg:overlay2 bg:base'
-read_only_style = 'bold fg:surface2 bg:base'
+format = " [$path]($style) [$read_only]($read_only_style) "
+style = 'bold fg:overlay2'
+read_only_style = 'bold fg:red'
 
 [directory.substitutions]
 "Music" = " "
@@ -98,14 +88,14 @@ disabled = true
 symbol = ' '
 truncation_length = 32
 truncation_symbol = ''
-style = 'bold fg:sapphire bg:base'
+style = 'bold fg:sapphire'
 format = "[$symbol$branch(:$remote_branch)]($style) "
 
 [git_commit]
 disabled = true
 commit_hash_length = 7
 only_detached = false
-style = "bold fg:mauve bg:base"
+style = "bold fg:mauve"
 format = "[\\($hash$tag\\)]($style) "
 
 [git_status]
@@ -127,8 +117,8 @@ style = "bold fg:yellow"
 [git_metrics]
 disabled = true
 ignore_submodules = true
-added_style = 'bold fg:green bg:base'
-deleted_style = 'bold fg:red bg:base'
+added_style = 'bold fg:green'
+deleted_style = 'bold fg:red'
 format = "([▴$added]($added_style)[▾$deleted]($deleted_style)) "
 
 [aws]
@@ -160,7 +150,7 @@ disabled = true
 [docker_context]
 disabled = false
 format = "[🐳 $context]($style) "
-style = "bold fg:blue bg:base"
+style = "bold fg:blue"
 
 [elixir]
 symbol = " "
@@ -177,7 +167,7 @@ disabled = true
 [gcloud]
 disabled = true
 symbol = "☁️"
-style = 'bold fg:overlay0 bg:base'
+style = 'bold fg:overlay0'
 format = '[$symbol$account(\($project\))]($style) '
 
 [golang]
@@ -209,7 +199,7 @@ disabled = true
 [jobs]
 disabled = true
 symbol = "⚙ "
-style = "bold fg:blue bg:base"
+style = "bold fg:blue"
 format = "[$symbol$number]($style) "
 
 [julia]
@@ -341,12 +331,12 @@ disabled = true
 [swift]
 disabled = false
 format = "[ $version]($style) "
-style = "bold fg:peach bg:base"
+style = "bold fg:peach"
 
 [terraform]
 disabled = false
 format = "[󱁢 $workspace]($style) "
-style = "bold fg:lavender bg:base"
+style = "bold fg:lavender"
 
 [zig]
 symbol = " "
@@ -355,7 +345,7 @@ disabled = true
 [custom.ansible]
 command = "ansible --version | awk 'NR==1{print $3}' | tr -d ']'"
 when = "test -f ansible.cfg -o -f playbook.yml -o -d roles"
-style = "bold fg:blue bg:base"
+style = "bold fg:blue"
 format = "[󱂚 $output]($style) "
 shell = ["sh", "-c"]
 disabled = false
@@ -365,7 +355,7 @@ disabled = false
 command = "basename \"${VIRTUAL_ENV:-$CONDA_PREFIX}\""
 when = "test -n \"$VIRTUAL_ENV\" -o -n \"$CONDA_PREFIX\""
 format = "[  $output ]($style)"
-style = "bold fg:crust bg:mauve"
+style = "bold fg:mauve"
 shell = ["bash", "-c"]
 use_stdin = false
 
@@ -381,14 +371,19 @@ shell = ["bash", "-c"]
 [custom.xcode]
 command = "xcodebuild -version | head -n1 | awk '{print $2}'"
 when = "ls -1d *.xcodeproj *.xcworkspace 2>/dev/null | grep -q '.'"
-style = "bold fg:sapphire bg:base"
+style = "bold fg:sapphire"
 format = "[🛠 $output]($style) "
 shell = ["bash", "-c"]
 disabled = false
 
 [custom.docker_compose]
-detect_files = ["docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
-style = "bold fg:teal bg:base"
+detect_files = [
+  "docker-compose.yml",
+  "docker-compose.yaml",
+  "compose.yml",
+  "compose.yaml",
+]
+style = "bold fg:teal"
 format = "[🐙]($style) "
 disabled = false
 
@@ -396,11 +391,11 @@ disabled = false
 command = "echo ''"
 directories = ["~/.config/fish"]
 when = "true"
-style = "bold fg:teal bg:base"
-format = "[󰈺]($style) "
-disabled = false
+style = "bold fg:teal"
+format = "[󰈺 ]($style) "
+disabled = true
 
-[palettes.cyberpunk_neon]
+[palettes.x]
 # Base colors
 rosewater = "#FF1493" # Deep pink
 flamingo = "#FF00FF"  # Magenta
@@ -469,4 +464,3 @@ surface0 = "#181818" # Dark surface
 base = "#161616"   # Primary background
 mantle = "#0c0c0c" # Darker background
 crust = "#080808"  # Darkest background
-

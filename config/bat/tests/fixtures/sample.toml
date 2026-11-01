@@ -1,0 +1,18 @@
+# Environment X Syntax Test Fixture: TOML
+[server]
+host = "127.0.0.1"
+port = 8889
+workers = 8
+debug = false
+
+[database]
+engine = "sqlite"
+path = "~/.local/share/atuin/history.db"
+timeout = 5.0
+max_connections = 25
+
+[security.tls]
+enabled = true
+cert = "/etc/ssl/certs/server.crt"
+key = "/etc/ssl/private/server.key"
+ciphers = ["TLS_AES_256_GCM_SHA384", "TLS_CHACHA20_POLY1305_SHA256"]

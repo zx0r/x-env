@@ -14,8 +14,22 @@ function M.benchmark()
   return require("core.audit.benchmark")
 end
 
+function M.antipatterns()
+  return require("core.audit.antipatterns")
+end
+
 --- Register all diagnostic and audit commands with zero startup cost
 function M.setup()
+  -- :CoreAudit / :CoreAntiPatterns — Run complete Tree-sitter AST anti-pattern inspection
+  local function run_antipatterns(opts)
+    local args = {}
+    if opts.args and opts.args:match("%-%-json") then args.json = true end
+    if opts.args and opts.args:match("%-%-verbose") then args.verbose = true end
+    require("core.audit.antipatterns").run(args)
+  end
+  vim.api.nvim_create_user_command("CoreAudit", run_antipatterns, { nargs = "*", desc = "Run Tree-sitter AST anti-pattern auditor" })
+  vim.api.nvim_create_user_command("CoreAntiPatterns", run_antipatterns, { nargs = "*", desc = "Run Tree-sitter AST anti-pattern auditor" })
+
   -- :CoreDoctor — Run complete architectural invariant & SLA audit
   vim.api.nvim_create_user_command("CoreDoctor", function(opts)
     require("core.audit.doctor").run(opts)

@@ -16,53 +16,68 @@
 -- ============================================================================
 
 return {
-{
+  {
     "folke/snacks.nvim",
-    opts = {
-      terminal = {
-        enabled = true,
-        shell = vim.env.SHELL or "/bin/bash",
-        win = {
-          style = "terminal",
-        },
-      },
-    },
     keys = {
-      { "<c-/>",      function() Snacks.terminal() end, desc = "Toggle Terminal" },
-      { "<c-_>",      function() Snacks.terminal() end, desc = "which_key_ignore" },
+      { "<c-/>", function() Snacks.terminal() end, desc = "Toggle Terminal" },
+      { "<c-_>", function() Snacks.terminal() end, desc = "which_key_ignore" },
     },
   },
   {
     "mrjones2014/smart-splits.nvim",
-    build = "./kitty/install-kittens.bash",
-    event = "VeryLazy",
 
     opts = {
-      -- Stop at the edge instead of wrapping to another window.
-      at_edge = "stop",
-
-      -- Multiplexer integration (auto-detects Kitty and Tmux)
-      multiplexer_integration = nil,
-
-      -- Keep the cursor with the buffer when buffers are swapped.
-      cursor_follows_swapped_bufs = true,
-
-      -- Interactive resize mode.
-      resize_mode = {
-        quit_key = "<Esc>",
-
-        resize_keys = {
-          "h",
-          "j",
-          "k",
-          "l",
-        },
-
-        silent = true,
+      move = {
+        -- Stop at the edge instead of wrapping to another window.
+        at_edge = "stop",
+      },
+      swap = {
+        -- Keep the cursor with the buffer when buffers are swapped.
+        move_cursor = true,
       },
     },
 
     keys = {
+      -- ======================================================================
+      -- SPATIAL PANE NAVIGATION (Alt + Arrows : Tmux / Mux 2D Grid Parity)
+      -- ======================================================================
+
+      {
+        "<A-Left>",
+        function()
+          require("smart-splits").move_cursor_left()
+        end,
+        mode = { "n", "t" },
+        desc = "Focus left (Tmux spatial parity)",
+      },
+
+      {
+        "<A-Down>",
+        function()
+          require("smart-splits").move_cursor_down()
+        end,
+        mode = { "n", "t" },
+        desc = "Focus down (Tmux spatial parity)",
+      },
+
+      {
+        "<A-Up>",
+        function()
+          require("smart-splits").move_cursor_up()
+        end,
+        mode = { "n", "t" },
+        desc = "Focus up (Tmux spatial parity)",
+      },
+
+      {
+        "<A-Right>",
+        function()
+          require("smart-splits").move_cursor_right()
+        end,
+        mode = { "n", "t" },
+        desc = "Focus right (Tmux spatial parity)",
+      },
+
       -- ======================================================================
       -- NORMAL MODE — PANE NAVIGATION (overrides core wincmd with mux support)
       -- ======================================================================
@@ -220,11 +235,11 @@ return {
       },
 
       -- ======================================================================
-      -- BUFFER SWAPPING (Alt + Arrows & Leader + wHJKL from x0r_old)
+      -- BUFFER SWAPPING (Alt + Shift + Arrows & Leader + wHJKL from x0r_old)
       -- ======================================================================
 
       {
-        "<A-Left>",
+        "<A-S-Left>",
         function()
           require("smart-splits").swap_buf_left()
         end,
@@ -233,7 +248,7 @@ return {
       },
 
       {
-        "<A-Down>",
+        "<A-S-Down>",
         function()
           require("smart-splits").swap_buf_down()
         end,
@@ -242,7 +257,7 @@ return {
       },
 
       {
-        "<A-Up>",
+        "<A-S-Up>",
         function()
           require("smart-splits").swap_buf_up()
         end,
@@ -251,7 +266,7 @@ return {
       },
 
       {
-        "<A-Right>",
+        "<A-S-Right>",
         function()
           require("smart-splits").swap_buf_right()
         end,
@@ -339,4 +354,20 @@ return {
       },
     },
   },
+
+  -- ==========================================================================
+  -- WINSHIFT (Interactive window split rearrangement)
+  -- ==========================================================================
+  {
+    "sindrets/winshift.nvim",
+    cmd = { "WinShift" },
+    opts = {
+      highlight_moving_win = true,
+    },
+    keys = {
+      { "<leader>ws", "<cmd>WinShift<cr>", desc = "WinShift: rearrange window splits" },
+      { "<leader>wX", "<cmd>WinShift swap<cr>", desc = "WinShift: swap windows" },
+    },
+  },
 }
+

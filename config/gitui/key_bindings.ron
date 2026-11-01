@@ -1,0 +1,15 @@
+//NOTE:-------------------------------------------------------
+//   ██╗  ██╗    W O R K S T A T I O N
+//   ╚██╗██╔╝
+//    ╚███╔╝     SYSTEMS OVER SCRIPTS
+//    ██╔██╗     INTENT OVER DRIFT
+//   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+//   ╚═╝  ╚═╝
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(
+    move_left: Some(( code: Char('h'), modifiers: "" )),
+    move_right: Some(( code: Char('l'), modifiers: "" )),
+    move_up: Some(( code: Char('k'), modifiers: "" )),
+    move_down: Some(( code: Char('j'), modifiers: "" )),
+)

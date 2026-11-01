@@ -221,7 +221,7 @@ return {
           mac_pro = {
             layout = {
               box = "horizontal",
-              backdrop = 60,
+              backdrop = false,
               width = 0.92,
               min_width = 90,
               height = 0.86,
@@ -248,7 +248,7 @@ return {
           mac_compact = {
             layout = {
               box = "vertical",
-              backdrop = 60,
+              backdrop = false,
               width = 0.92,
               height = 0.88,
               border = "none",
@@ -323,8 +323,40 @@ return {
       { "<leader>sb", function() Snacks.picker.lines() end, desc = "Grep Buffer Lines" },
       { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
       { "<leader>sh", function() Snacks.picker.help() end, desc = "Help Pages" },
+      { "<leader>si", function() Snacks.picker.icons() end, desc = "Icons / Symbols / Emoji" },
       { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
       { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
-    }
+    },
+  },
+
+  -- ==========================================================================
+  -- GRUG-FAR
+  -- High-performance project-wide search & replace buffer
+  -- ==========================================================================
+
+  {
+    "MagicDuck/grug-far.nvim",
+    cmd = { "GrugFar" },
+    keys = {
+      {
+        "<leader>sr",
+        function()
+          local grug = require("grug-far")
+          local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
+          grug.open({
+            transient = true,
+            prefills = {
+              filesFilter = ext and ext ~= "" and ("*." .. ext) or nil,
+            },
+          })
+        end,
+        mode = { "n", "v" },
+        desc = "Search and Replace (GrugFar)",
+      },
+    },
+    opts = {
+      headerMaxWidth = 80,
+    },
   },
 }
+

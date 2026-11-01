@@ -1,0 +1,123 @@
+{
+    "title": "03 - Application Launcher & Raycast Orchestration",
+    "rules": [
+        {
+            "description": "Hyper Application Launcher (Zero Conflict): Return (Ghostty), Shift+Return (Kitty), Space (Raycast), C (Clipboard), F (Search), S (Safari), M (Mail)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "return_or_enter",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift", "right_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open -b net.kovidgoyal.kitty"
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "return_or_enter",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open -b com.mitchellh.ghostty"
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "grave_accent_and_tilde",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "grave_accent_and_tilde",
+                            "modifiers": ["left_command"]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "spacebar",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open -b com.raycast.macos"
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "c",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open raycast://extensions/raycast/clipboard-history/clipboard-history"
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "f",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open raycast://extensions/raycast/file-search/file-search"
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "s",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open -b com.apple.Safari"
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "m",
+                        "modifiers": {
+                            "mandatory": ["left_command", "left_control", "left_option", "left_shift"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "open -b com.apple.mail"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

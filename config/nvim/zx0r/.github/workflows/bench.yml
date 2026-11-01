@@ -1,0 +1,94 @@
+name: SLA Benchmark & Invariant Audit CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "zx0r/**"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "zx0r/**"
+  workflow_dispatch:
+
+jobs:
+  # ── Job 1: Headless Startup SLA Benchmark (<15ms) ─────────────────────────
+  startup-benchmark:
+    name: "Startup SLA (<15ms)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim nightly
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      - name: Install hyperfine
+        run: |
+          wget -qO- https://github.com/sharkdp/hyperfine/releases/latest/download/hyperfine-x86_64-unknown-linux-musl.tar.gz \
+            | tar -xz --strip-components=1 hyperfine-x86_64-unknown-linux-musl/hyperfine
+          sudo mv hyperfine /usr/local/bin/
+
+      - name: Install ripgrep
+        run: sudo apt-get install -y ripgrep
+
+      - name: Validate Headless Invariants (Doctor)
+        run: |
+          env XDG_CONFIG_HOME="$GITHUB_WORKSPACE" NVIM_APPNAME=zx0r nvim --headless \
+            -c "lua require('core.audit.doctor').run(); vim.wait(1000, function() return false end)" +qa
+
+      - name: Run Cold-Start Hyperfine Benchmark
+        run: |
+          hyperfine --warmup 3 --runs 10 --export-json /tmp/startup_report.json \
+            "env XDG_CONFIG_HOME=$GITHUB_WORKSPACE NVIM_APPNAME=zx0r nvim --headless -c 'qa'"
+
+      - name: Upload Startup Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: startup-report
+          path: /tmp/startup_report.json
+          retention-days: 30
+
+  # ── Job 2: Zero Synchronous Shell Call & Invariant Static Analysis ────────
+  static-audit:
+    name: "Static Invariants Audit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: sudo apt-get install -y ripgrep
+
+      - name: Verify Zero Synchronous Shell Calls in Hot Paths
+        run: |
+          ! rg -n "vim\.fn\.system\s*\(|io\.popen\s*\(|os\.execute\s*\(|vim\.fn\.systemlist\s*\(" \
+            zx0r/lua/ -g "*.lua"
+
+      - name: Verify No Secrets / Plaintext Tokens
+        run: |
+          ! rg -n "sk-ant-|sk-proj-|ghp_[0-9a-zA-Z]{36}|gho_[0-9a-zA-Z]{36}" \
+            zx0r/lua/ -g "*.lua"
+
+  # ── Job 3: Code Style & Lint (StyLua) ─────────────────────────────────────
+  lua-lint:
+    name: "Lua Lint & Formatting"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stylua
+        run: |
+          curl -sL https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip -o stylua.zip
+          unzip -q stylua.zip && chmod +x stylua && sudo mv stylua /usr/local/bin/
+
+      - name: Check Formatting
+        run: |
+          if [ -f zx0r/.stylua.toml ]; then
+            stylua --config-path zx0r/.stylua.toml --check zx0r/lua/
+          fi

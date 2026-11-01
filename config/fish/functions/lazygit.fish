@@ -7,7 +7,7 @@
 # dependencies: ["git", "lazygit"]
 # backlinks: []
 # created_at: "2026-06-25"
-# updated_at: "2026-06-25"
+# updated_at: "2026-10-09"
 # last_commit: ""
 # tags: ["git", "utility"]
 # ---
@@ -18,12 +18,19 @@ function lazygit --description "Navigate to Git root and launch lazygit"
         return 1
     end
 
-    set -l repo (git rev-parse --show-toplevel 2>/dev/null)
+    # Pass-through if specific arguments or flags are passed (e.g. -p, --version)
+    if test (count $argv) -gt 0
+        command lazygit $argv
+        return $status
+    end
+
+    # Ensure we are inside a Git repository before launching
+    set -l repo (command git rev-parse --show-toplevel 2>/dev/null)
     if test -n "$repo"
         builtin cd "$repo"
         command lazygit
     else
-        echo "Error: Not in a Git repository." >&2
+        echo "Error: Not a Git repository." >&2
         return 1
     end
 end

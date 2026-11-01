@@ -1,0 +1,69 @@
+# ==============================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Global Git Ignore — Enterprise macOS Standard (Strict XDG)
+# Platform : macOS 27+ (Apple Silicon / aarch64 Darwin 27.2+)
+# Target   : ~/.config/git/ignore
+# ==============================================================
+
+# 1. User & Tool Local Overrides (Preserved)
+**/.claude/settings.local.json
+AGENTS.local.md
+*.local.md
+*.local
+
+# 2. macOS & APFS Filesystem Artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon
+Icon?
+.fseventsd
+
+# 3. Editor & IDE Workspace State
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+*.rej
+*.tmp
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf/
+.vscode/.browse.*
+
+# 4. Compilation & Debug Artifacts
+*.dSYM/
+*.su
+*.idb
+/core
+core.[0-9]*
+vgcore.*
+
+# 5. Local Secrets Overrides (Defense in Depth)
+.env.local
+.env.*.local
+*.private.key
+*.pem.local
+*.age.key
+
+# 6. Modern Toolchain & VCS Engine Caches (2026 Standard)
+.jj/
+.cache/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.turbo/
+.netrwhist

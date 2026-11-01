@@ -5,9 +5,9 @@
 # layer: "Functions"
 # responsibility: "Drop-in rm replacement routing all invocations through the Principal-grade trash governor"
 # dependencies: ["functions/trash.fish"]
-# backlinks: ["conf.d/20-abbr.fish"]
+# backlinks: ["conf.d/20_abbrs.fish"]
 # created_at: "2026-10-03"
-# updated_at: "2026-10-03"
+# updated_at: "2026-10-10"
 # tags: ["rm", "trash", "safety", "governor"]
 # ---
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.macos-security.cleaner</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/sbin/pfctl</string>
+        <string>-a</string>
+        <string>local.macos-security</string>
+        <string>-t</string>
+        <string>bruteforce</string>
+        <string>-T</string>
+        <string>expire</string>
+        <string>86400</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>3600</integer>
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/macos-security.cleaner.out</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/macos-security.cleaner.err</string>
+</dict>
+</plist>

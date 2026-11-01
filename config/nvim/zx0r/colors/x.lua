@@ -1,24 +1,33 @@
 -- ============================================================================
--- colors/x.lua
+-- colors/x.lua — The X Ultra-Fast AOT Theme Loader
 --
 -- Ring 0 Execution: SLA < 0.05 ms via pre-compiled AOT Bytecode Chunk
 -- Fallback: Dynamic spec compilation via lua/theme/master.lua
-
+--
+-- Architect: zx0r & DeepMind Advanced Agentic Systems Engineering
 -- ============================================================================
 
 local active_style = vim.g.theme_style or vim.env.X_THEME or "dark"
 local cache_file = vim.fs.joinpath(vim.fn.stdpath("cache"), "theme", active_style .. ".luac")
-local master_file = vim.fn.stdpath("config") .. "/lua/theme/master.lua"
-
+local theme_dir = vim.fn.stdpath("config") .. "/lua/theme"
+local master_file = theme_dir .. "/master.lua"
+local engine_file = theme_dir .. "/engine.lua"
 -- ── 1. Fast Path: AOT Compiled Cache ────────────────────────────────────────
 local cache_stat = vim.uv.fs_stat(cache_file)
-local master_stat = vim.uv.fs_stat(master_file)
+if cache_stat then
+  local master_stat = vim.uv.fs_stat(master_file)
+  local engine_stat = vim.uv.fs_stat(engine_file)
+  local is_fresh = master_stat and (cache_stat.mtime.sec >= master_stat.mtime.sec)
+  if is_fresh and engine_stat and engine_stat.mtime.sec > cache_stat.mtime.sec then
+    is_fresh = false
+  end
 
-if cache_stat and master_stat and cache_stat.mtime.sec >= master_stat.mtime.sec then
-  local chunk, err = loadfile(cache_file)
-  if chunk then
-    chunk()
-    goto register_commands
+  if is_fresh then
+    local chunk = loadfile(cache_file)
+    if chunk then
+      chunk()
+      goto register_commands
+    end
   end
 end
 
@@ -31,12 +40,12 @@ require("theme.master").load(active_style)
 if not vim.g._theme_commands_registered then
   vim.g._theme_commands_registered = true
 
-  vim.api.nvim_create_user_command("EnvironmentXCompile", function()
+  vim.api.nvim_create_user_command("XCompile", function()
     local path = require("theme.master").compile()
-    vim.notify(string.format("Environment-X compiled [%s] -> %s", vim.g.theme_style or "dark", path), vim.log.levels.INFO, {
+    vim.notify(string.format("X theme compiled [%s] -> %s", vim.g.theme_style or "dark", path), vim.log.levels.INFO, {
       title = "Theme Compiler",
     })
-  end, { desc = "Recompile Environment-X theme bytecode for current style" })
+  end, { desc = "Recompile X theme bytecode for current style" })
 
   vim.api.nvim_create_user_command("ThemeStyle", function(opts)
     local style = vim.trim(opts.args):lower()
@@ -50,13 +59,13 @@ if not vim.g._theme_commands_registered then
   end, {
     nargs = 1,
     complete = function() return { "dark", "light" } end,
-    desc = "Switch Environment-X palette (dark | light)",
+    desc = "Switch X theme palette (dark | light)",
   })
 
   vim.api.nvim_create_user_command("ThemeToggle", function()
     local next_style = (vim.g.theme_style == "dark") and "light" or "dark"
     vim.g.theme_style = next_style
     vim.cmd.colorscheme("x")
-    vim.notify("Environment-X style: " .. next_style, vim.log.levels.INFO)
-  end, { desc = "Toggle Environment-X theme palette between dark and light" })
+    vim.notify("X theme style: " .. next_style, vim.log.levels.INFO)
+  end, { desc = "Toggle X theme palette between dark and light" })
 end

@@ -1,0 +1,528 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[mgr]
+prepend_keymap = [
+  # ==========================================================================
+  # 1. CORE SELECTION & VISUAL WORKFLOW (Zero-Conflict Space Ergonomics)
+  # ==========================================================================
+  # Instant atomic toggle selection (vanilla canonical: selects and moves down)
+  { on = [
+    "<Space>",
+  ], run = [
+    "toggle",
+    "arrow 1",
+  ], desc = "Toggle selection state and move down" },
+
+  # Visual range selection modes
+  { on = [
+    "v",
+  ], run = "visual_mode", desc = "Enter visual selection mode" },
+  { on = [
+    "V",
+  ], run = "visual_mode --unset", desc = "Enter visual unset mode" },
+
+  # Batch selection commands
+  { on = [
+    "<C-a>",
+  ], run = "toggle_all --state=on", desc = "Select all files in directory" },
+  { on = [
+    "<C-r>",
+  ], run = "toggle_all", desc = "Invert all file selections" },
+  { on = [
+    "<Esc>",
+  ], run = [
+    "escape --all",
+    "unyank",
+  ], desc = "Clear all selections, exit visual mode, unyank, and cancel search" },
+  { on = [
+    "<C-[>",
+  ], run = [
+    "escape --all",
+    "unyank",
+  ], desc = "Clear all selections, exit visual mode, unyank, and cancel search" },
+
+  # ==========================================================================
+  # 2. CORE VIM ESSENTIALS: DELETE, FIND & PREVIEW SCROLL
+  # ==========================================================================
+  { on = [
+    "d",
+  ], run = "remove", desc = "Delete (trash) selected files with confirmation" },
+  { on = [
+    "D",
+  ], run = "remove --permanently", desc = "Permanently delete selected files with confirmation" },
+  { on = [
+    "p",
+  ], run = "plugin smart-paste", desc = "Smart paste (into hovered dir or CWD)" },
+  { on = [
+    "P",
+  ], run = "paste --force", desc = "Paste and overwrite" },
+  { on = [
+    "f",
+  ], run = "filter --smart", desc = "Filter files (live match only)" },
+  { on = [
+    "F",
+  ], run = "filter --smart", desc = "Filter files (live match only)" },
+  { on = [
+    "/",
+  ], run = "find --smart", desc = "Find next file by name" },
+  { on = [
+    "?",
+  ], run = "find --previous --smart", desc = "Find previous file by name" },
+  { on = [
+    "n",
+  ], run = "find_arrow", desc = "Go to next found file" },
+  { on = [
+    "N",
+  ], run = "find_arrow --previous", desc = "Go to previous found file" },
+  { on = [
+    "s",
+  ], run = "plugin frank 'name all'", desc = "FD: Search files and dirs with preview" },
+  { on = [
+    "S",
+  ], run = "plugin frank 'content rg'", desc = "Ripgrep: Search text with Bat preview" },
+  { on = [
+    "<C-s>",
+  ], run = "escape --search", desc = "Cancel active search" },
+  { on = [
+    "<C-u>",
+  ], run = "seek -5", desc = "Preview: Scroll up 5 lines" },
+  { on = [
+    "<C-d>",
+  ], run = "seek 5", desc = "Preview: Scroll down 5 lines" },
+  { on = [
+    "A",
+  ], run = "create --dir", desc = "Create directory (immediate)" },
+  { on = [
+    "R",
+  ], run = "rename --hovered --cursor=before_ext", desc = "Rename filename stem before extension" },
+  { on = [
+    "<C-v>",
+  ], run = "shell 'qlmanage -p \"$@\"' --confirm", desc = "QuickLook: Native macOS preview" },
+  { on = [
+    ".",
+  ], run = "hidden toggle", desc = "Toggle hidden files" },
+
+  # ==========================================================================
+  # 3. LEADER MATRIX (,) - RAPID DISPATCH (Clean Which-Key, Zero Conflict)
+  # ==========================================================================
+  { on = [
+    ",",
+    "f",
+  ], run = "plugin frank 'name all'", desc = "FD: Search files with preview" },
+  { on = [
+    ",",
+    "s",
+  ], run = "plugin frank 'content rg'", desc = "Ripgrep: Search text with Bat preview" },
+  { on = [
+    ",",
+    "d",
+  ], run = "plugin diff", desc = "Diff selected vs hovered" },
+  { on = [
+    ",",
+    ",",
+  ], run = "plugin toggle-pane max-preview", desc = "Toggle maximize preview pane" },
+  { on = [
+    "T",
+  ], run = "plugin toggle-pane max-preview", desc = "Toggle maximize preview pane" },
+  { on = [
+    ",",
+    "t",
+  ], run = "shell 'tmux new-session -A -s x_term' --confirm", desc = "Drop-in terminal / tmux" },
+  { on = [
+    ",",
+    "g",
+  ], run = "shell 'lazygit' --block --confirm", desc = "Launch Lazygit" },
+  { on = [
+    ",",
+    "b",
+  ], run = "plugin bookmarks jump", desc = "Jump to bookmark" },
+  { on = [
+    ",",
+    "m",
+  ], run = "plugin bookmarks save", desc = "Save bookmark" },
+  { on = [
+    ",",
+    "M",
+  ], run = "plugin mount", desc = "Disks: Launch Mount/Unmount/Eject Manager" },
+  { on = [
+    ",",
+    "S",
+  ], run = "plugin what-size", desc = "Calculate size of selection or dir" },
+  { on = [
+    ",",
+    "e",
+  ], run = "open --with edit", desc = "Open in Neovim" },
+  { on = [
+    ",",
+    "z",
+  ], run = "plugin zoxide", desc = "Zoxide interactive jump" },
+
+  # Alternate Leader Alias (\ - Classic Vim Leader)
+  { on = [
+    "\\",
+    "f",
+  ], run = "plugin frank 'name all'", desc = "FD: Search files with preview" },
+  { on = [
+    "\\",
+    "s",
+  ], run = "plugin frank 'content rg'", desc = "Ripgrep: Search text with Bat preview" },
+  { on = [
+    "\\",
+    "d",
+  ], run = "plugin diff", desc = "Diff selected vs hovered" },
+  { on = [
+    "\\",
+    "\\",
+  ], run = "plugin toggle-pane max-preview", desc = "Toggle maximize preview pane" },
+  { on = [
+    "\\",
+    "t",
+  ], run = "shell 'tmux new-session -A -s x_term' --confirm", desc = "Drop-in terminal / tmux" },
+  { on = [
+    "\\",
+    "g",
+  ], run = "shell 'lazygit' --block --confirm", desc = "Launch Lazygit" },
+  { on = [
+    "\\",
+    "b",
+  ], run = "plugin bookmarks jump", desc = "Jump to bookmark" },
+  { on = [
+    "\\",
+    "m",
+  ], run = "plugin bookmarks save", desc = "Save bookmark" },
+  { on = [
+    "\\",
+    "M",
+  ], run = "plugin mount", desc = "Disks: Launch Mount/Unmount/Eject Manager" },
+  { on = [
+    "\\",
+    "S",
+  ], run = "plugin what-size", desc = "Calculate size of selection or dir" },
+  { on = [
+    "\\",
+    "e",
+  ], run = "open --with edit", desc = "Open in Neovim" },
+  { on = [
+    "\\",
+    "z",
+  ], run = "plugin zoxide", desc = "Zoxide interactive jump" },
+
+  # ==========================================================================
+  # 4. SMART DRILL-DOWN & NAVIGATION
+  # ==========================================================================
+  { on = [
+    "l",
+  ], run = "plugin smart-enter", desc = "Smart enter (drill-down or open)" },
+  { on = [
+    "<Enter>",
+  ], run = "plugin smart-enter", desc = "Smart enter (drill-down or open)" },
+  { on = [
+    "H",
+  ], run = "back", desc = "Directory history back" },
+  { on = [
+    "L",
+  ], run = "forward", desc = "Directory history forward" },
+
+  # ==========================================================================
+  # 5. MNEMONIC NAVIGATION & GITHUB (g - Go)
+  # ==========================================================================
+  { on = [
+    "g",
+    "r",
+  ], run = "plugin git-root", desc = "Go to Git repository root" },
+  { on = [
+    "g",
+    "b",
+  ], run = "shell 'gh browse .' --confirm", desc = "GitHub: Browse repository in browser" },
+  { on = [
+    "g",
+    "f",
+  ], run = "shell 'gh browse \"$1\"' --confirm", desc = "GitHub: Browse current file on GitHub" },
+  { on = [
+    "g",
+    "h",
+  ], run = "cd ~", desc = "Go to Home (~)" },
+  { on = [
+    "g",
+    "w",
+  ], run = "cd ~/Workspace", desc = "Go to Workspace" },
+  { on = [
+    "g",
+    "c",
+  ], run = "cd ~/.config", desc = "Go to ~/.config" },
+  { on = [
+    "g",
+    "n",
+  ], run = "cd ~/.config/nvim", desc = "Go to Neovim config" },
+  { on = [
+    "g",
+    "y",
+  ], run = "cd ~/.config/yazi", desc = "Go to Yazi config" },
+  { on = [
+    "g",
+    "d",
+  ], run = "cd ~/Downloads", desc = "Go to Downloads" },
+  { on = [
+    "g",
+    "D",
+  ], run = "cd ~/Documents", desc = "Go to Documents" },
+  { on = [
+    "g",
+    "t",
+  ], run = "cd /tmp", desc = "Go to /tmp" },
+  { on = [
+    "g",
+    "p",
+  ], run = "cd ~/Projects", desc = "Go to Projects" },
+  { on = [
+    "g",
+    "/",
+  ], run = "cd /", desc = "Go to Root (/)" },
+
+  # ==========================================================================
+  # 6. CLIPBOARD & DEVELOPER POWER-TOOLS (c)
+  # ==========================================================================
+  { on = [
+    "c",
+    "a",
+  ], run = "copy path", desc = "Copy absolute path to clipboard" },
+  { on = [
+    "c",
+    "d",
+  ], run = "copy dirname", desc = "Copy directory path to clipboard" },
+  { on = [
+    "c",
+    "n",
+  ], run = "copy filename", desc = "Copy filename to clipboard" },
+  { on = [
+    "c",
+    "e",
+  ], run = "copy name_without_ext", desc = "Copy filename stem without extension" },
+  { on = [
+    "c",
+    "o",
+  ], run = "shell 'open -R \"$1\"' --confirm", desc = "Reveal in macOS Finder" },
+  { on = [
+    "c",
+    "r",
+  ], run = "shell 'python3 -c \"import os, sys; print(os.path.relpath(sys.argv[1]), end=\\\"\\\")\" \"$1\" | pbcopy'", desc = "Copy relative path to clipboard" },
+  { on = [
+    "c",
+    "y",
+  ], run = "shell 'cat \"$@\" | pbcopy'", desc = "Yank file contents to clipboard" },
+  { on = [
+    "c",
+    "x",
+  ], run = "shell 'chmod +x \"$@\"'", desc = "Chmod +x (make executable)" },
+  { on = [
+    "c",
+    "m",
+  ], run = "plugin chmod", desc = "Interactive chmod permissions UI" },
+  { on = [
+    "c",
+    "s",
+  ], run = "plugin what-size", desc = "Calculate size of selection or dir" },
+  { on = [
+    "c",
+    "S",
+  ], run = "plugin what-size -- '-c'", desc = "Calculate size and copy to clipboard" },
+
+  # ==========================================================================
+  # 7. BOOKMARKS (b / ')
+  # ==========================================================================
+  { on = [
+    "'",
+  ], run = "plugin bookmarks jump", desc = "Jump to bookmark" },
+  { on = [
+    "b",
+    "s",
+  ], run = "plugin bookmarks save", desc = "Save bookmark" },
+  { on = [
+    "b",
+    "j",
+  ], run = "plugin bookmarks jump", desc = "Jump to bookmark" },
+  { on = [
+    "b",
+    "d",
+  ], run = "plugin bookmarks delete", desc = "Delete bookmark" },
+  { on = [
+    "b",
+    "D",
+  ], run = "plugin bookmarks delete_all", desc = "Delete all bookmarks" },
+
+  # ==========================================================================
+  # 8. ARCHIVE & EXTRACTION (Z & C)
+  # ==========================================================================
+  { on = [
+    "C",
+  ], run = "plugin ouch", desc = "Compress selected with ouch" },
+  { on = [
+    "Z",
+    "c",
+  ], run = "plugin ouch", desc = "Compress selected with ouch" },
+  { on = [
+    "z",
+  ], run = "shell 'ouch d -y \"$1\"' --block --confirm", desc = "Extract archive with ouch" },
+  { on = [
+    "Z",
+    "x",
+  ], run = "shell 'ouch d -y \"$1\"' --block --confirm", desc = "Extract archive with ouch" },
+  { on = [
+    "Z",
+    "7",
+  ], run = "shell '7z a archive.7z \"$@\"' --block --confirm", desc = "Compress selected to 7z" },
+
+  # ==========================================================================
+  # 9. MACOS FINDER TAGS (t / b)
+  # ==========================================================================
+  { on = [
+    "t",
+    "a",
+  ], run = "plugin mactag add", desc = "Tag: Add macOS color tag" },
+  { on = [
+    "t",
+    "r",
+  ], run = "plugin mactag remove", desc = "Tag: Remove macOS color tag" },
+  { on = [
+    "b",
+    "a",
+  ], run = "plugin mactag add", desc = "Tag: Add macOS color tag" },
+  { on = [
+    "b",
+    "r",
+  ], run = "plugin mactag remove", desc = "Tag: Remove macOS color tag" },
+
+  # ==========================================================================
+  # 10. MERMAID DIAGRAM CONTROLS (M)
+  # ==========================================================================
+  { on = [
+    "M",
+    "m",
+  ], run = "plugin mermaid -- toggle-mode", desc = "Mermaid: toggle inline/image/text/split mode" },
+  { on = [
+    "M",
+    "+",
+  ], run = "plugin mermaid -- zoom-in", desc = "Mermaid: zoom in diagram box height" },
+  { on = [
+    "M",
+    "-",
+  ], run = "plugin mermaid -- zoom-out", desc = "Mermaid: zoom out diagram box height" },
+
+  # ==========================================================================
+  # 11. DOCUMENT PREVIEW (P)
+  # ==========================================================================
+  # Flush all preview caches (markdown glow + latex + mermaid) for a clean re-render
+  { on = [
+    "P",
+    "c",
+  ], run = "shell 'rm -f /tmp/md-yazi-*.ans /tmp/latex-yazi-*.png /tmp/mermaid-yazi-*.png /tmp/yg-*.ans 2>/dev/null && echo \"Preview cache cleared\"' --confirm", desc = "Clear all preview caches" },
+]
+
+# ==============================================================================
+# SUBSYSTEM CONTROLS & VIM DISCIPLINE (tasks, select, input, confirm, help)
+# ==============================================================================
+[tasks]
+prepend_keymap = [
+  { on = [
+    "<Esc>",
+  ], run = "close", desc = "Close task manager" },
+  { on = [
+    "<C-[>",
+  ], run = "close", desc = "Close task manager" },
+  { on = [
+    "q",
+  ], run = "close", desc = "Close task manager" },
+  { on = [
+    "w",
+  ], run = "close", desc = "Close task manager" },
+  { on = [
+    "x",
+  ], run = "cancel", desc = "Cancel hovered task" },
+  { on = [
+    "<Enter>",
+  ], run = "inspect", desc = "Inspect hovered task" },
+]
+
+[select]
+prepend_keymap = [
+  { on = [
+    "<Esc>",
+  ], run = "close", desc = "Cancel selection menu" },
+  { on = [
+    "<C-[>",
+  ], run = "close", desc = "Cancel selection menu" },
+  { on = [
+    "q",
+  ], run = "close", desc = "Cancel selection menu" },
+  { on = [
+    "<Enter>",
+  ], run = "close --submit", desc = "Submit selection" },
+]
+
+[input]
+prepend_keymap = [
+  { on = [
+    "<Esc>",
+  ], run = "close", desc = "Cancel input prompt" },
+  { on = [
+    "<C-[>",
+  ], run = "close", desc = "Cancel input prompt" },
+]
+
+[confirm]
+prepend_keymap = [
+  { on = [
+    "<Esc>",
+  ], run = "close", desc = "Cancel confirmation" },
+  { on = [
+    "<C-[>",
+  ], run = "close", desc = "Cancel confirmation" },
+  { on = [
+    "n",
+  ], run = "close", desc = "Cancel confirmation" },
+  { on = [
+    "y",
+  ], run = "close --submit", desc = "Submit confirmation" },
+  { on = [
+    "<Enter>",
+  ], run = "close --submit", desc = "Submit confirmation" },
+]
+
+[completion]
+prepend_keymap = [
+  { on = [
+    "<Esc>",
+  ], run = "close", desc = "Close completion" },
+  { on = [
+    "<C-[>",
+  ], run = "close", desc = "Close completion" },
+]
+
+[help]
+prepend_keymap = [
+  { on = [
+    "<Esc>",
+  ], run = "escape", desc = "Close help menu" },
+  { on = [
+    "<C-[>",
+  ], run = "escape", desc = "Close help menu" },
+  { on = [
+    "q",
+  ], run = "escape", desc = "Close help menu" },
+  { on = [
+    "/",
+  ], run = "filter", desc = "Filter help items" },
+  { on = [
+    "<C-e>",
+  ], run = "seek 5", desc = "Scroll help down" },
+  { on = [
+    "<C-y>",
+  ], run = "seek -5", desc = "Scroll help up" },
+]

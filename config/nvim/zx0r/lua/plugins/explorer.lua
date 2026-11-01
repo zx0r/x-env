@@ -1,54 +1,41 @@
---- Fast project root detection using C-fast-path markers with cwd fallback.
----@return string Project root or current working directory
-local function get_root()
-  return vim.fs.root(0, { ".git", "package.json", "Cargo.toml", "pyproject.toml" }) or vim.uv.cwd()
-end
-
---- Inspect active tabpage windows to verify if any NeoTree panel is rendered.
---- Bounded O(N) traversal on tabpage window list (typically <= 4 handles).
----@return boolean
-local function is_open()
-  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "neo-tree" then
-      return true
-    end
-  end
-  return false
-end
-
---- Deterministic multi-source sidebar toggle for Edgy integration.
---- When open: invokes global manager close to collapse all 3 pinned panels simultaneously.
---- When closed: focuses filesystem source; Edgy automatically mounts Buffers and VCS.
----@param dir string Target directory path
-local function toggle_explorer(dir)
-  if is_open() then
-    vim.cmd("Neotree close")
-  else
-    require("neo-tree.command").execute({ action = "focus", dir = dir })
-  end
-end
-
 return {
   {
     "nvim-neo-tree/neo-tree.nvim",
     cmd = { "Neotree" },
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "echasnovski/mini.icons",
-      "MunifTanjim/nui.nvim",
+      { "nvim-lua/plenary.nvim", lazy = true },
+      { "echasnovski/mini.icons", lazy = true },
+      { "MunifTanjim/nui.nvim", lazy = true },
+      {
+        "antosha417/nvim-lsp-file-operations",
+        opts = {},
+      },
     },
     keys = {
       {
         "<leader>fe",
         function()
-          toggle_explorer(vim.uv.cwd())
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+            if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "neo-tree" then
+              vim.cmd("Neotree close")
+              return
+            end
+          end
+          require("neo-tree.command").execute({ action = "focus", dir = vim.uv.cwd() })
         end,
         desc = "Explorer (cwd)",
       },
       {
         "<leader>fE",
         function()
-          toggle_explorer(get_root())
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+            if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "neo-tree" then
+              vim.cmd("Neotree close")
+              return
+            end
+          end
+          local root = vim.fs.root(0, { ".git", "package.json", "Cargo.toml", "pyproject.toml" }) or vim.uv.cwd()
+          require("neo-tree.command").execute({ action = "focus", dir = root })
         end,
         desc = "Explorer (Root)",
       },
@@ -57,23 +44,6 @@ return {
     },
     deactivate = function()
       vim.cmd([[Neotree close]])
-    end,
-    init = function()
-      vim.api.nvim_create_autocmd("BufEnter", {
-        group = vim.api.nvim_create_augroup("Neotree_start_directory", { clear = true }),
-        desc = "Start Neo-tree with directory",
-        once = true,
-        callback = function()
-          if package.loaded["neo-tree"] then
-            return
-          else
-            local stats = vim.uv.fs_stat(vim.fn.argv(0))
-            if stats and stats.type == "directory" then
-              require("neo-tree")
-            end
-          end
-        end,
-      })
     end,
     opts = {
       close_if_last_window = true,
@@ -309,6 +279,16 @@ return {
         desc = "Open yazi at the current file",
       },
       {
+        "<leader>fy",
+        "<cmd>Yazi<cr>",
+        desc = "Open yazi at the current file",
+      },
+      {
+        "<leader>fY",
+        "<cmd>Yazi cwd<cr>",
+        desc = "Open yazi in cwd",
+      },
+      {
         "<leader>cw",
         "<cmd>Yazi cwd<cr>",
         desc = "Open the file manager in nvim's working directory",
@@ -333,9 +313,9 @@ return {
     cmd = { "Oil" },
     keys = {
       { "-", "<cmd>Oil<cr>", desc = "Open parent directory (oil)" },
-      { "<leader>o", "<cmd>Oil --float<cr>", desc = "Oil file explorer (float)" },
+      { "<leader>fo", "<cmd>Oil --float<cr>", desc = "Oil file explorer (float)" },
       {
-        "<leader>O",
+        "<leader>fO",
         function()
           require("oil").open(vim.fn.getcwd())
         end,
@@ -426,16 +406,6 @@ return {
         border = "rounded",
         win_options = { winblend = 0 },
         update_on_cursor_moved = true,
-      },
-    },
-  },
-
-  {
-    "folke/snacks.nvim",
-    opts = {
-      explorer = {
-        enabled = false,
-        replace_netrw = false,
       },
     },
   },

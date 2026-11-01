@@ -1,7 +1,12 @@
--- ============================================================================
+-- NOTE:-------------------------------------------------------
+--   ██╗  ██╗    W O R K S T A T I O N
+--   ╚██╗██╔╝
+--    ╚███╔╝     SYSTEMS OVER SCRIPTS
+--    ██╔██╗     INTENT OVER DRIFT
+--   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+--   ╚═╝  ╚═╝
 -- init.lua — Core Architecture
 -- Neovim >= 0.12
---
 -- Bootstrap order:
 --   1. Lua loader
 --   2. Performance baseline
@@ -10,7 +15,7 @@
 --   5. Plugin manager
 --   6. Autocommands
 --   7. Deferred observability
--- ============================================================================
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 -- ----------------------------------------------------------------------------
 -- 0. Lua module loader
@@ -36,50 +41,63 @@ require("core.perf")
 require("core.options")
 
 -- ----------------------------------------------------------------------------
--- 3. Leader definitions & Instant Theme Render (Ring 0: SLA < 1.0 ms)
+-- 3. Leader definitions & Instant Aesthetic Engine (Ring 0)
 -- ----------------------------------------------------------------------------
 -- Set leader keys strictly before lazy.nvim parses plugin key specs.
--- Keymap definitions are deferred to Ring 2 (VeryLazy) to avoid 1.5ms overhead.
+-- Keymap definitions are deferred to VeryLazy.
 
 vim.g.mapleader      = " "
 vim.g.maplocalleader = " "
 
-vim.cmd.colorscheme("x")
+local function apply_theme()
+  if not pcall(vim.cmd.colorscheme, "x") then
+    pcall(vim.cmd.colorscheme, "habamax")
+  end
+end
+
+if #vim.api.nvim_list_uis() > 0 then
+  apply_theme()
+else
+  vim.api.nvim_create_autocmd("UIEnter", {
+    once = true,
+    callback = apply_theme,
+  })
+end
 
 -- ----------------------------------------------------------------------------
--- 4. Plugin manager (Ring 1: Lazy Bootstrap, SLA 5-15 ms)
+-- 4. Plugin manager (Ring 1: Lazy Bootstrap & Capability Discovery)
 -- ----------------------------------------------------------------------------
 -- Bootstraps and configures lazy.nvim.
--- Plugin domains are discovered from lua/plugins/.
+-- Discovers plugin domains from lua/plugins/.
 
 require("core.lazy")
 
 -- ----------------------------------------------------------------------------
--- 5. Autocommands & Deferred Lifecycle (Ring 2: Zero Initial Overhead)
+-- 5. Autocommands & System Lifecycle
 -- ----------------------------------------------------------------------------
--- Core event handling and augroup definitions.
+-- Core event handling, large file guard, and window syntax routing.
 
 require("core.autocmds")
-require("theme").setup()
 
 -- ----------------------------------------------------------------------------
--- 6. Deferred observability & diagnostics
+-- 6. Deferred Lifecycle (Global Keymaps, ACP Runtime & Audit Router)
 -- ----------------------------------------------------------------------------
--- Benchmarking, telemetry, and invariant auditing via :CoreDoctor and commands.
--- Modules load on-demand when commands are invoked — zero overhead at startup.
-
-require("core.audit").setup()
-
--- ----------------------------------------------------------------------------
--- 7. Deferred global keymaps
--- ----------------------------------------------------------------------------
--- Registers global editor mappings after UI is rendered and interactive.
+-- Registers global editor mappings, ACP IPC runtime, and audit commands
+-- after UI is rendered and interactive.
 
 vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
   once = true,
   callback = function()
     require("core.keymaps")
+    require("core.acp").setup()
+    require("core.audit").setup()
+    pcall(function()
+      local ok_theme, theme = pcall(require, "theme")
+      if ok_theme and theme.setup then
+        theme.setup()
+      end
+    end)
   end,
 })
 

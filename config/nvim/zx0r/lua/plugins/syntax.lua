@@ -41,7 +41,7 @@ return {
     build = ":TSUpdate",
 
     dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
+      { "nvim-treesitter/nvim-treesitter-textobjects", lazy = true },
     },
 
     opts = {
@@ -94,6 +94,7 @@ return {
         -- Documents
         "markdown",
         "markdown_inline",
+        "requirements",
         "typst",
         "latex",
 
@@ -103,6 +104,8 @@ return {
         "scss",
         "svelte",
         "vue",
+        "graphql",
+        "xml",
 
         -- Editor / configuration
         "regex",
@@ -200,16 +203,25 @@ return {
           end
 
           ----------------------------------------------------------------------
-          -- Ignore special buffers
+          -- Ignore special or non-syntax buffers
           ----------------------------------------------------------------------
 
           if vim.bo[bufnr].buftype ~= "" then
             return
           end
 
+          local ft = vim.bo[bufnr].filetype
+          if ft == "" or ft == "bigfile" then
+            return
+          end
+
           ----------------------------------------------------------------------
           -- Large-file protection
           ----------------------------------------------------------------------
+
+          if vim.b[bufnr].large_file then
+            return
+          end
 
           local filename = vim.api.nvim_buf_get_name(bufnr)
 
@@ -222,16 +234,20 @@ return {
             filename
           )
 
-          if ok and stat and stat.size > 100 * 1024 * 1024 then
+          if ok and stat and stat.size > 1024 * 1024 then
             vim.b[bufnr].large_file = true
             return
           end
 
           ----------------------------------------------------------------------
-          -- Start Tree-sitter
+          -- Start Tree-sitter safely only if parser is available
           ----------------------------------------------------------------------
 
-          pcall(vim.treesitter.start, bufnr)
+          local lang = vim.treesitter.language.get_lang(ft) or ft
+          local has_parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+          if has_parser then
+            pcall(vim.treesitter.start, bufnr, lang)
+          end
         end,
       })
     end,
@@ -252,7 +268,7 @@ return {
     },
 
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+      { "nvim-treesitter/nvim-treesitter", lazy = true },
     },
 
     opts = {
@@ -465,6 +481,10 @@ return {
       zindex = 20,
 
       on_attach = function(buf)
+        local ft = vim.bo[buf].filetype
+        if ft == "markdown" or ft == "quarto" or ft == "help" then
+          return false
+        end
         return vim.api.nvim_buf_is_valid(buf)
           and vim.bo[buf].buftype == ""
           and vim.bo[buf].modifiable
@@ -486,18 +506,6 @@ return {
     },
 
     config = function()
-      local ok, lib = pcall(require, "rainbow-delimiters.lib")
-      if ok and lib and lib.attach then
-        local orig_attach = lib.attach
-        lib.attach = function(bufnr)
-          vim.schedule(function()
-            if vim.api.nvim_buf_is_valid(bufnr) then
-              orig_attach(bufnr)
-            end
-          end)
-        end
-      end
-
       vim.g.rainbow_delimiters = {
         strategy = {
           [""] = "rainbow-delimiters.strategy.global",
@@ -529,11 +537,6 @@ return {
           return vim.api.nvim_buf_line_count(bufnr) <= 1000
         end,
       }
-
-      local bufnr = vim.api.nvim_get_current_buf()
-      if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "" and vim.bo[bufnr].filetype ~= "" then
-        pcall(require("rainbow-delimiters.lib").attach, bufnr)
-      end
     end,
   },
 
@@ -545,10 +548,6 @@ return {
     "haringsrob/nvim_context_vt",
 
     event = "VeryLazy",
-
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-    },
 
     opts = {
       prefix = "  󱞷",
@@ -583,25 +582,14 @@ return {
   -- ==========================================================================
   -- SNACKS SCOPE & INDENT
   --
-  -- Structural navigation, Treesitter scope textobjects, and indentation guides
   -- ==========================================================================
-
+  -- LOG HIGHLIGHT (Server/application log syntax highlighting)
+  -- ==========================================================================
   {
-    "folke/snacks.nvim",
-    opts = {
-      scope = {
-        enabled = true,
-        char = "│",
-        underline = false,
-        only_current = false,
-        hl = "SnacksIndentScope",
-      },
-      indent = {
-        enabled = true,
-        char = "│",
-        hl = "SnacksIndent",
-        animate = { enabled = false },
-      },
-    },
+    "fei6409/log-highlight.nvim",
+    ft = { "log" },
+    opts = {},
   },
 }
+
+

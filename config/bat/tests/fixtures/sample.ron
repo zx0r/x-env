@@ -1,0 +1,13 @@
+// RON (Rusty Object Notation) Configuration Fixture
+Config(
+    version: 2,
+    cluster: (
+        nodes: [
+            (id: "gpu-node-01", address: "10.0.0.1", port: 9000),
+            (id: "gpu-node-02", address: "10.0.0.2", port: 9000),
+        ],
+        heartbeat_ms: 500,
+        enable_tls: true,
+    ),
+    scheduler: FIFO,
+)

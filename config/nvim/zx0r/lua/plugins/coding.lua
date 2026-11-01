@@ -32,10 +32,7 @@ return {
     event = "InsertEnter",
 
     dependencies = {
-      {
-        "rafamadriz/friendly-snippets",
-        lazy = true,
-      },
+      { "rafamadriz/friendly-snippets", lazy = true },
     },
 
     ---@module 'blink.cmp'
@@ -198,22 +195,27 @@ return {
           "golines",
         },
 
-        javascript = { "biome", "prettier", stop_after_first = true },
-        javascriptreact = { "biome", "prettier", stop_after_first = true },
-        typescript = { "biome", "prettier", stop_after_first = true },
-        typescriptreact = { "biome", "prettier", stop_after_first = true },
+        javascript = { "biome", "prettierd", "prettier", stop_after_first = true },
+        javascriptreact = { "biome", "prettierd", "prettier", stop_after_first = true },
+        typescript = { "biome", "prettierd", "prettier", stop_after_first = true },
+        typescriptreact = { "biome", "prettierd", "prettier", stop_after_first = true },
 
-        json = { "biome", "prettier", stop_after_first = true },
-        jsonc = { "biome", "prettier", stop_after_first = true },
-        yaml = { "prettier" },
+        json = { "biome", "prettierd", "prettier", stop_after_first = true },
+        jsonc = { "biome", "prettierd", "prettier", stop_after_first = true },
+        yaml = { "prettierd", "prettier", stop_after_first = true },
 
-        markdown = {
-          "prettier",
-        },
+        markdown = { "prettierd", "prettier", stop_after_first = true },
+        ["markdown.mdx"] = { "prettierd", "prettier", stop_after_first = true },
 
-        html = { "prettier" },
-        css = { "prettier" },
-        scss = { "prettier" },
+        html = { "prettierd", "prettier", stop_after_first = true },
+        css = { "biome", "prettierd", "prettier", stop_after_first = true },
+        scss = { "prettierd", "prettier", stop_after_first = true },
+        less = { "prettierd", "prettier", stop_after_first = true },
+        handlebars = { "prettierd", "prettier", stop_after_first = true },
+        graphql = { "biome", "prettierd", "prettier", stop_after_first = true },
+        svelte = { "biome", "prettierd", "prettier", stop_after_first = true },
+        astro = { "biome", "prettierd", "prettier", stop_after_first = true },
+        vue = { "biome", "prettierd", "prettier", stop_after_first = true },
 
         nix = { "nixfmt" },
 
@@ -302,6 +304,12 @@ return {
           end,
         },
 
+        prettierd = {
+          condition = function(self, ctx)
+            return vim.fs.find({ "biome.json", "biome.jsonc" }, { path = ctx.filename, upward = true })[1] == nil
+          end,
+        },
+
         prettier = {
           condition = function(self, ctx)
             return vim.fs.find({ "biome.json", "biome.jsonc" }, { path = ctx.filename, upward = true })[1] == nil
@@ -358,8 +366,8 @@ return {
     "ThePrimeagen/refactoring.nvim",
 
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
+      { "nvim-lua/plenary.nvim", lazy = true },
+      { "nvim-treesitter/nvim-treesitter", lazy = true },
     },
 
     keys = {
@@ -419,7 +427,7 @@ return {
     "danymat/neogen",
 
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+      { "nvim-treesitter/nvim-treesitter", lazy = true },
     },
 
     cmd = "Neogen",
@@ -495,10 +503,6 @@ return {
   {
     "johmsalas/text-case.nvim",
 
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-    },
-
     keys = {
       {
         "gC",
@@ -508,12 +512,11 @@ return {
     },
 
     cmd = {
-      "TextCaseOpenTelescope",
+      "TextCaseStartReplacingCommand",
     },
 
     config = function()
       require("textcase").setup({})
-      require("telescope").load_extension("textcase")
     end,
   },
 
@@ -619,6 +622,14 @@ return {
         end,
         desc = "Structural replace",
       },
+      {
+        "<leader>cR",
+        mode = { "n", "x" },
+        function()
+          require("ssr").open()
+        end,
+        desc = "Structural replace (Tree-sitter)",
+      },
     },
 
     opts = {
@@ -670,8 +681,8 @@ return {
   {
     "smoka7/multicursors.nvim",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "smoka7/hydra.nvim",
+      { "nvim-treesitter/nvim-treesitter", lazy = true },
+      { "smoka7/hydra.nvim", lazy = true },
     },
     cmd = { "MCstart", "MCvisual", "MCclear", "MCpattern", "MCvisualPattern", "MCunderCursor" },
     keys = {
@@ -701,4 +712,88 @@ return {
     event = "InsertEnter",
     opts = {},
   },
+
+  -- ==========================================================================
+  -- SPIDER (Subword motions for camelCase / snake_case)
+  -- ==========================================================================
+  {
+    "chrisgrieser/nvim-spider",
+    keys = {
+      { "w", function() require("spider").motion("w") end, mode = { "n", "o", "x" }, desc = "Spider: Next subword" },
+      { "e", function() require("spider").motion("e") end, mode = { "n", "o", "x" }, desc = "Spider: End of subword" },
+      { "b", function() require("spider").motion("b") end, mode = { "n", "o", "x" }, desc = "Spider: Prev subword" },
+      { "ge", function() require("spider").motion("ge") end, mode = { "n", "o", "x" }, desc = "Spider: Prev end of subword" },
+    },
+    opts = {
+      skipInsignificantPunctuation = true,
+    },
+  },
+
+  -- ==========================================================================
+  -- PUPPETEER (Automatic template string conversion on ${ insertion)
+  -- ==========================================================================
+  {
+    "chrisgrieser/nvim-puppeteer",
+    dependencies = { { "nvim-treesitter/nvim-treesitter", lazy = true } },
+    event = "InsertEnter",
+    lazy = true,
+  },
+
+  -- ==========================================================================
+  -- COMMENT-BOX (Formatted section headers and ASCII comment boxes)
+  -- ==========================================================================
+  {
+    "LudoPinelli/comment-box.nvim",
+    cmd = { "CBccbox", "CBllline", "CBline", "CBllbox14", "CBcatalog", "CBd" },
+    keys = {
+      { "<leader>cbb", "<cmd>CBccbox<cr>", mode = { "n", "v" }, desc = "Comment Box: Centered" },
+      { "<leader>cbt", "<cmd>CBllline<cr>", mode = { "n", "v" }, desc = "Comment Box: Tiled line" },
+      { "<leader>cbl", "<cmd>CBline<cr>", desc = "Comment Box: Simple line" },
+      { "<leader>cbm", "<cmd>CBllbox14<cr>", mode = { "n", "v" }, desc = "Comment Box: Marked box" },
+      { "<leader>cbc", "<cmd>CBcatalog<cr>", desc = "Comment Box: Catalog" },
+      { "<leader>cbd", "<cmd>CBd<cr>", mode = { "n", "v" }, desc = "Comment Box: Delete style" },
+    },
+    opts = {},
+  },
+
+  -- ==========================================================================
+  -- PACKAGE-INFO (Dependency version inspector for package.json)
+  -- ==========================================================================
+  {
+    "vuki656/package-info.nvim",
+    event = {
+      "BufRead package.json",
+      "BufRead package-lock.json",
+    },
+    opts = {},
+    keys = {
+      { "<leader>cv", function() require("package-info").show({ force = true }) end, desc = "Package: show versions" },
+      { "<leader>cu", function() require("package-info").update() end, desc = "Package: update version" },
+      { "<leader>cd", function() require("package-info").delete() end, desc = "Package: delete dependency" },
+      { "<leader>cp", function() require("package-info").change_version() end, desc = "Package: change version" },
+      { "<leader>ci", function() require("package-info").install() end, desc = "Package: install dependency" },
+    },
+  },
+
+  -- ==========================================================================
+  -- CODESNAP (macOS HIG code screenshots to clipboard/file)
+  -- ==========================================================================
+  {
+    "mistricky/codesnap.nvim",
+    build = "make",
+    cmd = { "CodeSnap", "CodeSnapSave" },
+    keys = {
+      { "<leader>cs", mode = "x", "<cmd>CodeSnap<cr>", desc = "CodeSnap: clipboard" },
+      { "<leader>cS", mode = "x", "<cmd>CodeSnapSave<cr>", desc = "CodeSnap: save image" },
+    },
+    opts = {
+      save_path = (os.getenv("HOME") .. "/Pictures/Screenshots"),
+      has_breadcrumbs = true,
+      bg_theme = "summer",
+      watermark = "",
+    },
+  },
 }
+
+
+

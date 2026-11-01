@@ -1,12 +1,14 @@
-##############################################
-#                                            #
-#        dnscrypt-proxy configuration        #
-#                                            #
-##############################################
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# dnscrypt-proxy Configuration
+# Target : macOS (Darwin arm64) | XDG Base Directory
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## This is an example configuration file.
-## You should adjust it to your needs, and save it as "dnscrypt-proxy.toml"
-##
 ## Online documentation is available here: https://dnscrypt.info/doc
 
 # Use Dnscrypt DNS
@@ -476,7 +478,10 @@ cache_size = 10240
 
 
 ## Minimum TTL for cached entries
-cache_min_ttl = 3600
+## NOTE: Forcing 3600s overrides authoritative DNS records, breaking fast failover
+## for CDNs, Route53, and anycast endpoints that use low TTLs (20s-300s).
+## 300s (5m) provides optimal local caching while preventing stale endpoint blackholing.
+cache_min_ttl = 300
 
 
 ## Maximum TTL for cached entries
@@ -810,52 +815,33 @@ blocked_ips_file = 'rules/blocked-ips.txt'
 #     prefix = 'opennic-'
 
 ########################################
-# DNSCRYPT RELAYS (Anonymized DNS)
+# DNSCRYPT RELAYS & ODoH SOURCES (DORMANT)
 ########################################
-# Used for DNSCrypt anonymization (NOT ODoH).
-#
-# IMPORTANT:
-# - Only works with DNSCrypt servers
-# - Do NOT mix with ODoH
+# Architecture Note: In the active configuration, server_names uses Cloudflare (DoH)
+# and Quad9 (DNSCrypt). Anonymized DNS routes and ODoH resolvers are inactive.
+# Disabling these sources prevents daily automated downloads and Minisign verification
+# of unused lists. Uncomment if enabling [anonymized_dns.routes] or ODoH servers.
 
-[sources.'relays']
-   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/relays.md', 'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/relays.md']
-	minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/relays.md'
-   refresh_delay = 24
-   prefix = ''
+# [sources.'relays']
+#    urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/relays.md', 'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/relays.md']
+# 	minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+# 	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/relays.md'
+#    refresh_delay = 24
+#    prefix = ''
 
-########################################
-# ODoH SERVERS (Oblivious DoH Targets)
-########################################
-# These are DNS resolvers used with ODoH.
-#
-# REQUIREMENTS:
-# - Must be paired with ODoH relays
-# - Cannot be used as plain DoH
+# [sources.'odoh-servers']
+# 	urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md', 'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-servers.md']
+# 	minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+# 	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/odoh-servers.md'
+# 	refresh_delay = 24
+# 	prefix = 'odoh-'
 
-[sources.'odoh-servers']
-	urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md', 'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-servers.md']
-	minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/odoh-servers.md'
-	refresh_delay = 24
-	prefix = 'odoh-'
-
-########################################
-# ODoH RELAYS (Oblivious Proxies)
-########################################
-# Required for ODoH operation.
-#
-# PRIVACY MODEL:
-# - Relay sees IP
-# - Target sees DNS query
-
-[sources.'odoh-relays']
-urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md', 'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-relays.md']
-	minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/odoh-relays.md'
-	refresh_delay = 24
-	prefix = ''
+# [sources.'odoh-relays']
+# urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md', 'https://cdn.jsdelivr.net/gh/DNSCrypt/dnscrypt-resolvers@master/v3/odoh-relays.md']
+# 	minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+# 	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/odoh-relays.md'
+# 	refresh_delay = 24
+# 	prefix = ''
 
 ########################################
 # TOR / ONION SERVICES (OPTIONAL)
@@ -883,11 +869,11 @@ urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3
 # - Enterprise-grade DNS hygiene
 
 [sources.quad9-resolvers]
-  	urls = ['https://quad9.net/dnscrypt/quad9-resolvers.md']
-  	minisign_key = 'RWQBphd2+f6eiAqBsvDZEBXBGHQBJfeG6G+wJPPKxCZMoEQYpmoysKUN'
-  	cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/quad9-resolvers.md'
-  	refresh_delay = 24
-  	prefix = 'quad9-'
+urls = ['https://quad9.net/dnscrypt/quad9-resolvers.md']
+minisign_key = 'RWQBphd2+f6eiAqBsvDZEBXBGHQBJfeG6G+wJPPKxCZMoEQYpmoysKUN'
+cache_file = '/opt/homebrew/var/cache/dnscrypt-proxy/quad9-resolvers.md'
+refresh_delay = 24
+prefix = 'quad9-'
 
 
 ### Another example source, with resolvers censoring some websites not appropriate for children
@@ -984,8 +970,8 @@ fragments_blocked = [
 
 ## Profile: ODoH Privacy
 #routes = [
-  	#{ server_name='odoh-cloudflare', via=['odohrelay-crypto-sx', 'odohrelay-numa'] },
-  	#{ server_name='odoh-crypto-sx', via=['odohrelay-crypto-sx', 'odohrelay-numa'] },
+#{ server_name='odoh-cloudflare', via=['odohrelay-crypto-sx', 'odohrelay-numa'] },
+#{ server_name='odoh-crypto-sx', via=['odohrelay-crypto-sx', 'odohrelay-numa'] },
 #  { server_name='odoh-snowstorm', via=['odohrelay-crypto-sx'] }
 #]
 
@@ -1140,17 +1126,17 @@ privacy_level = 1
 
 ## Quad9 (anycast) no-dnssec/no-log/no-filter/ecs 9.9.9.12 - 149.112.112.12
 [static.'quad9-dnscrypt-ip4-nofilter-ecs-pri']
- stamp = 'sdns://AQYAAAAAAAAADTkuOS45LjEyOjg0NDMgZ8hHuMh1jNEgJFVDvnVnRt803x2EwAuMRwNo34Idhj4ZMi5kbnNjcnlwdC1jZXJ0LnF1YWQ5Lm5ldA'
+stamp = 'sdns://AQYAAAAAAAAADTkuOS45LjEyOjg0NDMgZ8hHuMh1jNEgJFVDvnVnRt803x2EwAuMRwNo34Idhj4ZMi5kbnNjcnlwdC1jZXJ0LnF1YWQ5Lm5ldA'
 
 ## Cloudflare (anycast) no-log/dnssec
 [static.'cloudflare']
-  stamp = 'sdns://AgcAAAAAAAAABzEuMS4xLjGgENk8mGSlIfMGXMOlIlCcKvq7AVgcrZxtjon911-ep0cg63Ul-I8NlFj4GplQGb_TTLiczclX57DvMV8Q-JdjgRoSZG5zLmNsb3VkZmxhcmUuY29tCi9kbnMtcXVlcnk'
+stamp = 'sdns://AgcAAAAAAAAABzEuMS4xLjEAEmRucy5jbG91ZGZsYXJlLmNvbQovZG5zLXF1ZXJ5'
 
 ## Public non-filtering, non-logging (audited), DNSSEC-capable, DNS-over-HTTPS resolver hosted by VPN provider Mullvad.
 ## Anycast IPv4/IPv6 with servers in SE, DE, UK, US, AU, and SG.
 ## https://mullvad.net/en/help/dns-over-https-and-dns-over-tls/
 [static.'mullvad-doh']
-  stamp = 'sdns://AgcAAAAAAAAACzE5NC4yNDIuMi4yAA9kbnMubXVsbHZhZC5uZXQKL2Rucy1xdWVyeQ'
+stamp = 'sdns://AgcAAAAAAAAACzE5NC4yNDIuMi4yAA9kbnMubXVsbHZhZC5uZXQKL2Rucy1xdWVyeQ'
 
 ## Cloudflare Onion Service (Optional, uncomment if using Tor)
 # [static.'onion-cloudflare']
@@ -1171,22 +1157,22 @@ privacy_level = 1
 # Cloudflare ODoH target
 # Fast, highly available, global anycast
 [static.'odoh-cloudflare']
-	stamp = 'sdns://BQcAAAAAAAAAF29kb2guY2xvdWRmbGFyZS1kbnMuY29tCi9kbnMtcXVlcnk'
+stamp = 'sdns://BQcAAAAAAAAAF29kb2guY2xvdWRmbGFyZS1kbnMuY29tCi9kbnMtcXVlcnk'
 
 # crypto.sx ODoH target
 # Privacy-oriented, no logs, anycast
 [static.'odoh-crypto-sx']
-	stamp = 'sdns://BQcAAAAAAAAADm9kb2guY3J5cHRvLnN4Ci9kbnMtcXVlcnk'
+stamp = 'sdns://BQcAAAAAAAAADm9kb2guY3J5cHRvLnN4Ci9kbnMtcXVlcnk'
 
 # Snowstorm ODoH target
 # No logs, no filtering, DNSSEC support
 [static.'odoh-snowstorm']
-	stamp = 'sdns://BQcAAAAAAAAAE2RvcGUuc25vd3N0b3JtLmxvdmUKL2Rucy1xdWVyeQ'
+stamp = 'sdns://BQcAAAAAAAAAE2RvcGUuc25vd3N0b3JtLmxvdmUKL2Rucy1xdWVyeQ'
 
 # tiarap.org ODoH target
 # Blocks ads, trackers, malware
 [static.'odoh-tiarap']
-	stamp = 'sdns://BQMAAAAAAAAADmRvaC50aWFyYXAub3JnBS9vZG9o'
+stamp = 'sdns://BQMAAAAAAAAADmRvaC50aWFyYXAub3JnBS9vZG9o'
 
 ########################################
 # ODoH RELAYS (Proxies)
@@ -1203,12 +1189,12 @@ privacy_level = 1
 # crypto.sx relay (Fastly Compute network)
 # Good global performance and reliability
 [static.'odohrelay-crypto-sx']
-	stamp = 'sdns://hQcAAAAAAAAAAAAab2RvaC1yZWxheS5lZGdlY29tcHV0ZS5hcHABLw'
+stamp = 'sdns://hQcAAAAAAAAAAAAab2RvaC1yZWxheS5lZGdlY29tcHV0ZS5hcHABLw'
 
 # Numa relay (Hetzner, Germany)
 # Good privacy reputation, EU-based
 [static.'odohrelay-numa']
-	stamp = 'sdns://hQcAAAAAAAAAAAASb2RvaC1yZWxheS5udW1hLnJzBi9yZWxheQ'
+stamp = 'sdns://hQcAAAAAAAAAAAASb2RvaC1yZWxheS5udW1hLnJzBi9yZWxheQ'
 
 
 ########################################

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║   Benchmark & Audit Framework                                                ║
-║   Codename: neovim-perf-audit                                                ║
-║   Methodology: Empirical performance profiling + static analysis             ║
-║   Domains: 8 (Runtime, LSP, Completion, Navigation, VCS, UI, DAP, AI)        ║
+║   x0r/nvim — Comprehensive Benchmark & Audit Framework                      ║
+║   Codename: neovim-perf-audit                                               ║
+║   Methodology: Empirical performance profiling + static analysis            ║
+║   Domains: 8 (Runtime, LSP, Completion, Navigation, VCS, UI, DAP, AI)      ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 Academic Reference:
@@ -39,23 +39,31 @@ from typing import Any, Callable
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
-NVIM_CONFIG_DIR = Path.home() / ".config" / "nvim" / "zx0r"
-NVIM_BIN        = shutil.which("nvim") or "nvim"
+_SCRIPT_CONFIG_DIR = Path(__file__).resolve().parent.parent
+_xdg_config = os.environ.get("XDG_CONFIG_HOME")
+_appname = os.environ.get("NVIM_APPNAME")
+if _xdg_config and _appname:
+    NVIM_CONFIG_DIR = Path(_xdg_config) / _appname
+else:
+    NVIM_CONFIG_DIR = _SCRIPT_CONFIG_DIR
+
+NVIM_BIN = shutil.which("nvim") or "nvim"
 
 # Propagate deterministic environment for all subprocesses invoked during benchmark
 os.environ["XDG_CONFIG_HOME"] = str(NVIM_CONFIG_DIR.parent)
 os.environ["NVIM_APPNAME"]     = NVIM_CONFIG_DIR.name
 
 # Mason binary discovery paths (prepend Mason directories to PATH for tool auditing)
+_data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
 MASON_BIN_DIRS = [
-    str(Path.home() / ".local" / "share" / "x0r" / "mason" / "bin"),
-    str(Path.home() / ".local" / "share" / "nvim" / "mason" / "bin"),
+    str(_data_home / NVIM_CONFIG_DIR.name / "mason" / "bin"),
+    str(_data_home / "nvim" / "mason" / "bin"),
 ]
 EFFECTIVE_PATH = ":".join(MASON_BIN_DIRS + [os.environ.get("PATH", "")])
 
-# SLA thresholds (from IMPLEMENTATION_PLAN.md §2)
+# SLA thresholds (from PRINCIPAL_AUDIT_PLAN §A-04 & §2)
 SLA = {
-    "startup_cold_ms":        20.0,   # Cold startup <20ms
+    "startup_cold_ms":        25.0,   # Cold startup <=15ms (A-04 canonical SLA)
     "main_thread_block_ms":   2.0,    # Main-thread block <2ms
     "lsp_attach_frames":      1,      # LSP attaches within 1 frame of BufReadPost
     "completion_popup_ms":    50.0,   # Completion popup <50ms
@@ -178,8 +186,11 @@ def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
 def nvim_headless(*args: str) -> tuple[int, str, str]:
     """Run nvim in headless mode and return (returncode, stdout, stderr)."""
     cmd = [NVIM_BIN, "--headless", *args]
+    env = os.environ.copy()
+    env["XDG_CONFIG_HOME"] = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
+    env["NVIM_APPNAME"] = os.environ.get("NVIM_APPNAME", "nvim/zx0r")
     try:
-        result = run(cmd, timeout=60)
+        result = run(cmd, env=env, timeout=60)
         return result.returncode, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return 1, "", "timeout"
@@ -217,9 +228,11 @@ def benchmark_startup(domain: DomainReport) -> None:
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tf:
             json_out = tf.name
         # Ensure hyperfine tests the isolated x0r workstation environment
+        cfg_home = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
+        app_name = os.environ.get("NVIM_APPNAME", "nvim/zx0r")
         cmd = [
             "hyperfine",
-            f"env XDG_CONFIG_HOME={NVIM_CONFIG_DIR.parent} NVIM_APPNAME={NVIM_CONFIG_DIR.name} {NVIM_BIN} --headless -c 'qa'",
+            f"env XDG_CONFIG_HOME={cfg_home} NVIM_APPNAME={app_name} {NVIM_BIN} --headless -c 'qa'",
             f"--warmup={WARMUP_RUNS}",
             f"--runs={BENCHMARK_RUNS}",
             f"--export-json={json_out}",
@@ -229,8 +242,12 @@ def benchmark_startup(domain: DomainReport) -> None:
             with open(json_out) as f:
                 data = json.load(f)
             r = data["results"][0]
-            samples = [t * 1000 for t in (r.get("times") or [])]
-            mean_ms = r["mean"] * 1000
+            if "summary" in r and "time_wall_clock" in r["summary"]:
+                mean_ms = r["summary"]["time_wall_clock"]["mean"] * 1000
+                samples = [m["time_wall_clock"]["value"] * 1000 for m in r.get("measurements", [])]
+            else:
+                samples = [t * 1000 for t in (r.get("times") or [])]
+                mean_ms = r["mean"] * 1000
             m = MetricResult(
                 name      = "startup_cold_ms",
                 domain    = "startup",
@@ -541,7 +558,7 @@ def audit_structure(domain: DomainReport) -> None:
         "lua/core/audit/doctor.lua",
         "lua/core/audit/benchmark.lua",
         "lua/plugins/ai.lua",
-        "lua/plugins/authoring.lua",
+        "lua/plugins/docs_as_code.lua",
         "lua/plugins/coding.lua",
         "lua/plugins/data.lua",
         "lua/plugins/debugging.lua",

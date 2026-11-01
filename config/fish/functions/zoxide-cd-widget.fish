@@ -5,9 +5,9 @@
 # layer: "Functions"
 # responsibility: "Interactive frecency directory selection using zoxide and fzf with instant prompt repaint"
 # dependencies: ["zoxide", "fzf"]
-# backlinks: ["conf.d/40-keymaps.fish"]
+# backlinks: ["conf.d/40_bindings.fish"]
 # created_at: "2026-10-04"
-# updated_at: "2026-10-04"
+# updated_at: "2026-10-10"
 # tags: ["navigation", "zoxide", "widget", "keymaps"]
 # ---
 

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package environment_x.v1;
+
+message TensorPayload {
+    string tensor_id = 1;
+    repeated int64 shape = 2;
+    enum DataType {
+        FLOAT32 = 0;
+        FLOAT16 = 1;
+        BFLOAT16 = 2;
+        INT8 = 3;
+    }
+    DataType dtype = 3;
+    bytes raw_data = 4;
+}
+
+service InferenceEngine {
+    rpc Predict(TensorPayload) returns (TensorPayload);
+}

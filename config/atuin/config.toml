@@ -1,184 +1,403 @@
-# NOTE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# NOTE:-----------------------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ------------------------------------------------------------------------------
+# 1. Base Paths & Storage (Strict XDG Compliance)
+# ------------------------------------------------------------------------------
 
-#   █████  ████████ ██    ██ ██ ███    ██
-#  ██   ██    ██    ██    ██ ██ ████   ██
-#  ███████    ██    ██    ██ ██ ██ ██  ██
-#  ██   ██    ██    ██    ██ ██ ██  ██ ██
-#  ██   ██    ██     ██████  ██ ██   ████
-#
-#  Author       : zx0r
-#  License      : MIT License
-#  Description  : Stay hungry; Stay foolish
-#  Contact Info : https://github.com/zx0r/hyprdots-gentoo
+## Base directory for Atuin data files (databases, keys, session, etc.)
+## All data file paths default to being relative to this directory.
+## linux/mac: ~/.local/share/atuin (or $XDG_DATA_HOME/atuin)
+## windows: %USERPROFILE%/.local/share/atuin
+data_dir = "~/.local/share/atuin"
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-## where to store your database, default is your system data directory
+## Where to store your database, default is your system data directory
 ## linux/mac: ~/.local/share/atuin/history.db
 ## windows: %USERPROFILE%/.local/share/atuin/history.db
-db_path = "$HOME/.local/share/atuin/history.db"
+db_path = "~/.local/share/atuin/history.db"
 
-## where to store your encryption key, default is your system data directory
+## Where to store your encryption key, default is your system data directory
 ## linux/mac: ~/.local/share/atuin/key
 ## windows: %USERPROFILE%/.local/share/atuin/key
-key_path = "$HOME/.local/share/atuin/key"
+key_path = "~/.local/share/atuin/key"
 
-## where to store your auth session token, default is your system data directory
+## Where to store your auth session token, default is your system data directory
 ## linux/mac: ~/.local/share/atuin/session
 ## windows: %USERPROFILE%/.local/share/atuin/session
-sesision_path = "$HOME/.local/share/atuin/session"
+session_path = "~/.local/share/atuin/session"
 
-## address of the sync server
+## Date format used in stats / history: "us" (MM/DD) or "uk" (DD/MM)
+dialect = "us"
+
+## Default timezone to use when displaying time:
+## "local", "l" for system local timezone, or an offset like "+9", "-05", "+03:30"
+timezone = "local"
+
+# ------------------------------------------------------------------------------
+# 2. Network & Synchronization
+# ------------------------------------------------------------------------------
+
+## Address of the sync server
 sync_address = "https://api.atuin.sh"
 
-## enable or disable automatic sync
+## Enable or disable automatic background sync
 auto_sync = true
 
-## enable or disable automatic update checks
-update_check = true
+## Enable or disable automatic update checks
+## Set to false to avoid external network requests during interactive shell startup
+update_check = false
 
-## how often to sync history. note that this is only triggered when a command
-## is ran, so sync intervals may well be longer
-## set it to 0 to sync after every command
+## Which release channel to follow with `atuin update` and update checks
+## "stable" for stable releases only, "nightly" to also receive prereleases
+update_channel = "stable"
+
+## How often to sync history. Triggered when a command is executed.
+## Accepts duration format: "5m", "10m", "1h", or 0 to sync after every command
 sync_frequency = "10m"
 
-## which search mode to use
-## possible values: prefix, fulltext, fuzzy, skim
-search_mode = "fuzzy"
+## Maximum time in seconds to wait for a network request to complete
+network_timeout = 30
 
-## which filter mode to use
-## possible values: global, host, session, directory
+## Maximum time in seconds to wait for connection establishment to sync server
+network_connect_timeout = 5
+
+## Timeout (in seconds) for acquiring a local database connection lock (sqlite)
+local_timeout = 5
+
+## Extra HTTP headers to send on every request to the sync server. Useful when
+## a self-hosted server sits behind a proxy that requires its own auth header (e.g. Cloudflare Access).
+# extra_headers = { "CF-Access-Client-Id" = "...", "CF-Access-Client-Secret" = "..." }
+
+# ------------------------------------------------------------------------------
+# 3. Search & Matching Engine
+# ------------------------------------------------------------------------------
+
+## Which search mode to use for interactive search (Ctrl-R)
+## Values:
+##   - "prefix"       : query*
+##   - "fulltext"     : *query*
+##   - "fuzzy"        : fzf-style fuzzy matching
+##   - "daemon-fuzzy" : high-performance daemon in-memory index (Atuin 18.13+)
+search_mode = "daemon-fuzzy"
+
+## Which search mode to use when atuin is invoked from a shell up-key binding
+## Accepts identical values to search_mode
+search_mode_shell_up_key_binding = "fuzzy"
+
+## Which filter mode to use for interactive search (Ctrl-R)
+## Values: "global", "host", "session", "session-preload", "directory", "workspace"
 filter_mode = "global"
+
+## Which filter mode to use when atuin is invoked from a shell up-key binding
+## Set to "global" so Up-Arrow accesses full history
+filter_mode_shell_up_key_binding = "global"
 
 ## With workspace filtering enabled, Atuin will filter for commands executed
 ## in any directory within a git repository tree (default: false)
-workspaces = false
+workspaces = true
 
-## which filter mode to use when atuin is invoked from a shell up-key binding
-## the accepted values are identical to those of "filter_mode"
-## leave unspecified to use same mode set in "filter_mode"
-filter_mode_shell_up_key_binding = "global"
+# ------------------------------------------------------------------------------
+# 4. User Interface & Display Layout
+# ------------------------------------------------------------------------------
 
-## which search mode to use when atuin is invoked from a shell up-key binding
-## the accepted values are identical to those of "search_mode"
-## leave unspecified to use same mode set in "search_mode"
-search_mode_shell_up_key_binding = "fuzzy"
-
-## which style to use
-## possible values: auto, full, compact
+## Which display style to use
+## Values:
+##   - "auto"    : uses "full", falls back to "compact" when terminal height is limited
+##   - "full"    : multi-line layout with metadata rows
+##   - "compact" : single-line density per result
 style = "auto"
 
-## the maximum number of lines the interface should take up
-## set it to 0 to always go full screen
+## Maximum number of lines the interface should take up
+## Set to 0 to take up the full terminal screen
 inline_height = 0
 
-## Invert the UI - put the search bar at the top , Default to `false`
+## Maximum number of lines when invoked via shell up-key binding
+## Keeps terminal screen context visible on quick command recalls
+inline_height_shell_up_key_binding = 0
+
+## Invert the UI - put the search bar at the top (true) or bottom (false)
 invert = false
 
-## enable or disable showing a preview of the selected command
-## useful when the command is longer than the terminal width and is cut off
+## Enable or disable showing a preview of the selected command
 show_preview = true
 
-## Configure the maximum height of the preview to show.:%s
-## Useful when you have long scripts in your history that you want to distinguish
-## by more than the first few lines.
-max_preview_height = 4
+## Configure the maximum height of the preview box to show
+max_preview_height = 12
 
-## Configure whether or not to show the help row, which includes the current Atuin
-## version (and whether an update is available), a keymap hint, and the total 
-## amount of commands in your history.
-show_tabs = true
-
-## Configure whether or not to show the help row, which includes the current Atuin
-## version (and whether an update is available), a keymap hint, and the total
-## amount of commands in your history.
+## Configure whether or not to show the help row at the bottom
 show_help = true
 
-## what to do when the escape key is pressed when searching
-## possible values: return-original, return-query
-#exit_mode = "return-query"
+## Configure whether or not to show tabs for Search and Inspect modes
+show_tabs = true
+
+## Auto-hide extra UI lines when terminal height falls below this row threshold
+## 0 to never auto-hide. Default is 8 lines (applies to compact mode)
+auto_hide_height = 8
+
+## What to do when the escape key is pressed when searching
+## Values:
+##   - "return-original" : restore the command line as it was before search
+##   - "return-query"    : place current typed search query on the command line
 exit_mode = "return-original"
 
-## Configures whether to store commands that failed (those with non-zero exit status) or not.
-store_failed = true
-
-## possible values: emacs, subl
-word_jump_mode = "emacs"
-
-## The terminal’s cursor style associated with each keymap mode in the Atuin search. 
-## This is specified by a dictionary whose keys and values being the keymap names and 
-## the cursor styles, respectively. A key specifies one of the keymaps from emacs, 
-## vim_insert, and vim_normal. A value is one of the cursor styles,
-## default or {blink,steady}-{block,underline,bar}. The following is an example.
-keymap_cursor = { emacs = "blink-underline", vim_insert = "blink-underline", vim_normal = "steady-block" }
-
-## characters that count as a part of a word
-# word_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-## number of context lines to show when scrolling by pages
-# scroll_context_lines = 1
-
-## The history format allows you to configure the default history list format - which can also 
-## be specified with the —format arg.
-## The specified —format arg will prioritize the config when both are present
-## More on https://docs.atuin.sh/reference/list/
-history_format = "history_filter"
-
-## prevent commands matching any of these regexes from being written to history.
-## Note that these regular expressions are unanchored, i.e. if they don't start
-## with ^ or end with $, they'll match anywhere in the command.
-## For details on the supported regular expression syntax, see
-## https://docs.rs/regex/latest/regex/#syntax
-# history_filter = [
-#   "^secret-cmd",
-#   "^innocuous-cmd .*--secret=.+"
-# ]
-
-## prevent commands run with cwd matching any of these regexes from being written
-## to history. Note that these regular expressions are unanchored, i.e. if they don't
-## start with ^ or end with $, they'll match anywhere in CWD.
-## For details on the supported regular expression syntax, see
-## https://docs.rs/regex/latest/regex/#syntax
-# cwd_filter = [
-#   "^/very/secret/area"
-# ]
-
-
-## use ctrl instead of alt as the shortcut modifier key for numerical UI shortcuts
-## alt-0 .. alt-9
-# ctrl_n_shortcuts = false
-
-## Defaults to true. This matches history against a set of default regex, and will not save it if we get a match. Defaults include
-## 1. AWS key id
-## 2. Github pat (old and new)
-## 3. Slack oauth tokens (bot, user)
-## 4. Slack webhooks
-## 5. Stripe live/test keys
-secrets_filter = true
-
-## Defaults to true. If enabled, upon hitting enter Atuin will immediately execute the command. Press tab to return to the shell and edit.
-# This applies for new installs. Old installs will keep the old behaviour unless configured otherwise.
+## If enabled, upon hitting enter Atuin will immediately execute the command.
+## Pressing Tab puts the command in the prompt for editing.
 enter_accept = true
 
-# Set commands that should be totally stripped and ignored from stats
-common_prefix = ["sudo"]
+## Word navigation mode for editing search queries: "emacs" or "subl"
+word_jump_mode = "emacs"
+
+## Characters that count as part of a word during editing
+# word_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+## Number of context lines to show when scrolling by pages
+# scroll_context_lines = 1
+
+## Use ctrl instead of alt as the shortcut modifier key for numerical UI shortcuts
+ctrl_n_shortcuts = false
+
+## Show numeric shortcuts (1..9) beside list items in the TUI
+show_numeric_shortcuts = false
+
+## Default history list format - can also be specified with the --format arg
+history_format = "{time}  {duration}  {command}"
+
+## Strip trailing spaces and tabs from commands before saving them to history
+strip_trailing_whitespace = true
+
+## Reduce motion in the TUI (disables live-updating relative timestamps)
+prefers_reduced_motion = false
+
+## Command chaining: parse &&, || or | into distinct history entries
+command_chaining = false
+
+## Configures whether to store commands that failed (non-zero exit status) or not
+store_failed = true
+
+# ------------------------------------------------------------------------------
+# 5. UI Columns Layout ([ui])
+# ------------------------------------------------------------------------------
+
+[ui]
+## Columns to display in the interactive search, from left to right.
+## The selection indicator (" > ") is always shown first implicitly.
+##
+## Available column types (with default widths):
+##   duration  (5)  - Command execution duration (e.g., "123ms")
+##   time      (8)  - Relative time since execution (e.g., "59m ago")
+##   datetime  (16) - Absolute timestamp (e.g., "2025-01-22 14:35")
+##   directory (20) - Working directory (truncated if too long)
+##   host      (15) - Hostname where command was run
+##   user      (10) - Username
+##   exit      (3)  - Exit code (colored by success/failure)
+##   command   (*)  - The command itself (expands by default)
+columns = ["duration", "time", "command"]
+
+## Syntax highlight commands in the search results using the theme's colors
+syntax_highlight = true
+
+# ------------------------------------------------------------------------------
+# 6. Search Scoring & Filter Cycle ([search])
+# ------------------------------------------------------------------------------
+
+[search]
+## The list of enabled filter modes in order of priority when toggled via Ctrl-R
+filters = ["global", "workspace", "directory", "session", "host"]
+
+## Filter interactive search results by shell type: "all", "auto", or array of strings
+shells = "all"
+
+## Score multipliers for "daemon-fuzzy" search mode (frecency calculation):
+## Formula: Recency * Recency_Multiplier + Frequency * Frequency_Multiplier
+recency_score_multiplier = 2.0
+frequency_score_multiplier = 1.0
+frecency_score_multiplier = 2.0
+
+# ------------------------------------------------------------------------------
+# 7. Keyboard Navigation & Bindings ([keys])
+# ------------------------------------------------------------------------------
+
+[keys]
+## If disabled (false), using up/down won't exit the TUI when scrolled past boundaries
+scroll_exits = false
+
+## Key prefix for chord bindings
+prefix = 'a'
+
+## Left arrow key exits the TUI when scrolling before the first character
+exit_past_line_start = true
+
+## Right arrow key performs Tab functionality (copies selected line to prompt)
+accept_past_line_end = false
+
+## Left arrow key performs Tab functionality (copies selected line to prompt)
+accept_past_line_start = false
+
+## Backspace key performs Tab functionality when at start of line
+accept_with_backspace = false
+
+# ------------------------------------------------------------------------------
+# 8. Preview Rendering Strategy ([preview])
+# ------------------------------------------------------------------------------
+
+[preview]
+## Strategy for calculating preview box height (respects max_preview_height):
+##   - "auto"   : dynamically calculated from length of selected command
+##   - "static" : length of longest command in current result set
+##   - "fixed"  : always use max_preview_height
+strategy = "auto"
+syntax = "command"
+command = "echo {} | bat -p --color=always -l fish"
+
+# ------------------------------------------------------------------------------
+# 9. Tmux Popup Integration ([tmux])
+# ------------------------------------------------------------------------------
+
+[tmux]
+## Enable using Atuin with native tmux popup (requires tmux >= 3.2).
+## When enabled and running inside tmux, Atuin renders as a floating popup window.
+## Set to false to render inline within the active pane.
+enabled = false
+
+## Width of the tmux popup window (percentage or integer character columns)
+width = "85%"
+
+## Height of the tmux popup window (percentage or integer lines)
+height = "70%"
+
+# ------------------------------------------------------------------------------
+# 10. Background Daemon Engine ([daemon])
+# ------------------------------------------------------------------------------
+
+[daemon]
+## Enable the high-performance background daemon
+enabled = true
+
+## Automatically start and manage the daemon when needed
+autostart = true
+
+## How often the daemon should sync in seconds (5 minutes)
+sync_frequency = 300
+
+## Unix domain socket path used by the daemon for local IPC
+socket_path = "$TMPDIR/atuin.sock"
+
+## Daemon pidfile used for lifecycle management
+pidfile_path = "~/.local/share/atuin/atuin-daemon.pid"
+
+## Use systemd socket activation (Linux only; false on macOS Darwin)
+systemd_socket = false
+
+## TCP port for daemon communications (fallback)
+tcp_port = 8889
+
+# ------------------------------------------------------------------------------
+# 11. Command Output Capture ([output])
+# ------------------------------------------------------------------------------
+
+[output]
+## Capture and store command output via pty-proxy and daemon.
+## When false, nothing is captured and related settings are ignored.
+enabled = false
+
+## Maximum output buffer retained per command (first half + last half)
+max_output_size = "1MB"
+
+## Disk usage threshold for captured output before purging oldest records
+max_disk_usage = "10%"
+
+## Commands whose output is never stored on disk
+command_filter = [
+  "^cat ",
+  "^bat ",
+  "^less ",
+  "^head ",
+  "^tail ",
+  "^kubectl get secret",
+  "^sops",
+  "^age",
+  "^get-secret",
+  "^with-secret",
+]
+
+# ------------------------------------------------------------------------------
+# 12. Logging & Diagnostics ([logs])
+# ------------------------------------------------------------------------------
+
+[logs]
+## Enable file-based logging. Set to false for zero I/O overhead.
+enabled = false
+dir = "~/.local/state/atuin/logs"
+level = "error"
+retention = "4d"
+
+# ------------------------------------------------------------------------------
+# 13. Security, Secrets Scrubbing & Privacy Filters
+# ------------------------------------------------------------------------------
+
+## Built-in scanner matching AWS keys, GitHub PATs, Slack tokens, Stripe keys
+secrets_filter = true
+
+## Custom unanchored regular expressions to prevent sensitive commands from being recorded
+history_filter = [
+  "^export.*(KEY|SECRET|PASSWORD|TOKEN|AUTH|CREDENTIAL|PASS|SIGNING)",
+  "^set -[gU]?x?.*(KEY|SECRET|PASSWORD|TOKEN|AUTH)",
+  "^aws configure",
+  "^ssh-add",
+  "^ssh-keygen",
+  "^gpg ",
+  "^security find-generic-password",
+  "^security find-internet-password",
+  "^sops",
+  "^age",
+  "^get-secret",
+  "^with-secret",
+  ".*(-p|--password|--token|--secret|--api-key)[ =].+",
+  ".*Authorization: Bearer .+",
+  "^gh auth",
+  "^docker login",
+  "^vault ",
+]
+
+## Exclude sensitive directories from history tracking
+cwd_filter = ["^/private", "^/tmp/secrets"]
+
+# ------------------------------------------------------------------------------
+# 14. Keymap & Cursor Dynamics
+# ------------------------------------------------------------------------------
+
+## Keymap mode on startup of `atuin search`: "auto", "emacs", "vim-insert", "vim-normal"
+keymap_mode = "auto"
+
+## Cursor style in each keymap mode: default or {blink,steady}-{block,underline,bar}
+keymap_cursor = { emacs = "blink-underline", vim_insert = "blink-underline", vim_normal = "steady-underline" }
+
+# ------------------------------------------------------------------------------
+# 15. Subcommand Statistics & Normalization ([stats])
+# ------------------------------------------------------------------------------
+
+## Prefixes stripped from command invocations when computing usage statistics
+common_prefix = ["sudo", "doas", "time", "command"]
 
 [stats]
-# Set commands where we should consider the subcommand for statistics. Eg, kubectl get vs just kubectl
+## Commands where the subcommand should be considered for statistics (e.g. "git commit")
 common_subcommands = [
-  "cd",
+  "apt",
   "cargo",
+  "cd",
   "composer",
   "dnf",
-  "duf",
-  "dooit",
-  "doas",
-  "eix",
-  "emerge",
   "docker",
+  "dotnet",
+  "fish",
   "git",
   "go",
   "ip",
+  "jj",
   "kubectl",
   "nix",
   "nmcli",
@@ -186,54 +405,40 @@ common_subcommands = [
   "pecl",
   "pnpm",
   "podman",
-  "python",
   "port",
+  "python",
   "systemctl",
   "tmux",
   "yarn",
+  "zoxide",
 ]
 
-# [theme]
-name = ""
+## Commands completely ignored from stats
+# ignored_commands = [
+#   "cd",
+#   "ls",
+#   "vi"
+# ]
+
+# ------------------------------------------------------------------------------
+# 16. Theme Configuration ([theme])
+# ------------------------------------------------------------------------------
+
+[theme]
+## Active theme loaded from ~/.config/atuin/themes/x.toml
+name = "x"
 debug = false
-parent = "autumn"
+parent = "default"
 max_depth = 10
 
-[colors]
-AlertInfo = "#00ff00"       # Bright green for informational messages
-AlertWarn = "#ffcc00"       # Yellow to capture attention for warnings
-AlertError = "#ff0033"      # Red for critical errors needing immediate action
-Annotation = "#888888"      # Gray for supporting text, unobtrusive but readable
-Base = "#ffffff"            # Default foreground color (white for readability)
-Guidance = "#888844"        # Muted yellow-green for instructive text
-Important = "#ff6600"       # Orange for high-priority information
-Title = "#ff66ff"           # Vibrant pink for headings to match the cyberpunk theme
+# ------------------------------------------------------------------------------
+# 17. Multi-Device State & Dotfiles ([sync], [dotfiles])
+# ------------------------------------------------------------------------------
 
 [sync]
+## Synchronize arbitrary record stores across devices
 records = true
 
 [dotfiles]
-enabled = true
-
-## This section of the client config is specifically for configuring key-related settings.
-[keys]
-scroll_exits = true
-prefix = 'a'
-
-## This section of the client config is specifically for configuring preview-related settings. 
-## (In the future the other 2 preview settings will be moved here.)
-[preview]
-strategy = "auto"
-
-## Enable the background daemon
-## Add the new section to the bottom of your config file
-[daemon]
+## Disabled: dotfiles are managed strictly by x-config SSOT control plane
 enabled = false
-tcp_port = 8889
-sync_frequency = 300
-systemd_socket = false
-socket_path = "$HOME/.local/share/atuin/atuin.sock"
-# socket_path = "/run/user/1000/atuin.sock"
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-

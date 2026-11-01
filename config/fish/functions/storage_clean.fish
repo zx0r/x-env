@@ -5,9 +5,9 @@
 # layer: "Functions"
 # responsibility: "Executes 5-tier systematic workstation storage reclamation with animated spinners, per-item checkboxes, safety governors, dual-circuit telemetry, and macOS notifications"
 # dependencies: ["functions/__tui_engine.fish", "functions/trash.fish", "functions/storage_audit.fish"]
-# backlinks: ["conf.d/20-abbr.fish"]
+# backlinks: ["conf.d/20_abbrs.fish"]
 # created_at: "2026-10-03"
-# updated_at: "2026-10-05"
+# updated_at: "2026-10-10"
 # tags: ["storage", "clean", "disk", "kondo", "mole", "trash", "cache", "macos", "tui", "spinner", "safety-governor"]
 # ---
 

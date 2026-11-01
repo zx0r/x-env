@@ -1,0 +1,317 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[mgr]
+ratio = [1, 2, 4]
+sort_by = "natural"
+sort_sensitive = false
+sort_reverse = false
+sort_dir_first = true
+sort_translit = false
+linemode = "size"
+show_hidden = false
+show_symlink = true
+scrolloff = 8
+mouse_events = ["click", "scroll"]
+title_format = "{cwd} 󰇘 X"
+
+[preview]
+wrap = "yes"
+tab_size = 2
+max_width = 3840
+max_height = 2400
+image_delay = 10
+image_filter = "lanczos3"
+image_quality = 90
+sixel_fraction = 10
+
+# ==============================================================================
+# OPENER MATRIX (macOS / Neovim / Lazygit)
+# ==============================================================================
+[opener]
+edit = [{ run = 'nvim %s', block = true, desc = "Neovim" }]
+system_open = [{ run = 'open %s', orphan = true, desc = "macOS Open" }]
+reveal = [{ run = 'open -R %s1', orphan = true, desc = "Reveal in Finder" }]
+lazygit = [{ run = 'lazygit', block = true, desc = "Lazygit" }]
+codium = [{ run = 'codium %s', orphan = true, desc = "VSCodium" }]
+kitty_edit = [
+  { run = 'kitty --detach nvim %s', orphan = true, desc = "Neovim (Kitty Window)" },
+]
+ghostty_edit = [
+  { run = 'open -na Ghostty.app --args -e nvim %s', orphan = true, desc = "Neovim (Ghostty Window)" },
+]
+archive = [
+  { run = 'ouch d -y %s', block = true, desc = "Extract with ouch" },
+  { run = '7z x %s1', block = true, desc = "Extract with 7z" },
+]
+
+# ==============================================================================
+# OPEN RULES
+# ==============================================================================
+[open]
+rules = [
+  # Directories
+  { url = "*/", use = ["edit", "system_open", "reveal"] },
+
+  # Empty Inode (Newly touched files) -> Neovim
+  { mime = "inode/x-empty", use = ["edit", "codium"] },
+
+  # Text & Source Code -> Neovim / Codium / Ghostty / Kitty
+  { mime = "text/*", use = ["edit", "codium", "ghostty_edit", "kitty_edit", "reveal"] },
+  { mime = "application/json", use = ["edit", "codium", "ghostty_edit", "kitty_edit"] },
+  { mime = "application/javascript", use = ["edit", "codium", "ghostty_edit", "kitty_edit"] },
+  { mime = "application/toml", use = ["edit", "codium", "ghostty_edit", "kitty_edit"] },
+  { mime = "application/x-yaml", use = ["edit", "codium", "ghostty_edit", "kitty_edit"] },
+
+  # Media Files -> System Open
+  { mime = "image/*", use = ["system_open", "reveal"] },
+  { mime = "video/*", use = ["system_open", "reveal"] },
+  { mime = "audio/*", use = ["system_open", "reveal"] },
+  { mime = "application/pdf", use = ["system_open", "reveal"] },
+
+  # E-Books & Documents -> macOS Books / Preview
+  { mime = "application/epub+zip", use = ["system_open", "reveal"] },
+  { mime = "application/x-mobipocket-ebook", use = ["system_open", "reveal"] },
+
+  # Archives
+  { mime = "application/*zip", use = ["archive", "system_open"] },
+  { mime = "application/x-tar", use = ["archive", "system_open"] },
+  { mime = "application/x-7z-compressed", use = ["archive", "system_open"] },
+  { mime = "application/x-rar", use = ["archive", "system_open"] },
+  { mime = "application/gzip", use = ["archive", "system_open"] },
+  { mime = "application/x-bzip*", use = ["archive", "system_open"] },
+  { mime = "application/x-xz", use = ["archive", "system_open"] },
+  { mime = "application/zstd", use = ["archive", "system_open"] },
+
+  # Fallback -> Neovim
+  { url = "*", use = ["edit", "codium", "ghostty_edit", "kitty_edit", "system_open", "reveal"] },
+]
+
+# ==============================================================================
+# PLUGIN PIPELINES (Fetchers & Previewers)
+# ==============================================================================
+# Architecture: Cascading precedence — most specific first.
+#
+# Preview Rendering Strategy (Zero Overhead — all cache-hit paths = 0 subprocesses):
+#   Tier 1: .mmd / .mermaid → mermaid.yazi (mmdc → PNG → ya.image_show)
+#   Tier 2: .md / .markdown → markdown.yazi (glow ANSI cache, auto-delegates to
+#           mermaid.yazi when ```mermaid blocks detected)
+#   Tier 3: .tex            → latex.yazi (tectonic → PDF → pdftoppm → PNG)
+#   Tier 4: .bib/.sty/.cls  → bat.yazi (syntax highlighting, no compilation)
+#   Tier 5: Code / text/*   → bat.yazi (syntax highlighting via bat --theme=x)
+# ==============================================================================
+[plugin]
+prepend_fetchers = [
+  { group = "git", url = "*", run = "git" },
+  { group = "git", url = "*/", run = "git" },
+  { group = "mactag", url = "*", run = "mactag" },
+  { group = "mactag", url = "*/", run = "mactag" },
+]
+
+prepend_preloaders = [
+  # ── Preload Tier 1: Mermaid Diagrams (background headless mmdc render) ──
+  { url = "*.mmd", run = "mermaid" },
+  { url = "*.mermaid", run = "mermaid" },
+
+  # ── Preload Tier 2: Markdown (background glow ANSI cache warming) ────────
+  { url = "*.md", run = "markdown" },
+  { url = "*.markdown", run = "markdown" },
+  { url = "*.mdx", run = "markdown" },
+
+  # ── Preload Tier 3: LaTeX & Typst (background tectonic / typst compile) ──
+  { url = "*.tex", run = "latex" },
+  { url = "*.typ", run = "latex" },
+]
+
+prepend_previewers = [
+  # ── Tier 1: Pure Mermaid Diagrams ────────────────────────────────────────
+  { url = "*.mmd", run = "mermaid" },
+  { url = "*.mermaid", run = "mermaid" },
+
+  # ── Tier 2: Markdown → glow TrueColor ANSI (atomic disk cache) ──────────
+  #   Cache-hit: single file read, zero subprocesses.
+  #   Auto-detects ```mermaid blocks and delegates to mermaid.yazi split view.
+  { url = "*.md", run = "markdown" },
+  { url = "*.markdown", run = "markdown" },
+  { url = "*.mdx", run = "markdown" },
+
+  # ── Tier 3: LaTeX & Typst → Rendered Image Preview ──────────────────────
+  #   Pipeline: tectonic compile → PDF → pdftoppm → PNG → ya.image_show()
+  #             typst compile → PNG → ya.image_show()
+  #   Cache-hit: single file read, zero subprocesses.
+  #   Falls back to bat syntax highlighting on compile failure.
+  { url = "*.tex", run = "latex" },
+  { url = "*.typ", run = "latex" },
+
+  # ── Tier 4: Interactive Notebooks (Jupyter) ─────────────────────────────
+  { url = "*.ipynb", run = 'piper -- rich --ipynb --force-terminal "$1"' },
+
+  # ── Tier 5: Office & Production Documents ───────────────────────────────
+  # Word documents via macOS native textutil
+  { url = "*.{docx,doc,rtf,odt}", run = 'piper -- textutil -convert txt -stdout "$1" | head -n 120' },
+  # Excel spreadsheets via xlsx2csv
+  { url = "*.{xlsx,xls,ods}", run = 'piper -- xlsx2csv "$1" | head -n 80 | column -s, -t' },
+  # Apple iWork metadata
+  { url = "*.{pages,numbers,key}", run = 'piper -- mdls "$1" | grep -E "kMDItem(Title|Authors|PageCount|Version|Kind)"' },
+
+  # ── Tier 6: High-Performance Data & Databases ───────────────────────────
+  # Columnar Parquet via DuckDB
+  { url = "*.parquet", run = "piper -- duckdb -dark-mode -c \"SELECT * FROM '$1' LIMIT 50;\"" },
+  # Tabular CSV / TSV via DuckDB table view (fallback bat)
+  { url = "*.{csv,tsv}", run = "piper -- duckdb -dark-mode -c \"SELECT * FROM '$1' LIMIT 50;\" 2>/dev/null || bat --color=always --style=plain \"$1\"" },
+  # Relational SQLite Databases (Tables + Schema)
+  { mime = "application/sqlite3", run = 'piper -- echo "=== TABLES ===" && sqlite3 "$1" .tables && echo "" && echo "=== SCHEMA ===" && sqlite3 "$1" .schema | head -n 60' },
+  { mime = "application/x-sqlite3", run = 'piper -- echo "=== TABLES ===" && sqlite3 "$1" .tables && echo "" && echo "=== SCHEMA ===" && sqlite3 "$1" .schema | head -n 60' },
+  { url = "*.{sqlite,sqlite3,db,db3,s3db}", run = 'piper -- echo "=== TABLES ===" && sqlite3 "$1" .tables && echo "" && echo "=== SCHEMA ===" && sqlite3 "$1" .schema | head -n 60' },
+  # Apple Property Lists (Binary & XML)
+  { url = "*.plist", run = 'piper -- plutil -p "$1"' },
+
+  # ── Tier 7: Audio & Rich Media Metadata ─────────────────────────────────
+  { mime = "audio/*", run = 'piper -- mediainfo "$1" 2>/dev/null || afinfo "$1"' },
+  { url = "*.{mp3,wav,flac,aac,m4a,ogg,opus,aiff,alac}", run = 'piper -- mediainfo "$1" 2>/dev/null || afinfo "$1"' },
+
+  # ── Tier 8: Web / Rendered HTML ─────────────────────────────────────────
+  { url = "*.{html,htm}", run = 'piper -- w3m -dump "$1" 2>/dev/null | head -n 120 || bat --color=always --style=plain "$1"' },
+
+  # ── Tier 9: Security Certificates & Keys ────────────────────────────────
+  { url = "*.{pem,crt,cer}", run = 'piper -- openssl x509 -in "$1" -text -noout 2>/dev/null | head -n 60 || bat --color=always --style=plain "$1"' },
+  { url = "*.pub", run = 'piper -- ssh-keygen -l -f "$1" 2>/dev/null && echo "" && bat --color=always --style=plain "$1"' },
+
+  # ── Tier 10: Extended & Modern Archives (ouch.yazi tree preview) ────────
+  { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}", run = "ouch --archive-icon='' --show-file-icons" },
+  { url = "*.{zip,tar,gz,tgz,bz2,tbz2,xz,txz,zst,tzst,7z,rar,iso,dmg,pkg,deb,rpm}", run = "ouch --archive-icon='' --show-file-icons" },
+
+  # ── Tier 11: LaTeX Support Files → Syntax Highlighting ──────────────────
+  { url = "*.bib", run = "bat" },
+  { url = "*.sty", run = "bat" },
+  { url = "*.cls", run = "bat" },
+
+  # ── Tier 12: Code, Config & Text → bat (x theme, zero-clutter) ─────────
+  { mime = "text/*", run = "bat" },
+  { mime = "application/json", run = "bat" },
+  { mime = "application/javascript", run = "bat" },
+  { mime = "application/toml", run = "bat" },
+  { mime = "application/x-yaml", run = "bat" },
+  { mime = "application/x-sh", run = "bat" },
+  { mime = "application/x-shellscript", run = "bat" },
+  { url = "*.lua", run = "bat" },
+  { url = "*.rs", run = "bat" },
+  { url = "*.go", run = "bat" },
+  { url = "*.ts", run = "bat" },
+  { url = "*.tsx", run = "bat" },
+  { url = "*.js", run = "bat" },
+  { url = "*.jsx", run = "bat" },
+  { url = "*.py", run = "bat" },
+  { url = "*.toml", run = "bat" },
+  { url = "*.yaml", run = "bat" },
+  { url = "*.yml", run = "bat" },
+  { url = "*.json", run = "bat" },
+  { url = "*.{sh,bash,zsh,fish}", run = "bat" },
+  { url = "*.{env,env.*,conf,ini,cfg,cnf,properties,service,timer,socket,target}", run = "bat" },
+  { url = "*.{sql,graphql,gql,prisma}", run = "bat" },
+  { url = "*.{astro,svelte,vue}", run = "bat" },
+  { url = "*.{c,cpp,cc,h,hpp,metal}", run = "bat" },
+  { url = "*.{log,diff,patch}", run = "bat" },
+  { url = "*.{lock,json5,jsonc,ron,kdl,proto,pbtxt,textproto}", run = "bat" },
+  { url = "*.{plist,strings,xcconfig}", run = "bat" },
+  { url = "{Justfile,justfile,Procfile,Brewfile,Containerfile,Earthfile,Fastfile}", run = "bat" },
+  { url = "*{tmux}*.conf", run = "bat" },
+  { url = ".*rc", run = "bat" },
+]
+
+append_previewers = [
+  # ── Universal Mach-O / Binary Inspection & Hex Dump Fallback ────────────
+  { mime = "application/x-mach-binary", run = 'piper -- file "$1" && echo "" && otool -L "$1" 2>/dev/null | head -n 15 && echo "" && hexyl --border=none --terminal-width=$w "$1"' },
+  { mime = "application/octet-stream", run = 'piper -- file "$1" && echo "" && hexyl --border=none --terminal-width=$w "$1"' },
+  { url = "*", run = 'piper -- file "$1" && echo "" && hexyl --border=none --terminal-width=$w "$1"' },
+]
+
+# ==============================================================================
+# TASK RUNNER & WORKER POOLS (Apple Silicon M1 Pro: 6 P-Cores Balanced)
+# ==============================================================================
+[tasks]
+file_workers = 4         # APFS instant copy-on-write clone pipeline
+plugin_workers = 4       # Max concurrent Lua/CLI plugin tasks
+fetch_workers = 4        # Concurrent metadata & git status fetchers
+preload_workers = 3      # Headless background pre-cache (prevents CPU spikes)
+process_workers = 4      # Heavy external renderers (magick, tectonic, typst)
+bizarre_retry = 3
+image_alloc = 536870912  # 512 MB memory cache for high-res Retina graphics
+image_bound = [0, 0]
+suppress_preload = false
+
+# ==============================================================================
+# MODAL DIALOGS & PROMPT GEOMETRIES (High-Density UX)
+# ==============================================================================
+[input]
+cursor_blink = false
+
+# Directory jumping & File creation (Clean Top-Center Docking)
+cd_title = "Change directory:"
+cd_origin = "top-center"
+cd_offset = [0, 2, 50, 3]
+
+create_title = ["Create:", "Create (dir):"]
+create_origin = "top-center"
+create_offset = [0, 2, 50, 3]
+
+# Contextual Rename (Hovered next to current cursor)
+rename_title = "Rename:"
+rename_origin = "hovered"
+rename_offset = [0, 1, 50, 3]
+
+# Filters & Search prompts
+filter_title = "Filter:"
+filter_origin = "top-center"
+filter_offset = [0, 2, 50, 3]
+
+find_title = ["Find next:", "Find previous:"]
+find_origin = "top-center"
+find_offset = [0, 2, 50, 3]
+
+search_title = "Search via {n}:"
+search_origin = "top-center"
+search_offset = [0, 2, 50, 3]
+
+shell_title = ["Shell:", "Shell (block):"]
+shell_origin = "top-center"
+shell_offset = [0, 2, 50, 3]
+
+[confirm]
+trash_title = "Trash {n} selected file{s}?"
+trash_origin = "center"
+trash_offset = [0, 0, 70, 20]
+
+delete_title = "Permanently delete {n} selected file{s}?"
+delete_origin = "center"
+delete_offset = [0, 0, 70, 20]
+
+overwrite_title = "Overwrite file?"
+overwrite_body = "Will overwrite the following file:"
+overwrite_origin = "center"
+overwrite_offset = [0, 0, 50, 15]
+
+quit_title = "Quit?"
+quit_body = "The following task is still running, are you sure you want to quit?"
+quit_origin = "center"
+quit_offset = [0, 0, 50, 15]
+
+[pick]
+open_title = "Open with:"
+open_origin = "hovered"
+open_offset = [0, 1, 50, 7]
+
+# ==============================================================================
+# WHICH-KEY POPUP CONFIGURATION
+# ==============================================================================
+[which]
+sort_by = "key"
+sort_sensitive = false
+sort_reverse = false
+sort_translit = false

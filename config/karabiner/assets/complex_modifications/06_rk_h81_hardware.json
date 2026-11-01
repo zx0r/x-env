@@ -1,0 +1,258 @@
+{
+    "title": "06 - Royal Kludge RK H81 Hardware Layer",
+    "rules": [
+        {
+            "description": "RK H81: Swap Command and Option keys (Device Isolated)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "left_option",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "key_code": "left_command" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "left_command",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "key_code": "left_option" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "right_option",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "key_code": "right_command" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "right_command",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "key_code": "right_option" }]
+                }
+            ]
+        },
+        {
+            "description": "RK H81: Map Windows Mode Multimedia Keys (Finder, Safari, Mail, Calculator)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "consumer_key_code": "al_local_machine_browser",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open ~" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "consumer_key_code": "ac_home",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.Safari" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "consumer_key_code": "al_email_reader",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.mail" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "consumer_key_code": "al_calculator",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.calculator" }]
+                }
+            ]
+        },
+        {
+            "description": "RK H81: Map Mac Mode Fn Multimedia Keys (Finder, Safari, Mail, Calculator)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "f1",
+                        "modifiers": { "mandatory": ["fn"], "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open ~" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "consumer_key_code": "display_brightness_decrement",
+                        "modifiers": { "mandatory": ["fn"], "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open ~" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "f2",
+                        "modifiers": { "mandatory": ["fn"], "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.Safari" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "consumer_key_code": "display_brightness_increment",
+                        "modifiers": { "mandatory": ["fn"], "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.Safari" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "f3",
+                        "modifiers": { "mandatory": ["fn"], "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.mail" }]
+                },
+                {
+                    "type": "basic",
+                    "conditions": [
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                { "product_id": 61138, "vendor_id": 1240 },
+                                { "product_id": 64007, "vendor_id": 13652 }
+                            ]
+                        }
+                    ],
+                    "from": {
+                        "key_code": "f4",
+                        "modifiers": { "mandatory": ["fn"], "optional": ["any"] }
+                    },
+                    "to": [{ "shell_command": "open -b com.apple.calculator" }]
+                }
+            ]
+        }
+    ]
+}

@@ -1,28 +1,7 @@
-#!/bin/bash
-
-# DEV VErsion!!!! Not tested
+#!/usr/bin/env bash
 # ==============================================================================
-#  _____ _      _____ _____ _____   ______ _   _  _____
-# |  ___| |    |_   _|_   _|  ___|  |  _  \ \ | |/  ___|
-# | |__ | |      | |   | | | |__    | | | |  \| |\ `--.
-# |  __|| |      | |   | | |  __|   | | | | . ` | `--. \
-# | |___| |____ _| |_  | | | |___   | |/ /| |\  |/\__/ /
-# \____/\_____/\___/  \_/ \____/   |___/ \_| \_/\____/
-#
-#  ADAPTIVE STEALTH DNS INFRASTRUCTURE (v2026.05)
-# ==============================================================================
-# Description:
-# This script automates the deployment of a PhD-level DNSCrypt-proxy stack.
-# It ensures maximum speed through QUIC/HTTP3, anonymity via Relays/ODoH,
-# and DPI resilience via local deterministic filtering.
-#
-# Logic:
-# 1. Validates dependencies (Homebrew, dnscrypt-proxy).
-# 2. Clones/Updates the configuration in ~/.config/dnscrypt-proxy.
-# 3. Creates professional system directory hierarchy for cache/logs.
-# 4. Sets up macOS LaunchDaemons for autonomous daily updates.
-# 5. Hardens system network interfaces against DNS leaks.
-# 6. Executes a full health-check suite.
+# dnscrypt-proxy macOS Deployment & Hardening Script
+# Configures system symlinks, directories, network DNS, and launchd daemons.
 # ==============================================================================
 
 set -e
@@ -33,77 +12,105 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-echo -e "${BLUE}Starting Elite DNS Infrastructure Setup...${NC}"
+echo -e "${BLUE}Starting dnscrypt-proxy deployment...${NC}"
 
- #sudo ln -s "$CONF_DIR/dnscrypt-proxy.toml" /opt/homebrew/etc/
- #sudo ln -s "$CONF_DIR/rules" /opt/homebrew/etc/rules
+# Dynamic XDG & System Environment Variables
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
+BREW_PREFIX="$(brew --prefix 2>/dev/null || echo "/opt/homebrew")"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -d "$SCRIPT_DIR/../../config/dnscrypt-proxy" ]]; then
+    SOT_CONF="$(cd "$SCRIPT_DIR/../../config/dnscrypt-proxy" && pwd)"
+    SOT_BIN="$(cd "$SCRIPT_DIR/../../bin/dnscrypt-proxy" && pwd)"
+else
+    SOT_CONF="$(cd "$SCRIPT_DIR/.." && pwd)"
+    SOT_BIN="$SCRIPT_DIR"
+fi
+
+CONF_DIR="$XDG_CONFIG_HOME/dnscrypt-proxy"
+BIN_DIR="$XDG_BIN_HOME/dnscrypt-proxy"
+CACHE_DIR="$BREW_PREFIX/var/cache/dnscrypt-proxy"
+LOG_DIR="$BREW_PREFIX/var/log/dnscrypt-proxy"
+PLIST_NAME="org.dnscrypt.dnsguard.plist"
 
 # 1. Dependency Check
 echo "--- Step 1: Checking Dependencies ---"
-if ! command -v brew &> /dev/null; then
+if ! command -v brew >/dev/null 2>&1; then
     echo -e "${RED}Homebrew not found. Please install it first.${NC}"
     exit 1
 fi
 
-if ! brew list dnscrypt-proxy &> /dev/null; then
+if ! brew list dnscrypt-proxy >/dev/null 2>&1; then
     echo "Installing dnscrypt-proxy via Homebrew..."
     brew install dnscrypt-proxy
 fi
 
-# 2. Directory Structure Setup
-echo "--- Step 2: Setting up Directory Hierarchy ---"
-CONF_DIR="$HOME/.config/dnscrypt-proxy"
-CACHE_DIR="/opt/homebrew/var/cache/dnscrypt-proxy"
-LOG_DIR="/opt/homebrew/var/log/dnscrypt-proxy"
+# 2. XDG Symlink Distribution
+echo "--- Step 2: Provisioning XDG Symlinks ---"
+mkdir -p "$XDG_CONFIG_HOME" "$XDG_BIN_HOME"
 
-mkdir -p "$CONF_DIR"
+if [[ "$SOT_CONF" != "$CONF_DIR" ]]; then
+    ln -sfn "$SOT_CONF" "$CONF_DIR"
+fi
+
+if [[ "$SOT_BIN" != "$BIN_DIR" ]]; then
+    ln -sfn "$SOT_BIN" "$BIN_DIR"
+fi
+
+chmod +x "$BIN_DIR"/* 2>/dev/null || true
+
+# 3. System Directories & Blocklist Seed
+echo "--- Step 3: Configuring System Directories ---"
 sudo mkdir -p "$CACHE_DIR" "$LOG_DIR"
 sudo chown -R root:admin "$CACHE_DIR" "$LOG_DIR"
 sudo chmod -R 775 "$CACHE_DIR" "$LOG_DIR"
 
-# 3. Configuration Deployment (Assuming local file context or GitHub fallback)
-echo "--- Step 3: Deploying Configuration ---"
-# If running in the repo, just use current files. If not, user should clone it.
-if [ ! -f "dnscrypt-proxy.toml" ]; then
-    echo -e "${RED}Error: Configuration files not found in current directory.${NC}"
-    echo "Please run this script from inside your configuration repository."
-    exit 1
+if [[ ! -f "$CACHE_DIR/domains-blocklist.txt" ]]; then
+    echo "Downloading initial blocklist seed..."
+    curl -sSL "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/pro-onlydomains.txt" \
+        -o "$CACHE_DIR/domains-blocklist.txt"
+    sudo chmod 644 "$CACHE_DIR/domains-blocklist.txt"
 fi
 
-cp *.toml *.txt *.md *.sh *.plist "$CONF_DIR/"
-chmod +x "$CONF_DIR/"*.sh
-
-# 4. System Symlink (Homebrew integration)
+# 4. Homebrew Integration Symlinks
 echo "--- Step 4: Linking Configuration to Homebrew ---"
-sudo rm -f /opt/homebrew/etc/dnscrypt-proxy.toml
-sudo ln -s "$CONF_DIR/dnscrypt-proxy.toml" /opt/homebrew/etc/dnscrypt-proxy.toml
+sudo ln -sfn "$CONF_DIR/dnscrypt-proxy.toml" "$BREW_PREFIX/etc/dnscrypt-proxy.toml"
+sudo ln -sfn "$CONF_DIR/rules" "$BREW_PREFIX/etc/rules"
 
-# 5. Autonomous Maintenance Setup (Launchd)
-echo "--- Step 5: Configuring Autonomous Maintenance ---"
-PLIST="com.x0r.dnscrypt.maintenance.plist"
-sudo cp "$CONF_DIR/$PLIST" "/Library/LaunchDaemons/$PLIST"
-sudo chown root:wheel "/Library/LaunchDaemons/$PLIST"
-sudo launchctl unload -w "/Library/LaunchDaemons/$PLIST" 2>/dev/null || true
-sudo launchctl load -w "/Library/LaunchDaemons/$PLIST"
+# 5. LaunchDaemon Setup
+echo "--- Step 5: Configuring LaunchDaemon ---"
+if [[ -f "$CONF_DIR/system/$PLIST_NAME" ]]; then
+    sudo cp "$CONF_DIR/system/$PLIST_NAME" "/Library/LaunchDaemons/$PLIST_NAME"
+    sudo chown root:wheel "/Library/LaunchDaemons/$PLIST_NAME"
+    sudo chmod 644 "/Library/LaunchDaemons/$PLIST_NAME"
+    sudo launchctl unload -w "/Library/LaunchDaemons/$PLIST_NAME" 2>/dev/null || true
+    sudo launchctl load -w "/Library/LaunchDaemons/$PLIST_NAME"
+fi
 
-# 6. OS Hardening (Anti-Leak)
-echo "--- Step 6: Hardening macOS Network Interfaces ---"
-SERVICES=$(networksetup -listallnetworkservices | grep -v '*')
+# 6. Network DNS Configuration
+echo "--- Step 6: Configuring macOS Network DNS ---"
+SERVICES=$(networksetup -listallnetworkservices 2>/dev/null | grep -v '*' || true)
 while IFS= read -r service; do
-    echo "Securing DNS for: $service"
-    sudo networksetup -setdnsservers "$service" 127.0.0.2 2>/dev/null || true
-    # Note: If using port 5353, additional OS routing or a local forwarder might be needed for system-wide use.
+    [[ -z "$service" ]] && continue
+    echo "Setting DNS for: $service"
+    sudo networksetup -setdnsservers "$service" 127.0.0.1 2>/dev/null || true
 done <<< "$SERVICES"
 
-# 7. Final Validation
-echo "--- Step 7: Executing Health-Check Suite ---"
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder 2>/dev/null || true
+
+# 7. Verification from XDG_BIN_HOME
+echo "--- Step 7: Executing Verification ---"
 sudo brew services restart dnscrypt-proxy
-sleep 5
-cd "$CONF_DIR"
-./scripts/health-check.sh
+sleep 2
+
+if [[ -x "$BIN_DIR/validate" ]]; then
+    "$BIN_DIR/validate"
+elif [[ -x "$BIN_DIR/health-check.sh" ]]; then
+    "$BIN_DIR/health-check.sh"
+fi
 
 echo -e "${GREEN}==============================================${NC}"
-echo -e "${GREEN}   ELITE DNS INFRASTRUCTURE DEPLOYED SUCCESSFULLY ${NC}"
+echo -e "${GREEN}   dnscrypt-proxy setup complete and verified ${NC}"
 echo -e "${GREEN}==============================================${NC}"
-echo "Your config is now safe in $CONF_DIR"
-echo "Daily updates scheduled at 03:00 AM."

@@ -1,0 +1,54 @@
+# NOTE:━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     ▪ Atuin Shell History — Semantic Theme Definition
+#    ██╔██╗     ▪ Palette: Environment X [Classic Terminal / x_terminal]
+#   ██╔╝ ██╗    ▪ Architect: zx0r & DeepMind Advanced Agentic Systems
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[theme]
+name = "x"
+parent = "default"
+
+[colors]
+# 1. Selection & Navigation
+Cursor = "#CD00F7"          # fzf alias: pointer / indicator (Neon Magenta)
+Shortcut = "#4A5168"        # Quick-select row numbers (1..9)
+MatchHighlight = "#FFFF00"  # fzf alias: hl / match (search query match)
+
+# 2. Input & Prompt
+Prompt = "#CD00F7"          # fzf alias: prompt (GLOBAL / HOST / SESSION)
+PromptSymbol = "#CD00F7"    # Input prompt arrow (❯ / )
+
+# 3. Columns
+Duration = "#646B84"        # Execution duration (0.3s)
+Time = "#7B8496"            # Relative time (~5m)
+Datetime = "#646B84"        # Absolute timestamp
+Directory = "#58BAF5"       # Working directory path (alias: cwd)
+Host = "#7B8496"            # Hostname (alias: hostname)
+User = "#7B8496"            # Username (alias: username)
+ExitSuccess = "#00FF88"     # Exit code 0 (alias: success)
+ExitFailure = "#FF5555"     # Non-zero exit code (alias: error)
+
+# 4. Frame, Tabs & Header
+Border = "#4A5168"          # Window frame borders and dividers (alias: border)
+HeaderTitle = "#BCC4DD"     # Version header (alias: header)
+HeaderHelp = "#646B84"      # Keyboard hints (<esc>: exit... alias: help)
+HeaderStats = "#646B84"     # History counter (alias: info / stats)
+TabActive = "#CD00F7"       # Active tab (Search)
+TabInactive = "#4A5168"     # Inactive tab (Inspector)
+
+# 5. Syntax Highlighting
+SyntaxCommand = "#FF007F"   # Hot Neon Pink (matches Environment X fn token!)
+SyntaxFlag = "#7B8496"      # Muted Slate for options and flags (--flag, -f)
+SyntaxString = "#05FFA1"    # Acid Mint string literals ("...", '...')
+SyntaxVariable = "#FFB800"  # Electric Orange for variables ($VAR)
+SyntaxOperator = "#CD00F7"  # Magenta shell operators (| && > ;)
+SyntaxComment = "#4A5168"   # Slate comments (# ...)
+
+# 6. Base Text & Alerts
+Base = "#D1E8F2"            # Crisp high-contrast default command text
+AlertError = "#FF5555"      # Critical alerts and update warning
+AlertWarn = "#FFB86C"       # Warning messages
+AlertInfo = "#00FF88"       # Informational messages

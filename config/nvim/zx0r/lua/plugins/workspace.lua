@@ -168,8 +168,10 @@ return {
     event = "BufReadPre",
     opts = {},
     keys = {
-      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
-      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qs", function() require("persistence").select() end, desc = "Select Session" },
+      { "<leader>ql", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>qL", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qS", function() require("persistence").save() end, desc = "Save Session" },
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },

@@ -16,42 +16,45 @@ local function cyberpunk_header()
     {
       align = "center",
       text = {
-        { "  ██╗  ██╗    ", hl = "SnacksDashboardHeader" },
-        { "W O R K S P A C E                           ", hl = "SnacksDashboardTitle" },
+        { "            ██╗  ██╗    ", hl = "SnacksDashboardHeader" },
+        { "W O R K S T A T I O N                ", hl = "SnacksDashboardTitle" },
       },
     },
     {
       align = "center",
       text = {
-        { "  ╚██╗██╔╝                                                ", hl = "SnacksDashboardHeader" },
+        {
+          "            ╚██╗██╔╝                                         ",
+          hl = "SnacksDashboardHeader",
+        },
       },
     },
     {
       align = "center",
       text = {
-        { "   ╚███╔╝     ", hl = "SnacksDashboardHeader" },
-        { "▪ Declarative ▪ Immutable ▪ High-Performance", hl = "SnacksDashboardDesc" },
+        { "             ╚███╔╝     ", hl = "SnacksDashboardHeader" },
+        { "SYSTEMS OVER SCRIPTS                 ", hl = "SnacksDashboardDesc" },
       },
     },
     {
       align = "center",
       text = {
-        { "   ██╔██╗     ", hl = "SnacksDashboardHeader" },
-        { "▪ Masterpiece of CLI Architecture           ", hl = "SnacksDashboardDesc" },
+        { "             ██╔██╗     ", hl = "SnacksDashboardHeader" },
+        { "INTENT OVER DRIFT                    ", hl = "SnacksDashboardDesc" },
       },
     },
     {
       align = "center",
       text = {
-        { "  ██╔╝ ██╗    ", hl = "SnacksDashboardHeader" },
-        { "▪ [ Architect: zx0r ]                       ", hl = "SnacksDashboardDesc" },
+        { "            ██╔╝ ██╗    ", hl = "SnacksDashboardHeader" },
+        { "AUTOMATION WITH CONTROL              ", hl = "SnacksDashboardDesc" },
       },
     },
     {
       align = "center",
       padding = 1,
       text = {
-        { "  ╚═╝  ╚═╝                                                ", hl = "SnacksDashboardHeader" },
+        { "            ╚═╝  ╚═╝                                         ", hl = "SnacksDashboardHeader" },
       },
     },
   }
@@ -204,57 +207,65 @@ local function setup_discrete_controller(buf, win)
     end
   end
 
+  local moving = false
   -- Intercept CursorMoved: prevent floating, enforce strict discrete lock
   vim.api.nvim_create_autocmd("CursorMoved", {
     group = vim.api.nvim_create_augroup("snacks_dashboard_cursor", { clear = true }),
     buffer = buf,
     callback = function()
-      local cur = vim.api.nvim_win_get_cursor(win)
-      local r, c = cur[1], cur[2]
-
-      local matching_lvl_idx = nil
-      for idx, lvl in ipairs(levels) do
-        if lvl.row == r then
-          matching_lvl_idx = idx
-          break
-        end
+      if moving then
+        return
       end
+      moving = true
+      local ok, err = pcall(function()
+        local cur = vim.api.nvim_win_get_cursor(win)
+        local r, c = cur[1], cur[2]
 
-      if matching_lvl_idx then
-        cur_lvl_idx = matching_lvl_idx
-        local lvl = levels[cur_lvl_idx]
-        if lvl.type == "dock" then
-          local best = lvl.cells[1]
-          local min_d = math.abs(c - best.col)
-          for _, cell in ipairs(lvl.cells) do
-            local d = math.abs(c - cell.col)
-            if d < min_d then
-              min_d = d
-              best = cell
+        local matching_lvl_idx = nil
+        for idx, lvl in ipairs(levels) do
+          if lvl.row == r then
+            matching_lvl_idx = idx
+            break
+          end
+        end
+
+        if matching_lvl_idx then
+          cur_lvl_idx = matching_lvl_idx
+          local lvl = levels[cur_lvl_idx]
+          if lvl.type == "dock" then
+            local best = lvl.cells[1]
+            local min_d = math.abs(c - best.col)
+            for _, cell in ipairs(lvl.cells) do
+              local d = math.abs(c - cell.col)
+              if d < min_d then
+                min_d = d
+                best = cell
+              end
+            end
+            lvl.selected = best.idx
+            if cur[2] ~= best.col then
+              vim.api.nvim_win_set_cursor(win, { lvl.row, best.col })
+            end
+          else
+            if cur[2] ~= lvl.col then
+              vim.api.nvim_win_set_cursor(win, { lvl.row, lvl.col })
             end
           end
-          lvl.selected = best.idx
-          if cur[2] ~= best.col then
-            vim.api.nvim_win_set_cursor(win, { lvl.row, best.col })
-          end
         else
-          if cur[2] ~= lvl.col then
-            vim.api.nvim_win_set_cursor(win, { lvl.row, lvl.col })
+          -- Landed off-grid (header, border, subtitle, gap, footer) -> Snap to nearest valid row
+          local best_idx = 1
+          local min_dist = math.abs(r - levels[1].row)
+          for idx, lvl in ipairs(levels) do
+            local dist = math.abs(r - lvl.row)
+            if dist < min_dist then
+              min_dist = dist
+              best_idx = idx
+            end
           end
+          jump_to(best_idx)
         end
-      else
-        -- Landed off-grid (header, border, subtitle, gap, footer) -> Snap to nearest valid row
-        local best_idx = 1
-        local min_dist = math.abs(r - levels[1].row)
-        for idx, lvl in ipairs(levels) do
-          local dist = math.abs(r - lvl.row)
-          if dist < min_dist then
-            min_dist = dist
-            best_idx = idx
-          end
-        end
-        jump_to(best_idx)
-      end
+      end)
+      moving = false
     end,
   })
 
@@ -408,9 +419,30 @@ local function setup_discrete_controller(buf, win)
     end
   end
   local candidate_noops = {
-    "i", "I", "a", "A", "o", "O", "c", "C", "s", "S",
-    "r", "R", "d", "D", "x", "X", "p", "P", "u", "U",
-    "~", "<", ">", "=",
+    "i",
+    "I",
+    "a",
+    "A",
+    "o",
+    "O",
+    "c",
+    "C",
+    "s",
+    "S",
+    "r",
+    "R",
+    "d",
+    "D",
+    "x",
+    "X",
+    "p",
+    "P",
+    "u",
+    "U",
+    "~",
+    "<",
+    ">",
+    "=",
   }
   for _, k in ipairs(candidate_noops) do
     if not active_keys[k:lower()] and not active_keys[k] then
@@ -431,7 +463,27 @@ local function setup_discrete_controller(buf, win)
   jump_to(cur_lvl_idx)
 end
 
+local _controller_registered = false
+local function ensure_controller_autocmd()
+  if _controller_registered then
+    return
+  end
+  _controller_registered = true
+  vim.api.nvim_create_autocmd("User", {
+    group = vim.api.nvim_create_augroup("core_dashboard_discrete", { clear = true }),
+    pattern = { "SnacksDashboardOpened", "SnacksDashboardUpdatePost" },
+    callback = function(ev)
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(ev.buf) then
+          setup_discrete_controller(ev.buf)
+        end
+      end)
+    end,
+  })
+end
+
 local function workspace_dock(self)
+  ensure_controller_autocmd()
   if self and self.buf then
     _dashboards[self.buf] = self
   end
@@ -460,9 +512,9 @@ local function workspace_dock(self)
 
   local domain_meta = {
     agents = { icon = " ", hl = "SnacksDashboardIcon", key = "a" },
-    brain  = { icon = " ", hl = "SnacksDashboardIcon", key = "b" },
-    config = { icon = " ", hl = "SnacksDashboardIcon", key = "c" },
-    dev    = { icon = " ", hl = "SnacksDashboardIcon", key = "d" },
+    brain = { icon = " ", hl = "SnacksDashboardIcon", key = "b" },
+    core = { icon = " ", hl = "SnacksDashboardIcon", key = "c" },
+    dev = { icon = " ", hl = "SnacksDashboardIcon", key = "d" },
   }
 
   local reserved = { f = 1, F = 1, g = 1, G = 1, n = 1, r = 1, s = 1, q = 1, l = 1, m = 1, h = 1 }
@@ -576,19 +628,6 @@ end
 return {
   {
     "folke/snacks.nvim",
-    init = function()
-      vim.api.nvim_create_autocmd("User", {
-        group = vim.api.nvim_create_augroup("core_dashboard_discrete", { clear = true }),
-        pattern = { "SnacksDashboardOpened", "SnacksDashboardUpdatePost" },
-        callback = function(ev)
-          vim.schedule(function()
-            if vim.api.nvim_buf_is_valid(ev.buf) then
-              setup_discrete_controller(ev.buf)
-            end
-          end)
-        end,
-      })
-    end,
     opts = {
       dashboard = {
         enabled = true,
@@ -603,15 +642,91 @@ return {
             "  ╚═╝  ╚═╝                                                ",
           }, "\n"),
           keys = {
-            { icon = " ", icon_hl = "SnacksDashboardWidgetFind", key = "f", key_hl = "SnacksDashboardKey", desc = "Find File (Local)", desc_hl = "SnacksDashboardDesc", action = ":lua Snacks.picker.files()" },
-            { icon = "󰱼 ", icon_hl = "SnacksDashboardWidgetFind", key = "F", key_hl = "SnacksDashboardKey", desc = "Find File (Global)", desc_hl = "SnacksDashboardDesc", action = function() Snacks.picker.files({ cwd = os.getenv("X_ROOT") or (os.getenv("HOME") .. "/x") }) end },
-            { icon = " ", icon_hl = "SnacksDashboardWidgetGrep", key = "/", key_hl = "SnacksDashboardKey", desc = "Live Grep (Local)", desc_hl = "SnacksDashboardDesc", action = ":lua Snacks.picker.grep()" },
-            { icon = "󰈞 ", icon_hl = "SnacksDashboardWidgetGrep", key = "G", key_hl = "SnacksDashboardKey", desc = "Live Grep (Global)", desc_hl = "SnacksDashboardDesc", action = function() Snacks.picker.grep({ cwd = os.getenv("X_ROOT") or (os.getenv("HOME") .. "/x") }) end },
-            { icon = " ", icon_hl = "SnacksDashboardWidgetNew", key = "n", key_hl = "SnacksDashboardKey", desc = "New File", desc_hl = "SnacksDashboardDesc", action = ":ene | startinsert" },
-            { icon = " ", icon_hl = "SnacksDashboardWidgetRecent", key = "r", key_hl = "SnacksDashboardKey", desc = "Recent Files", desc_hl = "SnacksDashboardDesc", action = ":lua Snacks.picker.recent()" },
-            { icon = "󰒲 ", icon_hl = "SnacksDashboardWidgetLazy", key = "l", key_hl = "SnacksDashboardKey", desc = "Lazy", desc_hl = "SnacksDashboardDesc", action = ":Lazy" },
-            { icon = " ", icon_hl = "SnacksDashboardWidgetMason", key = "m", key_hl = "SnacksDashboardKey", desc = "Mason", desc_hl = "SnacksDashboardDesc", action = ":Mason" },
-            { icon = " ", icon_hl = "SnacksDashboardWidgetHealth", key = "h", key_hl = "SnacksDashboardKey", desc = "Health", desc_hl = "SnacksDashboardDesc", action = ":checkhealth" },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetFind",
+              key = "f",
+              key_hl = "SnacksDashboardKey",
+              desc = "Find File (Local)",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":lua Snacks.picker.files()",
+            },
+            {
+              icon = "󰱼 ",
+              icon_hl = "SnacksDashboardWidgetFind",
+              key = "F",
+              key_hl = "SnacksDashboardKey",
+              desc = "Find File (Global)",
+              desc_hl = "SnacksDashboardDesc",
+              action = function()
+                Snacks.picker.files({ cwd = os.getenv("X_ROOT") or (os.getenv("HOME") .. "/x") })
+              end,
+            },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetGrep",
+              key = "/",
+              key_hl = "SnacksDashboardKey",
+              desc = "Live Grep (Local)",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":lua Snacks.picker.grep()",
+            },
+            {
+              icon = "󰈞 ",
+              icon_hl = "SnacksDashboardWidgetGrep",
+              key = "G",
+              key_hl = "SnacksDashboardKey",
+              desc = "Live Grep (Global)",
+              desc_hl = "SnacksDashboardDesc",
+              action = function()
+                Snacks.picker.grep({ cwd = os.getenv("X_ROOT") or (os.getenv("HOME") .. "/x") })
+              end,
+            },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetNew",
+              key = "n",
+              key_hl = "SnacksDashboardKey",
+              desc = "New File",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":ene | startinsert",
+            },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetRecent",
+              key = "r",
+              key_hl = "SnacksDashboardKey",
+              desc = "Recent Files",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":lua Snacks.picker.recent()",
+            },
+            {
+              icon = "󰒲 ",
+              icon_hl = "SnacksDashboardWidgetLazy",
+              key = "l",
+              key_hl = "SnacksDashboardKey",
+              desc = "Lazy",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":Lazy",
+            },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetMason",
+              key = "m",
+              key_hl = "SnacksDashboardKey",
+              desc = "Mason",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":Mason",
+            },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetHealth",
+              key = "h",
+              key_hl = "SnacksDashboardKey",
+              desc = "Health",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":checkhealth",
+            },
             {
               icon = " ",
               icon_hl = "SnacksDashboardWidgetSession",
@@ -626,7 +741,15 @@ return {
                 end
               end,
             },
-            { icon = " ", icon_hl = "SnacksDashboardWidgetQuit", key = "q", key_hl = "SnacksDashboardKey", desc = "Quit", desc_hl = "SnacksDashboardDesc", action = ":qa" },
+            {
+              icon = " ",
+              icon_hl = "SnacksDashboardWidgetQuit",
+              key = "q",
+              key_hl = "SnacksDashboardKey",
+              desc = "Quit",
+              desc_hl = "SnacksDashboardDesc",
+              action = ":qa",
+            },
           },
         },
         sections = {
@@ -639,4 +762,3 @@ return {
     },
   },
 }
-

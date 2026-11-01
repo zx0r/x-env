@@ -1,301 +1,334 @@
-# NOTE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-#  █████╗ ██╗      █████╗  ██████╗██████╗ ██╗████████╗████████╗██╗   ██╗
-# ██╔══██╗██║     ██╔══██╗██╔════╝██╔══██╗██║╚══██╔══╝╚══██╔══╝╚██╗ ██╔╝
-# ███████║██║     ███████║██║     ██████╔╝██║   ██║      ██║    ╚████╔╝
-# ██╔══██║██║     ██╔══██║██║     ██╔══██╗██║   ██║      ██║     ╚██╔╝
-# ██║  ██║███████╗██║  ██║╚██████╗██║  ██║██║   ██║      ██║      ██║
-# ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝   ╚═╝      ╚═╝      ╚═╝
-#		“Stay Hungry, Stay Foolish.”
-#                  Steve Jobs  Apple
-
-#  Author       : zx0r
-#  License      : MIT License
-#  Description  : Alacritty Configuration: alactitty.toml
-
+# NOTE:-----------------------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+#  Stack           : Fish + Tmux + Neovim
+#  Display         : Liquid Retina XDR (Display P3) | 120Hz ProMotion
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# GENERAL SETTINGS
+# ── [ 01 ] GENERAL SETTINGS & IPC ──────────────────────────────────────
 [general]
-ipc_socket         = true          	                                   # Offer IPC using alacritty msg (Unix only)
-live_config_reload = true  	                                           # Enable live config reload (changes require restart)
+ipc_socket = true          # UNIX IPC socket for `alacritty msg`
+live_config_reload = true  # Instant hot reload on file save
+working_directory = "None" # Inherit parent process working directory
 
-# ENVIRONMENT VARIABLES
+# ── [ 02 ] ENVIRONMENT ENGINE ──────────────────────────────────────────
 [env]
-# Default shell
-SHELL            = "/usr/local/bin/fish"                               # Use Fish shell as the default shell
-
-# Terminal settings
-TERM 	           = "xterm-256color"    	                               # Set the terminal type (required for true colors and advanced features)
-COLORTERM        = "truecolor"  	 	                                   # Enable true colors (required for Neovim and other tools)
-
-# Editor configuration
-EDITOR           = "nvim"                                              # Set the default editor to Neovim
-VISUAL           = "nvim"                                              # Set the default editor to Neovim
-GIT_EDITOR       = "nvim"
-SUDO_EDITOR      = "nvim"
-
-# Language settings
-LANG 	           = "en_US.UTF-8"                                	     # Set the language and locale (optional)
-LC_ALL 	         = "en_US.UTF-8"
+TERM = "xterm-256color"
+COLORTERM = "truecolor"
+EDITOR = "nvim"
+VISUAL = "nvim"
+GIT_EDITOR = "nvim"
+SUDO_EDITOR = "nvim"
+LANG = "en_US.UTF-8"
+LC_ALL = "en_US.UTF-8"
 PYTHONIOENCODING = "UTF-8"
 
-
-# TERMINAL SETTINGS 
-# Set Your PATH, Run on the terminal $(which fish)
+# ── [ 03 ] TERMINAL & CORE PROTOCOLS ──────────────────────────────────
 [terminal]
-osc52 = "OnlyCopy"                                                     # Allow OSC 52 clipboard copy
-shell = { program = "/usr/local/bin/fish", args = ["--login"] }        # Perfectly Work for macOS (Fish Shell + Tmux)
-# shell = { program = "/opt/homebrew/bin/fish", args = ["--login"] }   # Perfectly Work for macOS (Fish Shell + Tmux)
+osc52 = "OnlyCopy"
+shell = { program = "/opt/homebrew/bin/fish", args = ["--login"] }
 
-# TMUX INTEGRATION
-# args = ["--login", "-c", "tmux"]
-# args = ["--login", "-c", "tmux attach || tmux"]
-# args = ["--login", "-c", "tmux attach-session -t base || tmux new-session -s base"]
-
-# WINDOW SETTINGS
+# ── [ 04 ] WINDOW ARCHITECTURE & GEOMETRY ─────────────────────────────
 [window]
-blur         	            = true                                  # Blur behind transparent windows (macOS/KDE Wayland)
-opacity 		              = 0.8                                   # Background opacity (0.0 = transparent, 1.0 = opaque)
-startup_mode              = "Maximized"                           # Startup mode (Windowed, Maximized, Fullscreen)
-title        	            = "Alacritty"                           # Window title
-position     	            = "None"                                # Let the window manager handle placement
-padding 	   	            = { x = 5, y = 5 }                      # Padding around the window (scaled by DPI)
-dynamic_padding 	        = true                                  # Spread padding evenly around content
-dynamic_title             = true                                  # Allow terminal apps to change the window title
-decorations 		          = "None"                                # Window decorations (Full, None, etc.)
-decorations_theme_variant = "None"                                # Override system theme variant (Dark, Light, None)
-dimensions		            = { columns = 120, lines = 30 }         # Window size in columns and lines
-class = { instance        = "Alacritty", general = "Alacritty" }  # Window class (Linux/BSD)
+startup_mode = "Maximized"
+dimensions = { columns = 140, lines = 38 }
+position = "None"
 
-# SCROLLING SETTINGS
+padding = { x = 5, y = 5 }
+dynamic_padding = true
+resize_increments = false
+
+decorations = "None"
+decorations_theme_variant = "None"
+opacity = 0.55
+blur = true
+
+# Critical macOS Setting: Left Option acts as Alt/Meta for word jumps & Vim
+option_as_alt = "OnlyLeft"
+level = "Normal"
+class = { instance = "Alacritty", general = "Alacritty" }
+
+title = "Alacritty"
+dynamic_title = true
+
+# ── [ 05 ] SCROLLBACK BUFFER & DYNAMICS ────────────────────────────────
 [scrolling]
-history             = 10000                                       # Maximum scrollback lines
-multiplier          = 3                                           # Lines scrolled per input increment
+history = 20000
+multiplier = 3
 
+# ── [ 06 ] SELECTION & CLIPBOARD ENGINE ────────────────────────────────
 [selection]
-save_to_clipboard = false
+save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-# FONT SETTINGS
+# ── [ 07 ] TYPOGRAPHY & FONT RENDERING ────────────────────────────────
 [font]
-size                = 13.0                               	                  		# Font size in points
-offset              = { x = 0, y = 0 }                  	                  		# Offset (x = horizontal, y = vertical)
-glyph_offset 	      = { x = 0, y = 0 }  				                               	# Glyph offset (x = horizontal, y = vertical)
-builtin_box_drawing = true                 				                            	# Use built-in font for box drawing characters
-normal 	            = { family = "FiraMono Nerd Font", style = "Regular" }    	# Default font
-bold                = { family = "FiraMono Nerd Font", style = "Bold" }       	# Bold font style
-italic              = { family = "FiraMono Nerd Font", style = "Italic" }       # Italic font style
-bold_italic         = { family = "FiraMono Nerd Font", style = "Bold Italic" }  # Bold italic font style
+size = 13.0
+offset = { x = 0, y = 2 }
+glyph_offset = { x = 0, y = 1 }
+builtin_box_drawing = true
 
-# CURSOR SETTINGS
+normal = { family = "Maple Mono NF", style = "Regular" }
+bold = { family = "Maple Mono NF", style = "Bold" }
+italic = { family = "Maple Mono NF", style = "Italic" }
+bold_italic = { family = "Maple Mono NF", style = "Bold Italic" }
+
 [cursor]
-style = { shape = "Underline", blinking = "On" }   # Green underline cursor with blinking
-blink_interval  = 350                              # Blinking interval in milliseconds
-thickness       = 0.15                             # Cursor thickness (relative to cell width)
+style = { shape = "Underline", blinking = "On" }
+vi_mode_style = { shape = "Block", blinking = "On" }
+blink_interval = 350
+blink_timeout = 0
+thickness = 0.15
+unfocused_hollow = false
 
-# BELL SETTINGS
+# ── [ 09 ] AUDIO & VISUAL SIGNALS ─────────────────────────────────────
 [bell]
-animation = "Ease"                                 # Visual bell animation
-duration  = 200                                    # Duration of the visual bell flash (ms)
-color     = "#ffffff"                              # Visual bell color
+animation = "Ease"
+duration = 200
+color = "#ffffff"
+command = "None"
 
-# KEYBOARD SETTINGS
+# ── [ 10 ] MOUSE PROTOCOL & BEHAVIOR ──────────────────────────────────
+[mouse]
+hide_when_typing = false
+bindings = [{ mouse = "Right", mods = "Control", action = "Paste" }]
+
+# ── [ 11 ] HINTS SUITE (PARITY WITH KITTY HINTS) ──────────────────────
+[hints]
+alphabet = "jfkdls;ahgurieowpq"
+
+# 1. URL & Hyperlinks -> open in browser (Cmd+Shift+U / Cmd+Click)
+[[hints.enabled]]
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini://|gopher://|https://|http://|news:|file:|git://|ssh:|ftp://)[^\\u0000-\\u001F\\u007F-\\u009F<>\"\\s{-}\\^⟨⟩`\\\\]+"
+hyperlinks = true
+post_processing = true
+persist = false
+command = "open"
+binding = { key = "U", mods = "Command|Shift" }
+mouse = { mods = "Command", enabled = true }
+
+# 2. Copy URL -> Clipboard (Cmd+Shift+Y)
+[[hints.enabled]]
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini://|gopher://|https://|http://|news:|file:|git://|ssh:|ftp://)[^\\u0000-\\u001F\\u007F-\\u009F<>\"\\s{-}\\^⟨⟩`\\\\]+"
+hyperlinks = true
+post_processing = true
+persist = false
+action = "Copy"
+binding = { key = "Y", mods = "Command|Shift" }
+
+# 3. Git Hashes -> Clipboard (Cmd+Shift+H)
+[[hints.enabled]]
+regex = "\\b[0-9a-f]{7,40}\\b"
+hyperlinks = false
+post_processing = false
+persist = false
+action = "Copy"
+binding = { key = "H", mods = "Command|Shift" }
+
+# 4. File Paths with Line Numbers -> Neovim (Cmd+Shift+P)
+[[hints.enabled]]
+regex = "([\\w_./-]+):(\\d+)(?::(\\d+))?"
+hyperlinks = false
+post_processing = true
+persist = false
+command = { program = "nvim", args = [] }
+binding = { key = "P", mods = "Command|Shift" }
+
+# ── [ 12 ] COLOR PALETTE ENGINE (ENVIRONMENT X : DARK TIER) ───────────
+[colors]
+transparent_background_colors = true
+draw_bold_text_with_bright_colors = false
+
+[colors.primary]
+background = "#000000"
+foreground = "#ffffff"
+dim_foreground = "#646b84"
+bright_foreground = "#ffffff"
+
+[colors.cursor]
+text = "#000000"
+cursor = "#00ffff"
+
+[colors.vi_mode_cursor]
+text = "#000000"
+cursor = "#39ff14"
+
+[colors.selection]
+text = "#000000"
+background = "#00ffff"
+
+[colors.search.matches]
+foreground = "#000000"
+background = "#00ffff"
+
+[colors.search.focused_match]
+foreground = "#000000"
+background = "#39ff14"
+
+[colors.hints.start]
+foreground = "#000000"
+background = "#39ff14"
+
+[colors.hints.end]
+foreground = "#000000"
+background = "#00ffff"
+
+[colors.line_indicator]
+foreground = "#00ffff"
+background = "#1f2333"
+
+[colors.footer_bar]
+foreground = "#39ff14"
+background = "#1f2333"
+
+[colors.normal]
+black = "#1f2333"
+red = "#ff0000"
+green = "#39ff14"
+yellow = "#ffff00"
+blue = "#0a84ff"
+magenta = "#cd00f7"
+cyan = "#00ffff"
+white = "#ffffff"
+
+[colors.bright]
+black = "#646b84"
+red = "#b80000"
+green = "#39ff14"
+yellow = "#b8b800"
+blue = "#075db4"
+magenta = "#a855f7"
+cyan = "#00ffff"
+white = "#ffffff"
+
+[colors.dim]
+black = "#0f0f0f"
+red = "#712b2b"
+green = "#5f6f3a"
+yellow = "#a17e4d"
+blue = "#456877"
+magenta = "#704d68"
+cyan = "#4d7770"
+white = "#8e8e8e"
+
+# ── [ 13 ] KEYBOARD MATRIX & BINDINGS ─────────────────────────────────
 [keyboard]
 bindings = [
+  # macOS Native Clipboard & Paste Selection (alacritty.BAK & Kitty parity)
+  { key = "V", mods = "Command", action = "Paste" },
+  { key = "C", mods = "Command", action = "Copy" },
+  { key = "Insert", mods = "Shift", action = "PasteSelection" },
+  { key = "V", mods = "Control|Shift", action = "Paste" },
+  { key = "C", mods = "Control|Shift", action = "Copy" },
 
-  # Basic Operations
-  { key = "V",        mods = "Command",       action = "Paste" },                     # Paste text
-  { key = "C",        mods = "Command",       action = "Copy" },                      # Copy text
-  { key = "Insert",   mods = "Shift",         action = "PasteSelection" },            # Paste selection
-  { key = "L",        mods = "Control",       action = "ClearLogNotice" },            # Clear log notice
-  { key = "L",        mods = "Control",       chars = "\u000c" },                     # Clear log notice (alternative)
-  { key = "PageUp",   mods = "Shift",         action = "ScrollPageUp" },              # Scroll page up
-  { key = "PageDown", mods = "Shift",         action = "ScrollPageDown" },            # Scroll page down
-  { key = "Home",     mods = "Shift",         action = "ScrollToTop" },               # Scroll to top
-  { key = "End",      mods = "Shift",         action = "ScrollToBottom" },            # Scroll to bottom
+  # Screen & Log Diagnostics (alacritty.BAK parity)
+  { key = "L", mods = "Control", action = "ClearLogNotice" },
+  { key = "L", mods = "Control", chars = "\u000c" },
+  { key = "K", mods = "Command", action = "ClearHistory" },
 
-  # Vi Mode
-  { key = "F2",       mods = "None",          action = "ToggleViMode", mode = "Vi" },          # Toggle Vi mode
-  { key = "PageUp",   mods = "Shift",         action = "ScrollPageUp", mode = "Vi" },          # Scroll page up in Vi mode
-  { key = "PageDown", mods = "Shift",         action = "ScrollPageDown", mode = "Vi" },        # Scroll page down in Vi mode
-  { key = "Escape",   mods = "Alt",           action = "ClearSelection", mode = "Vi" },        # Clear selection in Vi mode
-  { key = "I",        mods = "Alt",           action = "ScrollToBottom", mode = "Vi" },        # Scroll to bottom in Vi mode
-  { key = "Y",        mods = "Alt",           action = "Copy", mode = "Vi" },                  # Copy in Vi mode
-  { key = "V",        mods = "Alt",           action = "ToggleNormalSelection", mode = "Vi" }, # Toggle normal selection in Vi mode
-  { key = "V",        mods = "Shift",         action = "ToggleLineSelection", mode = "Vi" },   # Toggle line selection in Vi mode
-  { key = "V",        mods = "Control",       action = "ToggleBlockSelection", mode = "Vi" },  # Toggle block selection in Vi mode
+  # Scrollback Buffer Navigation (alacritty.BAK & Kitty parity)
+  { key = "PageUp", mods = "Shift", action = "ScrollPageUp" },
+  { key = "PageDown", mods = "Shift", action = "ScrollPageDown" },
+  { key = "Home", mods = "Shift", action = "ScrollToTop" },
+  { key = "End", mods = "Shift", action = "ScrollToBottom" },
 
-  # Tab Management
-  { key = "T",        mods = "Command",       action = "CreateNewTab" },              # Create a new tab
-  { key = "Right",    mods = "Command",       action = "SelectNextTab" },             # Select next tab
-  { key = "Left",     mods = "Command",       action = "SelectPreviousTab" },         # Select previous tab
-  { key = "]",        mods = "Command|Shift", action = "SelectNextTab" },             # Select next tab
-  { key = "[",        mods = "Command|Shift", action = "SelectPreviousTab" },         # Select previous tab
-  { key = "1",        mods = "Command",       action = "SelectTab1" },                # Select tab 1
-  { key = "9",        mods = "Command",       action = "SelectLastTab" },             # Select last tab
+  # Typography & Font Scaling
+  { key = "Plus", mods = "Command", action = "IncreaseFontSize" },
+  { key = "Equals", mods = "Command", action = "IncreaseFontSize" },
+  { key = "Minus", mods = "Command", action = "DecreaseFontSize" },
+  { key = "0", mods = "Command", action = "ResetFontSize" },
 
-  # Search
-  { key = "F",        mods = "Control|Shift", action = "SearchForward" },             # Search forward
-  { key = "B",        mods = "Control|Shift", action = "SearchBackward" },            # Search backward
+  # Window Lifecycle & macOS Frame Management (alacritty.BAK parity)
+  { key = "N", mods = "Command", action = "CreateNewWindow" },
+  { key = "Return", mods = "Command", action = "SpawnNewInstance" },
+  { key = "Return", mods = "Command|Shift", action = "SpawnNewInstance" },
+  { key = "Q", mods = "Command", action = "Quit" },
+  { key = "W", mods = "Command", action = "Quit" },
+  { key = "H", mods = "Command", action = "Hide" },
+  { key = "H", mods = "Command|Alt", action = "HideOtherApplications" },
+  { key = "M", mods = "Command", action = "Minimize" },
+  { key = "F", mods = "Command|Control", action = "ToggleFullscreen" },
+  { key = ".", mods = "Command", action = "ToggleSimpleFullscreen" },
+  { key = ",", mods = "Command", action = "ToggleMaximized" },
+  { key = "/", mods = "Command", action = "ToggleMaximized" },
 
-  # macOS Specific
-  { key = "Q",        mods = "Command",       action = "Quit" },                      # Quit Alacritty
-  { key = "K",        mods = "Command",       action = "ClearHistory" },              # Clear history
-  { key = "H",        mods = "Command",       action = "Hide" },                      # Hide window
-  { key = "M",        mods = "Command",       action = "Minimize" },                  # Minimize window
-  { key = "N",        mods = "Command",       action = "CreateNewWindow" },           # Create a new window
-  { key = "Return",   mods = "Command",       action = "SpawnNewInstance" },          # Start new terminal instance
+  # macOS Native Tabs (alacritty.BAK + Kitty parity)
+  { key = "T", mods = "Command", action = "CreateNewTab" },
+  { key = "Right", mods = "Command", action = "SelectNextTab" },
+  { key = "Left", mods = "Command", action = "SelectPreviousTab" },
+  { key = "]", mods = "Command|Shift", action = "SelectNextTab" },
+  { key = "[", mods = "Command|Shift", action = "SelectPreviousTab" },
+  { key = "Tab", mods = "Control", action = "SelectNextTab" },
+  { key = "Tab", mods = "Control|Shift", action = "SelectPreviousTab" },
+  { key = "1", mods = "Command", action = "SelectTab1" },
+  { key = "2", mods = "Command", action = "SelectTab2" },
+  { key = "3", mods = "Command", action = "SelectTab3" },
+  { key = "4", mods = "Command", action = "SelectTab4" },
+  { key = "5", mods = "Command", action = "SelectTab5" },
+  { key = "6", mods = "Command", action = "SelectTab6" },
+  { key = "7", mods = "Command", action = "SelectTab7" },
+  { key = "8", mods = "Command", action = "SelectTab8" },
+  { key = "9", mods = "Command", action = "SelectLastTab" },
 
-  # Move between workspaces (requires external tools like yabai or i3)
-  { key = "1",        mods = "Command",       command = { program = "yabai", args = ["-m", "space", "--focus", "1"] } }, # Move to workspace 1 (macOS with yabai)
-  { key = "2",        mods = "Command",       command = { program = "yabai", args = ["-m", "space", "--focus", "2"] } }, # Move to workspace 2 (macOS with yabai)
+  # Vi Mode Engine (alacritty.BAK advanced selection suite + bug-free entry)
+  { key = "F2", mods = "None", action = "ToggleViMode" },
+  { key = "Space", mods = "Control|Shift", action = "ToggleViMode" },
+  { key = "PageUp", mods = "Shift", action = "ScrollPageUp", mode = "Vi" },
+  { key = "PageDown", mods = "Shift", action = "ScrollPageDown", mode = "Vi" },
+  { key = "Escape", mods = "Alt", action = "ClearSelection", mode = "Vi" },
+  { key = "I", mods = "Alt", action = "ScrollToBottom", mode = "Vi" },
+  { key = "Y", mods = "Alt", action = "Copy", mode = "Vi" },
+  { key = "V", mods = "Alt", action = "ToggleNormalSelection", mode = "Vi" },
+  { key = "V", mods = "Shift", action = "ToggleLineSelection", mode = "Vi" },
+  { key = "V", mods = "Control", action = "ToggleBlockSelection", mode = "Vi" },
 
-  # Font Size Adjustment
-  { key = "Plus",     mods = "Command",       action = "IncreaseFontSize" },          # Increase font size
-  { key = "Minus",    mods = "Command",       action = "DecreaseFontSize" },          # Decrease font size
-  { key = "0",        mods = "Command",       action = "ResetFontSize" },             # Reset font size
+  # Search Mode (alacritty.BAK + macOS standard)
+  { key = "F", mods = "Command", action = "SearchForward", mode = "~Search" },
+  { key = "B", mods = "Command", action = "SearchBackward", mode = "~Search" },
+  { key = "F", mods = "Control|Shift", action = "SearchForward", mode = "~Search" },
+  { key = "B", mods = "Control|Shift", action = "SearchBackward", mode = "~Search" },
 
-  # Fullscreen and Maximized Mode
-  { key = "M",      mods = "Command",          action = "ToggleFullscreen" },           # Toggle fullscreen mode
-  { key = ".",      mods = "Command",          action = "ToggleSimpleFullscreen" },    # Toggle simple fullscreen (macOS only)
-  { key = ",",      mods = "Command",          action = "ToggleMaximized" },           # Toggle maximized
-  { key = "/",      mods = "Command",          action = "ToggleMaximized" },           # Toggle maximized mode
+  # CSI u Extended Keyboard Protocol Disambiguation (Kitty parity)
+  { key = "Return", mods = "Shift", chars = "\u001b[13;2u" },
+  { key = "Return", mods = "Control", chars = "\u001b[13;5u" },
+  { key = "Tab", mods = "Control", chars = "\u001b[9;5u" },
+  { key = "Tab", mods = "Control|Shift", chars = "\u001b[9;6u" },
+
+  # Shell Word Navigation & Text Editing (macOS ergonomic shortcuts)
+  { key = "Left", mods = "Alt", chars = "\u001bb" },
+  { key = "Right", mods = "Alt", chars = "\u001bf" },
+  { key = "Back", mods = "Alt", chars = "\u0017" },
+  { key = "Delete", mods = "Alt", chars = "\u001bd" },
+
+  # Interactive Utilities Orchestration (Lazygit & Tmux workflow)
+  { key = "G", mods = "Command|Alt", command = { program = "fish", args = [
+    "-c",
+    "lazygit",
+  ] } },
+  { key = "G", mods = "Command|Shift", command = { program = "fish", args = [
+    "-c",
+    "lazygit",
+  ] } },
+  { key = "T", mods = "Command|Alt", command = { program = "fish", args = [
+    "-c",
+    "tmx",
+  ] } },
+  { key = "T", mods = "Command|Shift", command = { program = "fish", args = [
+    "-c",
+    "tmx new",
+  ] } },
 ]
 
-# MOUSE SETTINGS
-[mouse]
-hide_when_typing = false                        	              # Hide cursor when typing
-bindings  = [
-{ mouse = "Right", mods = "Control", action = "Paste" },  	      # Right-click paste
-]
-
-# COLORS (CYBERPUNK THEME)
-
-[colors]
-transparent_background_colors = false
-
-# Primary colors
-[colors.primary] 
-foreground        = "#f8f8f2"            # Light gray
-background        = "#000000"            # Dark black
-dim_foreground    = "#828482"            # Dimmed foreground
-bright_foreground = "#ffffff"            # Bright foreground
-
-# SELECTION COLORS
-[colors.selection]
-text = "CellForeground" 		   # Use the cell's foreground color for selected text
-background = "#2a2b36"  		   # Dark gray for the background of selected text
-
-# Normal colors
-[colors.normal]
-black = "#1e1e2e"                          # Dark blue
-red = "#ff5555"                            # Bright red
-green = "#50fa7b"                          # Neon green
-yellow = "#f1fa8c"                         # Yellow
-blue = "#6272a4"                           # Light blue
-magenta = "#bd93f9"                        # Purple
-cyan = "#8be9fd"                           # Cyan
-white = "#f8f8f2"                          # Light gray
-
-# Bright colors
-[colors.bright]
-black = "#44475a"                          # Dark gray
-red = "#ff6e6e"                            # Bright red
-green = "#69ff94"                          # Neon green
-yellow = "#ffffa5"                         # Bright yellow
-blue = "#6272a4"                           # Light blue
-magenta = "#d6acff"                        # Bright purple
-cyan = "#a4ffff"                           # Bright cyan
-white = "#ffffff"                          # White
-
-# Cursor colors
-[colors.cursor]
-text   = "#1e1e2e"                       # Background color
-cursor = "#00FF00"                       # Green cursor color
-
-# VI MODE CURSOR COLORS
-[colors.vi_mode_cursor]
-text   = "CellBackground"  	           # Use the cell's background color for the text
-cursor = "CellForeground"  		   # Use the cell's foreground color for the cursor
-
-# SEARCH MATCH COLORS
-[colors.search.matches]
-foreground = "#1a1b26" 			   # Dark blue-gray for the text of matched search results
-background = "#73daca" 			   # Teal for the background of matched search results
-
-# FOCUSED SEARCH MATCH COLORS
-[colors.search.focused_match]
-foreground = "#1a1b26"  		   # Dark blue-gray for the text of the focused match
-background = "#ff9e64" 			   # Orange for the background of the focused match
-	
-# FOOTER BAR COLORS
-[colors.footer_bar]
-background = "#1a1b26"  	           # Dark blue-gray for the footer bar background
-foreground = "#00ff9f" 			   # Bright green for the footer bar text
-
-# LINE INDICATOR COLORS
-[colors.line_indicator]
-foreground = "None" 			   # Use the default foreground color (no override)
-background = "None" 			   # Use the default background color (no override)
-
-# Dim colors
-[colors.dim]
-black = "#0f0f0f"                          # Dim black
-red = "#712b2b"                            # Dim red
-green = "#5f6f3a"                          # Dim green
-yellow = "#a17e4d"                         # Dim yellow
-blue = "#456877"                           # Dim blue
-magenta = "#704d68"                        # Dim magenta
-cyan = "#4d7770"                           # Dim cyan
-white = "#8e8e8e"                          # Dim white
-
-
-# COLORS (Cyberdream theme for alacritty)
-# [colors.primary]
-# background = "0x16181a"
-# foreground = "0xffffff"
-
-# [colors.selection]
-# background = "0x3c4048"
-# foreground = "0xffffff"
-
-# [[colors.indexed_colors]]
-# color = "0xffbd5e"
-# index = 16
-
-# [[colors.indexed_colors]]
-# color = "0xff6e5e"
-# index = 17
-
-# [colors.bright]
-# black = "0x3c4048"
-# blue = "0x5ea1ff"
-# cyan = "0x5ef1ff"
-# green = "0x5eff6c"
-# magenta = "0xbd5eff"
-# red = "0xff6e5e"
-# white = "0xffffff"
-# yellow = "0xf1ff5e"
-
-# [colors.normal]
-# black = "0x16181a"
-# blue = "0x5ea1ff"
-# cyan = "0x5ef1ff"
-# green = "0x5eff6c"
-# magenta = "0xbd5eff"
-# red = "0xff6e5e"
-# white = "0xffffff"
-# yellow = "0xf1ff5e"
-
-# DEBUG SETTINGS
+# ── [ 14 ] TELEMETRY & HARDWARE DEBUG ─────────────────────────────────
 [debug]
-log_level          = "Warn"                # Log level (Off, Error, Warn, etc.)
-renderer           = "None"                # Use highest available renderer
-render_timer       = false                 # Disable render timer
-print_events       = false                 # Disable event logging
-prefer_egl         = false                 # Disable EGL (macOS)
-highlight_damage   = false                 # Disable damage highlighting
-persistent_logging = false                 # Disable persistent logging
-
-
+log_level = "Warn"
+renderer = "None"
+render_timer = false
+print_events = false
+highlight_damage = false
+persistent_logging = false
+prefer_egl = false

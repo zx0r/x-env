@@ -1,224 +1,120 @@
-- [**Atuin**](https://docs.atuin.sh/guide/installation/) ✨ Magical shell history
+## 1. Architectural Role & System Boundaries
 
-#### Installation
+- **Core Responsibility:** High-throughput shell command ingestion, deduplication, secret scrubbing,
+  and sub-millisecond interactive recall (`Ctrl+R` and `Up-Arrow`).
+- **Non-Interference Contract:**
+    - **Zero Shell Wrapping:** Atuin is bootstrapped purely via native hooks. Never intercept or
+      wrap `atuin` through Fish functions, subshells, or IPC hooks.
+    - **Inline Native TUI:** Rendered strictly inline within the active terminal buffer
+      (`tmux.enabled = false`). Floating tmux popups are prohibited to eliminate windowing focus
+      penalties and preserve terminal transparency.
+    - **Zero Cold-Start I/O:** Network update checks (`update_check = false`) and non-essential disk
+      sync are decoupled from interactive shell startup.
 
-```fish
-# Use the installer,
-user $ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+---
 
-# Cargo
-user $ cargo install atuin
+## 2. Hard Performance SLAs & Invariants
 
-# Package Manager
-root $ emerge  --ask atuin
-```
-##### Setting up Sync
+- **Daemon Architecture (`[daemon]`):** A persistent local background worker (`atuin-daemon`)
+  manages pooled SQLite write connections through a dedicated Unix domain socket
+  (`$TMPDIR/atuin.sock`).
+- **In-Memory Fuzzy Indexing (`daemon-fuzzy`):** Command strings are interned and indexed directly
+  in the daemon process RAM, completely bypassing SQLite disk access during real-time typing.
 
-```fish
-# Register
-user $ atuin register -u <YOUR_USERNAME> -e <YOUR EMAIL>
+---
 
-# generate an encryption key for you and store it locally
-user $ atuin key
-# crater ankle exact fuel toward alien trust soft potato avoid moment example detail quantum turkey fly shoulder grunt second barely mistake spot mixed option
+## 3. Semantic Design System Contract (`theme = "x"`)
 
-# Import existing history
-user $ atuin import (basename $SHELL)
-#         Atuin
-# ======================
-#           🌍
-#        🐘🐘🐘🐘
-#           🐢
-# ======================
-# Importing history...
-# Importing history from fish
-# ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 14442/14442Import complete!
+The TUI color palette is bound 1:1 to the canonical **Environment X** palette
+([master.lua](file:///Users/x0r/.config/nvim/zx0r/lua/theme/master.lua) and
+[kitty/themes/x.conf](file:///Users/x0r/.config/kitty/themes/x.conf)). Raw white glare and
+uncalibrated ANSI colors are strictly barred.
 
-# Syncing will happen automatically in the background,
-# NOTE Or, if you see missing data, force a full sync with: atuin sync -f
-user $ atuin sync
+### Active Token Map ([themes/x.toml](file:///Users/x0r/.config/atuin/themes/x.toml))
 
-# gen-completions
-user $ atuin gen-completions --shell (basename $SHELL) --out-dir $HOME/.config/fish/completions
+| Atuin Semantic Meaning | Hex Code  | Environment X Token      | Visual & Architectural Role                                               |
+| :--------------------- | :-------- | :----------------------- | :------------------------------------------------------------------------ |
+| **`Base`**             | `#7B8496` | `surface_4` (Calm Slate) | Unquoted command arguments, prose body (calm 50% luminance)               |
+| **`SyntaxCommand`**    | `#00FF00` | `green / ok`             | Executable verbs (`git`, `cargo`, `docker`); matches `fish_color_command` |
+| **`Guidance`**         | `#00FFFF` | `cyan / accent`          | Active selection pointer (`>`); matches `CursorLineNr`                    |
+| **`Annotation`**       | `#A855F7` | `purple / type`          | Command execution duration (`123ms`, `2s`)                                |
+| **`Title`**            | `#97A0BC` | `text_2` (Slate)         | Relative timestamp (`5m ago`); calm secondary scanning path               |
+| **`Muted`**            | `#4A5168` | `text_4` (Graphite)      | Box borders, horizontal dividers, preview frame (zero glare)              |
+| **`Important`**        | `#CD00F7` | `magenta / kw`           | Fuzzy query character match highlights                                    |
+| **`AlertError`**       | `#A855F7` | `purple / type`          | Non-zero exit code badges (eliminates alarming red flashing)              |
+| **`SyntaxString`**     | `#00FF00` | `green / ok`             | Quoted string literals (`"path"`, `'msg'`)                                |
+| **`SyntaxOperator`**   | `#F40091` | `pink / fn`              | Pipes, redirects, conditionals (`\|`, `>`, `&&`, `\|\|`)                  |
+| **`SyntaxFlag`**       | `#646B84` | `text_3` (Dim Slate)     | CLI options and flags (`--verbose`, `-rf`)                                |
+| **`SyntaxVariable`**   | `#A855F7` | `purple / type`          | Environment variables (`$HOME`, `${VAR}`)                                 |
 
-```
+---
 
-#### Install Atuin on a new machine
+## 4. Architectural Traps & Anti-Patterns (Guardrails)
 
-```fish
-# Note : You will be prompted for your password, and for your key.
-user $ atuin login -u <USERNAME>
+> [!CAUTION] **Trap 1: Never remove the `[theme]` table from
+> [themes/x.toml](file:///Users/x0r/.config/atuin/themes/x.toml).**  
+> Atuin’s Rust deserializer (`serde`) strictly expects a root `ThemeDefinition` struct containing
+> both `[theme]` and `[colors]`. If `[theme]` is omitted, Atuin will silently discard the theme file
+> and revert to the built-in `default` theme, restoring blinding white borders (`#FFFFFF`) and muddy
+> gray text.
 
-# Syncing will happen automatically in the background,
-# NOTE Or, if you see missing data, force a full sync with: atuin sync -f
-user $ atuin sync
-```
+> [!WARNING] **Trap 2: Never use integer hex literals (`0xRRGGBB`) in Atuin TOML.**  
+> Unlike Neovim’s C-core (`kObjectTypeInteger`), Atuin’s TOML deserializer strictly expects string
+> types (`"#RRGGBB"`). Integer literals will trigger a hard deserialization panic.
 
-##### Configuration
+> [!IMPORTANT] **Trap 3: Never enable Tmux Popups (`[tmux] enabled = true`).**  
+> Native tmux popups create a detached child surface that introduces focus latency, breaks sub-shell
+> transparency, and corrupts window borders. Atuin must remain inline.
 
-```fish
-# 
+---
 
-# {command}, {directory}, {duration}, {user}, {host} and {time}
+## 5. Security & Privacy Topology
 
-abbr -a astats "atuin stats all"
-abbi -a ainfo "atuin info"
-abbr -a ahistory "atuin history list --format "{time} - {duration} - {command}""
+### Regex Scrubbing (`history_filter`)
 
-# Installing the shell plugin
-# ~/.config/fish/conf.d/atuin.fish
-# Check if 'atuin' is available
-if test -n (which atuin)
+Commands matching credential-sensitive or transient patterns are dropped before reaching SQLite:
 
-    # Prevent Atuin from setting default keybindings
-    # Disable up arrow
-    # set -gx ATUIN_NOBIND "true"
-
-    # Initialize Atuin for Fish shell
-    atuin init (basename $SHELL) | source
-
-    # Bind Ctrl-R to Atuin search in both normal and insert modes
-    for mode in default insert
-        bind -M $mode \cr _atuin_search
-    end
-end
-```
-
-```fish
-
-## To enable sync of shell aliases between hosts. Requires sync enabled.
-## Add the new section to the bottom of your config file, for every machine you use Atuin with
-## Note: you will need to have sync v2 enabled. See the above section.
-## Manage aliases using the command line options
-## After setting an alias, you will either need to restart your shell 
-## or source the init file for the change to take affect
-
-[sync]
-records = true
-
-[dotfiles]
-enabled = true
-
-# Alias 'k' to 'kubectl'
-user $ atuin dotfiles alias set k kubectl
-
-# List all aliases
-user $ atuin dotfiles alias list
-
-# Delete an alias
-user $ atuin dotfiles alias delete k
+```toml
+history_filter = [
+  "^export.*(KEY|SECRET|PASSWORD|TOKEN|AUTH|CREDENTIAL|PASS|SIGNING)",
+  "^set -[gU]?x?.*(KEY|SECRET|PASSWORD|TOKEN|AUTH)",
+  "^aws configure",
+  "^ssh-add",
+  "^ssh-keygen",
+  "^gpg ",
+  "^security find-generic-password",
+  "^sops",
+  "^age",
+  "^get-secret",
+  ".*(-p|--password|--token|--secret|--api-key)[ =].+",
+  ".*Authorization: Bearer .+"
+]
 ```
 
-##### DAemon
+### Automatic Scanner
 
-```fish
-# https://docs.atuin.sh/reference/daemon/
+- `secrets_filter = true`: Built-in automated entropy and signature scanner for AWS keys, GitHub
+  PATs, Slack webhooks, and Stripe secrets.
+- `cwd_filter = ["^/private", "^/tmp/secrets"]`: Automatic directory blackout.
 
-# This is experimental!
-#
-# The Atuin daemon is a background daemon designed to
-#
-# Speed up database writes
-# Allow machines to sync when not in use, so they’re ready to go right away
-# Perform background maintenance
-# It may also work around issues with ZFS/SQLite performance.
-#
-# It’s currently experimental, but is safe to use with a little bit of setup
-#
+---
 
-root $ chown -R $USER:$USER $HOME/.local/share/atuin
-user $ atuin daemon
-
-# ~/.config/atuin/config.toml
-## Enable the background daemon
-## Add the new section to the bottom of your config file
-[daemon]
-enabled = false
-tcp_port = 8889
-sync_frequency = 300
-systemd_socket = false
-socket_path = "$HOME/.local/share/atuin/atuin.sock"
-# socket_path = "/run/user/1000/atuin.sock"
-
-user $ atuin daemon
-# Error: failed to connect to local atuin daemon. Is it running?
-```
-
-##### Server setup
-
-```fish
-#https://docs.atuin.sh/self-hosting/server-setup/
-
-user $ atuin server start
-# ~/.config/atuin/server.toml.
-[server]
-host = "0.0.0.0"
-port = 8888
-open_registration = true
-db_uri="postgres://user:password@hostname/database"
-
-[tls]
-enable = true
-cert_path = "/path/to/letsencrypt/live/fully.qualified.domain/fullchain.pem"
-pkey_path = "/path/to/letsencrypt/live/fully.qualified.domain/privkey.pem"
-
-# Alternatively, configuration can also be provided with environment variables.
-ATUIN_HOST="0.0.0.0"
-ATUIN_PORT=8888
-ATUIN_OPEN_REGISTRATION=true
-ATUIN_DB_URI="postgres://user:password@hostname/database"
+## 6. Directory Map & Diagnostics
 
 ```
-
-##### Docker
-
-```fish
-# https://docs.atuin.sh/self-hosting/docker/
-# https://docs.atuin.sh/self-hosting/kubernetes/
+~/.config/atuin/
+├── config.toml               # Master engine configuration
+├── themes/
+│   └── x.toml                # Environment X semantic theme definition
+└── README.md                 # Architectural specification (this file)
 ```
 
-##### Sytemd
+### Operational Verification
 
 ```fish
-# https://docs.atuin.sh/self-hosting/systemd/
+# Check daemon health & SQLite connection
+atuin status
 
-# /etc/systemd/system/atuin-server.service
-[Unit]
-Description=Start the Atuin server syncing service
-After=network-online.target
-Wants=network-online.target systemd-networkd-wait-online.service
-
-[Service]
-ExecStart=atuin server start
-Restart=on-failure
-User=atuin
-Group=atuin
-
-Environment=ATUIN_CONFIG_DIR=/etc/atuin
-ReadWritePaths=/etc/atuin
-
-# Hardening options
-CapabilityBoundingSet=
-AmbientCapabilities=
-NoNewPrivileges=true
-ProtectHome=true
-ProtectSystem=strict
-ProtectKernelTunables=true
-ProtectKernelModules=true
-ProtectControlGroups=true
-PrivateTmp=true
-PrivateDevices=true
-LockPersonality=true
-
-[Install]
-WantedBy=multi-user.target
-
-# /etc/sysusers.d/atuin-server.conf
-u atuin - "Atuin synchronized shell history"
-
-# Now, you can attempt to run the Atuin server:
-root $ systemctl enable --now atuin-server
-root $ systemctl status atuin-server
-
-# NOTE If it started fine, it should have created the default config inside /etc/atuin/.
+# Full client diagnostics
+atuin doctor
 ```

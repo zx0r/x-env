@@ -1,0 +1,14 @@
+{
+	"runtime.version": "Lua 5.4",
+
+	"diagnostics": {
+		"globals": ["pandoc"],
+		"unusedLocalExclude": ["_*"], // allow `_varname` for unused variables
+		"groupFileStatus": {
+			"luadoc": "None", // we don't have the type info
+			"conventions": "None" // we often overwrite globals in pandoc filters
+		}
+	},
+
+	"$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json"
+}

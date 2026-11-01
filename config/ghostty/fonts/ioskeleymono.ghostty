@@ -1,0 +1,74 @@
+# =============================================================================
+# TYPOGRAPHY & FONT ENGINE: IOSKELEY MONO TERM NERD FONT [BERKELEY CLONE]
+# Platform: macOS CoreText | Display: Liquid Retina XDR (Display P3)
+# Character: Open-source mathematical clone of Berkeley Graphics TX-02
+# Features: Dotted zero, single-storey 'g', open 6/9, pre-patched Nerd Font
+#
+# ── [ INSTALLATION & HOMEBREW INSTRUCTIONS ] ─────────────────────────────────
+# Base Typeface via Homebrew:
+#   brew install --cask font-ioskeley-mono
+#
+# Universal Glyph / Nerd Font Symbols Fallback:
+#   brew install --cask font-symbols-only-nerd-font
+#
+# Activation (in config.ghostty):
+#   config-file = fonts/ioskeleymono.ghostty
+# =============================================================================
+
+# ── [ 01 ] PRIMARY TYPEFACE ARCHITECTURE ─────────────────────────────────────
+font-family             = Ioskeley Mono
+font-family-bold        = Ioskeley Mono
+font-family-italic      = Ioskeley Mono
+font-family-bold-italic = Ioskeley Mono
+
+font-style              = Regular
+font-style-bold         = Bold
+font-style-italic       = Italic
+font-style-bold-italic  = Bold Italic
+
+font-size               = 13.5
+
+# Synthetic Styles Fallback Policy
+font-synthetic-style    = bold,italic,bold-italic
+
+# ── [ 02 ] TEXT SHAPING & OPENTYPE FEATURE INJECTION ─────────────────────────
+font-shaping-break      = cursor
+
+# OpenType Features
+font-feature            = +calt
+font-feature            = +zero
+
+# ── [ 03 ] RETINA RASTERIZATION & STROKE CALIBRATION ─────────────────────────
+# Pre-hinted to subpixel perfection on Liquid Retina XDR: zero blooming
+font-thicken            = false
+
+# Unicode 15.1+ Width Standard
+grapheme-width-method   = unicode
+
+# ── [ 04 ] MICRO-METRICS & SUBPIXEL CELL GEOMETRY ────────────────────────────
+adjust-font-baseline           = 0
+adjust-cell-width              = 0
+adjust-cell-height             = 8%
+
+# Underline & Strikethrough
+adjust-underline-position      = 1
+adjust-underline-thickness     = 100%
+adjust-strikethrough-position  = 2
+adjust-strikethrough-thickness = 100%
+adjust-overline-position       = 0
+adjust-overline-thickness      = 100%
+
+# Cursor & Interface
+adjust-cursor-thickness        = 0
+adjust-cursor-height           = 0
+adjust-box-thickness           = 0
+adjust-icon-height             = 0
+
+# ── [ 05 ] UNIVERSAL GLYPH ROUTING & FALLBACKS ───────────────────────────────
+font-codepoint-map = U+23FB-U+23FE,U+2665,U+26A1,U+2B58,U+E000-U+E00A,U+E0A0-U+E0A2,U+E0A3,U+E0B0-U+E0B3,U+E0B4-U+E0C8,U+E0CA,U+E0CC-U+E0D7,U+E200-U+E2A9,U+E300-U+E3E3,U+E5FA-U+E6B7,U+E700-U+E8EF,U+EA60-U+EC1E,U+ED00-U+EFCE,U+F000-U+F2FF,U+F300-U+F381,U+F400-U+F533,U+F0001-U+F1AF0=Symbols Nerd Font Mono
+
+# Scientific & Mathematical Symbols Fallback
+font-codepoint-map = U+2200-U+22FF,U+2A00-U+2AFF,U+27C0-U+27EF,U+2980-U+29FF,U+1D400-U+1D7FF=STIX Two Math
+
+# Apple Human Interface Symbols Fallback
+font-codepoint-map = U+2300-U+23FF=Apple Symbols

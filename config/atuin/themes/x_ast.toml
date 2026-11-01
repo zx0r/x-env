@@ -1,0 +1,21 @@
+[theme]
+name = "x_ast"
+parent = "default"
+
+[colors]
+Base = "#BCC4DD"
+Title = "#7B8496"
+Annotation = "#646B84"
+Muted = "#4A5168"
+Guidance = "#00FFFF"
+Important = "#CD00F7"
+AlertInfo = "#0A84FF"
+AlertWarn = "#FFFF00"
+AlertError = "#646B84"
+
+SyntaxCommand = "#00FF88"
+SyntaxFlag = "#6C99BB"
+SyntaxString = "#6B4E32"
+SyntaxVariable = "#7DAF9C"
+SyntaxOperator = "#AAAAAA"
+SyntaxComment = "#6B4E32"

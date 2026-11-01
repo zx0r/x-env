@@ -5,9 +5,9 @@
 # layer: "Functions"
 # responsibility: "Safely intercepts file deletions, protects immutable system/dotfile paths, and moves targets to macOS Trash instead of permanent unlinking"
 # dependencies: []
-# backlinks: ["conf.d/20-abbr.fish"]
+# backlinks: ["conf.d/20_abbrs.fish"]
 # created_at: "2026-10-03"
-# updated_at: "2026-10-03"
+# updated_at: "2026-10-10"
 # tags: ["trash", "safety", "governor", "rm", "macos", "data-protection"]
 # ---
 

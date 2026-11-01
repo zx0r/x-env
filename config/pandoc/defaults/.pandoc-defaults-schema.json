@@ -1,0 +1,135 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/PandocDefaultsSchema",
+    "definitions": {
+        "PandocDefaultsSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "verbosity": {
+                    "type": "string"
+                },
+                "fail-if-warnings": {
+                    "type": "boolean"
+                },
+                "table-of-contents": {
+                    "type": "boolean"
+                },
+                "toc-depth": {
+                    "type": "integer"
+                },
+                "toc-title": {
+                    "type": "string"
+                },
+                "number-sections": {
+                    "type": "boolean"
+                },
+                "shift-heading-level-by": {
+                    "type": "integer"
+                },
+                "resource-path": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "pdf-engine": {
+                    "type": "string"
+                },
+                "pdf-engine-opts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "css": {
+                    "type": "string"
+                },
+                "variables": {
+                    "$ref": "#/definitions/Variables"
+                },
+                "reader": {
+                    "type": "string"
+                },
+                "writer": {
+                    "type": "string"
+                },
+                "reference-doc": {
+                    "type": "string"
+                },
+                "filters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "citeproc": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "object"
+                },
+                "bibliography": {
+                    "type": "string"
+                },
+                "metadata-file": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "string"
+                },
+                "metadata-files": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "default-image-extension": {
+                    "type": "string"
+                },
+                "incremental": {
+                    "type": "boolean"
+                },
+                "slide-level": {
+                    "type": "integer"
+                },
+                "strip-comments": {
+                    "type": "boolean"
+                }
+            },
+            "required": [],
+            "title": "PandocDefaultsSchema"
+        },
+        "Variables": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "document-css": {
+                    "type": "boolean"
+                },
+                "fontsize": {
+                    "type": "string"
+                },
+                "mainfont": {
+                    "type": "string"
+                },
+                "linestretch": {
+                    "type": "number"
+                },
+                "margin-left": {
+                    "type": ["string", "integer"]
+                },
+                "margin-right": {
+                    "type": ["string", "integer"]
+                },
+                "margin-top": {
+                    "type": ["string", "integer"]
+                },
+                "margin-bottom": {
+                    "type": ["string", "integer"]
+                }
+            },
+            "title": "Variables"
+        }
+    }
+}

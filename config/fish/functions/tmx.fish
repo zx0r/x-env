@@ -210,8 +210,8 @@ function __tmx_create
 end
 
 function __tmx_daily_template
-    set -l session_name Dev
-    set -l w_names Dev Ops Run
+    set -l session_name rt
+    set -l w_names dev ops run
     set -l layout tiled
 
     if tmux has-session -t "$session_name" 2>/dev/null
@@ -250,7 +250,7 @@ function __tmx_daily_template
     tmux split-window -v -t "$session_name:".1
 
     tmux select-layout -t "$session_name:" "$layout"
-    
+
     # Create extra 6 windows to complete the 9 hieroglyphs (一 to 九)
     for i in (seq 3 8)
         tmux new-window -t "$session_name:"

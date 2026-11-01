@@ -1,0 +1,21 @@
+[theme]
+name = "x_cyber"
+parent = "default"
+
+[colors]
+Base = "#BCC4DD"
+Title = "#7B8496"
+Annotation = "#646B84"
+Muted = "#4A5168"
+Guidance = "#00FFFF"
+Important = "#CD00F7"
+AlertInfo = "#0A84FF"
+AlertWarn = "#FFFF00"
+AlertError = "#646B84"
+
+SyntaxCommand = "#FF00C1"
+SyntaxFlag = "#2277FF"
+SyntaxString = "#0AB8C1"
+SyntaxVariable = "#2277FF"
+SyntaxOperator = "#AAAAAA"
+SyntaxComment = "#3B568C"

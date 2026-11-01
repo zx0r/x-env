@@ -1,0 +1,41 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+defaults:
+  view: prs
+  preview:
+    open: true
+    width: 60
+  refetchIntervalMinutes: 5
+
+pager:
+  diff: delta
+
+prSections:
+  - title: "Needs My Review"
+    filters: "is:open review-requested:@me"
+  - title: "My Open PRs"
+    filters: "is:open author:@me"
+  - title: "Involved"
+    filters: "is:open involves:@me -author:@me"
+  - title: "Recently Merged"
+    filters: "is:merged author:@me sort:updated-desc"
+
+issuesSections:
+  - title: "Assigned"
+    filters: "is:open assignee:@me"
+  - title: "Created by Me"
+    filters: "is:open author:@me"
+  - title: "Mentioned"
+    filters: "is:open mentions:@me"
+
+keybindings:
+  prs:
+    - key: d
+      command: gh pr diff {{.PrNumber}} | delta

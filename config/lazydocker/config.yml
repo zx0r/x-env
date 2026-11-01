@@ -1,0 +1,148 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# yaml-language-server: $schema=https://json.schemastore.org/lazydocker.json
+
+gui:
+  scrollHeight: 2
+  language: "auto"
+  theme:
+    activeBorderColor:
+      - "#00ffff" # Neon Cyan (Environment X active border/cursor token)
+      - bold
+    inactiveBorderColor:
+      - "#44475a" # Muted Slate
+    optionsTextColor:
+      - "#6272a4" # Comment Slate (bottom bar options)
+    selectedLineBgColor:
+      - "#44475a" # Selection Background (consistent with lazygit/fzf)
+  returnImmediately: false
+  wrapMainPanel: true
+  sidePanelWidth: 0.3333
+  showBottomLine: true # Senior UX mandate: always display contextual keybinding hints
+  expandFocusedSidePanel: true
+  screenMode: "normal"
+  containerStatusHealthStyle: "long"
+
+logs:
+  timestamps: false
+  since: "60m"
+  tail: "300" # Guardrail: prevent terminal buffer exhaustion on high-throughput services
+
+commandTemplates:
+  dockerCompose: "docker compose" # Modern Compose v2 plugin specification
+  restartService: "{{ .DockerCompose }} restart {{ .Service.Name }}"
+  startService: "{{ .DockerCompose }} start {{ .Service.Name }}"
+  stopService: "{{ .DockerCompose }} stop {{ .Service.Name }}"
+  up: "{{ .DockerCompose }} up -d"
+  upService: "{{ .DockerCompose }} up -d {{ .Service.Name }}"
+  down: "{{ .DockerCompose }} down"
+  downWithVolumes: "{{ .DockerCompose }} down --volumes"
+  serviceLogs: "{{ .DockerCompose }} logs --since=60m --follow {{ .Service.Name }}"
+  viewServiceLogs: "{{ .DockerCompose }} logs --follow {{ .Service.Name }}"
+  rebuildService: "{{ .DockerCompose }} up -d --build {{ .Service.Name }}"
+  recreateService: "{{ .DockerCompose }} up -d --force-recreate {{ .Service.Name }}"
+  allLogs: "{{ .DockerCompose }} logs --tail=300 --follow"
+  viewAlLogs: "{{ .DockerCompose }} logs"
+  dockerComposeConfig: "{{ .DockerCompose }} config"
+  checkDockerComposeConfig: "{{ .DockerCompose }} config --quiet"
+  serviceTop: "{{ .DockerCompose }} top {{ .Service.Name }}"
+
+customCommands:
+  containers:
+    - name: "Interactive Shell (sh)"
+      attach: true
+      command: "docker exec -it {{ .Container.ID }} /bin/sh"
+      serviceNames: []
+    - name: "Interactive Shell (bash)"
+      attach: true
+      command: "docker exec -it {{ .Container.ID }} /bin/bash"
+      serviceNames: []
+    - name: "Inspect Container (JSON)"
+      attach: true
+      command: "docker inspect {{ .Container.ID }}"
+      serviceNames: []
+    - name: "Process Tree (top)"
+      attach: true
+      command: "docker top {{ .Container.ID }}"
+      serviceNames: []
+    - name: "Live Stats (One-shot)"
+      attach: true
+      command: "docker stats --no-stream {{ .Container.ID }}"
+      serviceNames: []
+    - name: "Container Environment"
+      attach: true
+      command: "docker exec -it {{ .Container.ID }} env"
+      serviceNames: []
+    - name: "Prune Stopped Containers"
+      attach: false
+      command: "docker container prune -f"
+      serviceNames: []
+
+bulkCommands:
+  services:
+    - name: "up"
+      attach: false
+      shell: false
+      command: "{{ .DockerCompose }} up -d"
+      serviceNames: []
+    - name: "up (attached)"
+      attach: true
+      shell: false
+      command: "{{ .DockerCompose }} up"
+      serviceNames: []
+    - name: "stop"
+      attach: false
+      shell: false
+      command: "{{ .DockerCompose }} stop"
+      serviceNames: []
+    - name: "pull"
+      attach: true
+      shell: false
+      command: "{{ .DockerCompose }} pull"
+      serviceNames: []
+    - name: "build"
+      attach: true
+      shell: false
+      command: "{{ .DockerCompose }} build --parallel --force-rm"
+      serviceNames: []
+    - name: "down"
+      attach: false
+      shell: false
+      command: "{{ .DockerCompose }} down"
+      serviceNames: []
+    - name: "down with volumes"
+      attach: false
+      shell: false
+      command: "{{ .DockerCompose }} down --volumes"
+      serviceNames: []
+    - name: "down with images"
+      attach: false
+      shell: false
+      command: "{{ .DockerCompose }} down --rmi all"
+      serviceNames: []
+    - name: "down with volumes and images"
+      attach: false
+      shell: false
+      command: "{{ .DockerCompose }} down --volumes --rmi all"
+      serviceNames: []
+
+os:
+  openCommand: "open {{filename}}"
+  openLinkCommand: "open {{link}}"
+
+stats:
+  graphs:
+    - caption: "CPU (%)"
+      statPath: DerivedStats.CPUPercentage
+      color: cyan
+    - caption: "Memory (%)"
+      statPath: DerivedStats.MemoryPercentage
+      color: green
+  maxDuration: 3m0s

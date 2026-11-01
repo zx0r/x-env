@@ -1,0 +1,80 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Standards: OpenSSH 8.0+ | FIPS 186-4 ECDSA P-256 (Secure Enclave)
+# Target   : ~/.config/gh/config.yml
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ==============================================================================
+
+version: 1
+git_protocol: ssh
+editor: nvim
+prompt: enabled
+prefer_editor_prompt: disabled
+pager: ""
+http_unix_socket: ""
+browser: ""
+clipboard: enabled
+color_labels: enabled
+accessible_colors: disabled
+accessible_prompter: disabled
+spinner: enabled
+telemetry: disabled
+aliases:
+  co: pr checkout
+  pv: pr view
+  pvw: pr view --web
+  pd: '!gh pr diff "$@" | delta'
+  pm: pr list --author @me
+  pr-mine: pr list --author @me
+  pr-review: pr list --search "review-requested:@me is:open"
+  pr-all: pr list --limit 50
+  pr-create: pr create --fill
+  pr-draft: pr create --draft --fill
+  pr-checks: pr checks --watch
+  pr-approve: pr review --approve
+  pr-merge: pr merge --squash --delete-branch --auto
+  pr-ready: pr ready
+  pr-commits:
+    '!gh pr view "$@" --json commits --jq '' .commits[] | (.oid[0:7] + " " + .messageHeadline) '' '
+  pr-clean: poi
+  runs: run list --limit 20
+  run-watch: run watch
+  run-failed: run list --status failure --limit 10
+  run-rerun: run rerun --failed
+  run-log: run view --log-failed
+  run-view: run view
+  clone: repo clone
+  fork: repo fork --remote --clone=false
+  repo-view: repo view
+  repo-web: repo view --web
+  repos: repo list --limit 50
+  default-branch: '!gh repo view "$@" --json defaultBranchRef --jq .defaultBranchRef.name'
+  stars: api user/starred --jq ".[].full_name"
+  whoami:
+    '!gh api user --jq ''"User: " + .login + " (ID: " + (.id|tostring) + ") | Public Repos: " +
+    (.public_repos|tostring) + " | Joined: " + .created_at[:10]'''
+  ratelimit:
+    '!gh api rate_limit --jq ''"Core: " + (.resources.core.remaining|tostring) + "/" +
+    (.resources.core.limit|tostring) + " | GraphQL: " + (.resources.graphql.remaining|tostring) +
+    "/" + (.resources.graphql.limit|tostring) + " | Search: " +
+    (.resources.search.remaining|tostring) + "/" + (.resources.search.limit|tostring)'''
+  sec-alerts:
+    '!gh api repos/{owner}/{repo}/dependabot/alerts --jq '' .[] | "[" +
+    (.security_advisory.severity|ascii_upcase) + "] " + .dependency.package.name + ": " +
+    .security_advisory.summary '' 2>/dev/null || echo "No Dependabot alerts or insufficient
+    permissions"'
+  secrets: secret list
+  gql: '!gh api graphql -f query="$1"'
+  contributors:
+    '!gh api repos/{owner}/{repo}/contributors --jq '' .[] | ((.contributions|tostring) + "\t" +
+    .login) '' '
+  latest-release:
+    '!gh release view "$@" --json tagName,name,publishedAt --jq '' "Tag: " + .tagName + " | " +
+    .name + " | Published: " + .publishedAt[0:10] '' '
+  release-download: release download

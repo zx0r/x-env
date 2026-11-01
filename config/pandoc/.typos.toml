@@ -1,0 +1,6 @@
+# DOCS https://github.com/crate-ci/typos/blob/master/docs/reference.md
+#───────────────────────────────────────────────────────────────────────────────
+
+# ignore these files
+[files]
+extend-exclude = ["*.bib"] # too many false positives

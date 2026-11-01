@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "target_os": "darwin24+",
+  "profile": "principal-hardened-workstation",
+  "updated_at": "2026-10-21T06:27:00Z",
+  "domains": {
+    "perimeter": {
+      "pf": {
+        "enabled": true,
+        "anchor_name": "local.macos-security",
+        "anchor_file": "/etc/pf.anchors/local.macos-security",
+        "source_config": "~/.config/macos-security/pf.conf",
+        "checksum_sha256": "f4ab4ac379d2beb29f15f58a97bf54e32a6d89293e2e9d53a188270a8b6fa825",
+        "log_interface": "pflog0",
+        "required_tables": ["bruteforce", "whitelist", "apple_infra"]
+      },
+      "alf": {
+        "globalstate": 1,
+        "stealthmode": true,
+        "blockall": false,
+        "allowsigned": true,
+        "allowsignedapp": true
+      }
+    },
+    "kernel": {
+      "net.inet.tcp.blackhole": 2,
+      "net.inet.udp.blackhole": 1,
+      "net.inet.icmp.bmcastecho": 0,
+      "net.inet.ip.redirect": 0,
+      "net.inet6.ip6.redirect": 0,
+      "net.inet.icmp.drop_redirect": 1,
+      "net.inet.tcp.drop_synfin": 1,
+      "net.inet.tcp.always_keepalive": 1,
+      "net.inet.tcp.randomize_ports": 1,
+      "net.inet.tcp.icmp_may_rst": 0,
+      "kern.ipc.somaxconn": 2048
+    },
+    "integrity": {
+      "gatekeeper_enabled": true,
+      "sip_enabled": true,
+      "filevault_enabled": true,
+      "xprotect_bundle_min_version": 5300,
+      "xprotect_app_min_version": 160
+    },
+    "persistence": {
+      "enforce_ownership": "root:wheel",
+      "enforce_mode": "644",
+      "core": [
+        "local.macos-security.sysctl.plist",
+        "local.macos-security.pfctl.plist",
+        "local.macos-security.cleaner.plist",
+        "local.macos-security.drift.plist"
+      ],
+      "external": [
+        "com.xcodesorg.xcodesapp.Helper.plist",
+        "homebrew.mxcl.dnscrypt-proxy.plist"
+      ],
+      "disallow_untracked": false
+    }
+  }
+}

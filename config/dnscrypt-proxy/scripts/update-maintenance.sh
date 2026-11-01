@@ -10,18 +10,17 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 CONFIG_DIR="$PROJECT_ROOT/rules"
 
 CACHE_DIR="/opt/homebrew/var/cache/dnscrypt-proxy"
-GEN_SCRIPT="$PROJECT_ROOT/dns-update/generate-domains-blacklist_.py" # Adjust if path differs
+GEN_SCRIPT="$PROJECT_ROOT/dns-update/generate-domains-blacklist.py"
 
 echo "--- DNS Maintenance Started: $(date) ---"
 
 # 1. Update Blocklist
-if [ -f "$GEN_SCRIPT" ]; then
+if [ -f "$GEN_SCRIPT" ] && python "$GEN_SCRIPT" --help >/dev/null 2>&1; then
     echo "Running blocklist generator..."
-    python3 "$GEN_SCRIPT" -c "$CONFIG_DIR/domains-blocklist.conf" -o "$CACHE_DIR/domains-blocklist.txt"
+    python "$GEN_SCRIPT" -c "$CONFIG_DIR/domains-blocklist.conf" > "$CACHE_DIR/domains-blocklist.txt"
 else
-    echo "Warning: Blocklist generator script not found at $GEN_SCRIPT"
-    # Fallback to direct download if generator is missing
-    echo "Downloading fresh HaGezi Multi PRO (FULL) as fallback..."
+    # Fallback to direct download if generator environment is unavailable
+    echo "Downloading fresh HaGezi Multi PRO (FULL) as direct feed..."
     curl -sSL "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/pro-onlydomains.txt" -o "$CACHE_DIR/domains-blocklist.txt"
 fi
 

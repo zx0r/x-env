@@ -1,0 +1,63 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# --- COMMIT MESSAGE HYGIENE ---
+commit-msg:
+  commands:
+    "lint commit message":
+      # Using bunx for sub-millisecond startup
+      run: bunx commitlint --edit {1}
+
+# --- PRE-COMMIT PIPELINE ---
+pre-commit:
+  parallel: true # Runs all commands simultaneously to save time
+  commands:
+    # 1. THE FASTEST LINTER (Oxlint)
+    # Catches common bugs/perf issues in milliseconds before deeper linting
+    oxlint:
+      glob: "*.{ts,tsx,js,jsx}"
+      run: bunx oxlint --deny=correctness --deny=perf {staged_files}
+
+    # 2. THE FORMATTER & LINTER (Biome)
+    # Handles formatting and standard linting rules
+    biome:
+      glob: "*.{ts,tsx,js,jsx,css,json,jsonc,html}"
+      run:
+        bunx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+
+    # 3. ENTERPRISE ENGINE (Ultracite)
+    # Specific framework-level fixes and type-checking
+    ultracite:
+      glob: "*.{ts,tsx,js,jsx}"
+      run: bunx ultracite fix --type-aware --type-check {staged_files}
+      stage_fixed: true
+
+    # 4. DEAD CODE ANALYZER (Knip)
+    # Checks for unused exports and dependencies across the whole project
+    knip:
+      tags: [analysis]
+      run: bun run check:deps
+
+    # 5. KNOWLEDGE BASE VALIDATOR (Wiki CLI)
+    # Validates Markdown JSON schema and [[wikilinks]]
+    wiki-check:
+      glob: "**/*.md"
+      run: uvx --from wazootech-wiki wiki -c ~/.config/wazootech-wiki/wiki.yaml check
+
+    wiki-lint:
+      glob: "**/*.md"
+      run: uvx --from wazootech-wiki wiki -c ~/.config/wazootech-wiki/wiki.yaml lint {staged_files}
+
+    # 6. LEGACY LINTER (ESLint) - Optional
+    # Only keep if Biome/Oxlint don't cover specific Next.js/React rules yet
+    # eslint:
+    #   glob: "*.{ts,tsx,js,jsx}"
+    #   run: bunx eslint --fix {staged_files}
+    #   stage_fixed: true

@@ -1,7 +1,11 @@
 # ── Tool artifacts (never track) ──────────────────────────────────────────
 .playwright-mcp/
 .DS_Store
+fish/
 
+# ── Reference configs (separate repos, not submodules) ────────────────────
+folke/
+lazyvim/
 
 # ── Neovim runtime artifacts ─────────────────────────────────────────────
 *.swp

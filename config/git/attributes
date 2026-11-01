@@ -1,0 +1,98 @@
+# ==============================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Global Git Attributes Configuration — Zero Drift (Strict XDG)
+# Platform : macOS 27+ (Apple Silicon / aarch64 Darwin 27.2+)
+# Target   : ~/.config/git/attributes
+# ==============================================================
+
+# 1. Line Ending Normalization (Cross-Platform Determinism)
+* text=auto eol=lf
+
+# 2. SOPS Transparent Decryption Diffing (Zero Plaintext Leakage)
+# Intercepts git diff for encrypted files and pipes through 'sops decrypt'
+*.enc                 diff=sops
+*.enc.*               diff=sops
+*.sops.yaml           diff=sops
+*.sops.yml            diff=sops
+*.sops.json           diff=sops
+*.sops.env            diff=sops
+*secrets*.yaml        diff=sops
+*secrets*.yml         diff=sops
+*secrets*.json        diff=sops
+*secrets*.env         diff=sops
+
+# 3. Binary Asset Protection (Bypass Diff & Line Ending Conversions)
+*.png                 binary
+*.jpg                 binary
+*.jpeg                binary
+*.gif                 binary
+*.webp                binary
+*.ico                 binary
+*.icns                binary
+*.pdf                 binary
+*.woff                binary
+*.woff2               binary
+*.ttf                 binary
+*.otf                 binary
+*.eot                 binary
+*.dylib               binary
+*.so                  binary
+*.a                   binary
+*.o                   binary
+*.tar                 binary
+*.tar.gz              binary
+*.tgz                 binary
+*.zip                 binary
+*.7z                  binary
+*.dmg                 binary
+*.iso                 binary
+
+# 4. AST-Aware Tree-sitter Merge Driver (Mergiraf) + Functional Diff Drivers
+# Built-in hunk header context extraction (diff=<lang>) paired with structural merge
+*.rs                  diff=rust merge=mergiraf
+*.go                  diff=golang merge=mergiraf
+*.py                  diff=python merge=mergiraf
+*.js                  diff=javascript merge=mergiraf
+*.jsx                 diff=javascript merge=mergiraf
+*.ts                  diff=typescript merge=mergiraf
+*.tsx                 diff=typescript merge=mergiraf
+*.json                merge=mergiraf
+*.yml                 merge=mergiraf
+*.yaml                merge=mergiraf
+*.toml                merge=mergiraf
+*.c                   diff=cpp merge=mergiraf
+*.h                   diff=cpp merge=mergiraf
+*.cc                  diff=cpp merge=mergiraf
+*.cpp                 diff=cpp merge=mergiraf
+*.hpp                 diff=cpp merge=mergiraf
+*.java                diff=java merge=mergiraf
+*.kt                  diff=kotlin merge=mergiraf
+*.swift               diff=swift
+*.m                   diff=objc
+*.mm                  diff=cpp
+*.css                 diff=css
+*.html                diff=html merge=mergiraf
+*.sh                  diff=bash merge=mergiraf
+*.lua                 merge=mergiraf
+*.rb                  diff=ruby merge=mergiraf
+*.nix                 merge=mergiraf
+*.tf                  merge=mergiraf
+*.hcl                 merge=mergiraf
+*.md                  diff=markdown merge=mergiraf
+
+# 5. Machine-Generated Lockfile Protection (Bypass Merge Conflicts & Diff Bloat)
+Cargo.lock            -diff merge=binary
+package-lock.json     -diff merge=binary
+pnpm-lock.yaml        -diff merge=binary
+yarn.lock             -diff merge=binary
+bun.lock              -diff merge=binary
+bun.lockb             binary
+uv.lock               -diff merge=binary
+poetry.lock           -diff merge=binary
+composer.lock         -diff merge=binary
+flake.lock            -diff merge=binary

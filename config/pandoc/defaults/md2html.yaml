@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=./.pandoc-defaults-schema.json
+# `$USERDATA` set via pandoc option `--data-dir` to this directory
+# DOCS https://pandoc.org/MANUAL.html#defaults-files
+#───────────────────────────────────────────────────────────────────────────────
+# INFO md -> html is just an intermediary step, a shell script is then used to
+# convert the html via headless browser to PDF:
+# `Alfred.alfredpreferences/workflows/pdf-utilities/scripts/headless-md2pdf.sh`
+# INFO CHeck out for CSS files to style the output: https://marked2app.com/styles/
+#───────────────────────────────────────────────────────────────────────────────
+
+number-sections: false
+table-of-contents: false
+
+template: base # `pandoc --print-default-template=html` for default
+variables: # https://pandoc.org/MANUAL.html#variables-for-html
+  mainfont: Palatino
+  fontsize: 1rem
+  linestretch: 1.4 # = line-height
+
+metadata-file: base.yaml # overwritten by document's yaml (`metadata:` would not be)
+filters: [autoset-today-as-date-if-no-date-metadata.lua]
+
+#───────────────────────────────────────────────────────────────────────────────
+
+verbosity: WARNING
+fail-if-warnings: true
+
+writer: html
+reader: "markdown\
+  +lists_without_preceding_blankline\
+  +mark\
+  +wikilinks_title_after_pipe\
+  +rebase_relative_paths"
+resource-path: [./attachments, .]

@@ -1,0 +1,59 @@
+# =============================================================================
+# THEME: ENVIRONMENT X [DARK TIER : PURE CYBER-LUMINESCENCE]
+# Deep cyberpunk aesthetic: High-contrast neons intersecting void black.
+# Color Space: Apple Display P3 Native | WCAG AAA 21:1 Contrast Ratio
+# =============================================================================
+
+# Foundation Surfaces
+background = #000000
+foreground = #DCE3F5
+
+# Interactive Selection
+selection-foreground = #000000
+selection-background = #00FFFF
+
+# Cursor Dynamics & Vector Links
+cursor-color = #00FFFF
+cursor-text  = #000000
+
+# Window Panes & Split Dividers (Ergonomic Muted Slate: Kitty Parity)
+split-divider-color   = #282C3A
+
+# Search Highlights
+search-foreground          = #000000
+search-background          = #00FFFF
+search-selected-foreground = #000000
+search-selected-background = #39FF14
+
+# ANSI 16-Color Terminal Palette (Clean Saturated Hues | Zero Mud)
+# Black / Surface Shadows
+palette = 0=#12151F
+palette = 8=#4E5569
+
+# Red / Critical Failures (Laser Crimson & Radiant Coral)
+palette = 1=#FF2A55
+palette = 9=#FF5C7A
+
+# Green / Systems Nominal (Electric Lime & Radiant Mint)
+palette = 2=#39FF14
+palette = 10=#66FF47
+
+# Yellow / Warnings (Cyberpunk 2077 Gold & Canary Neon)
+palette = 3=#FFE600
+palette = 11=#FFF066
+
+# Blue / Auxiliary Data (Vibrant Cobalt & Electric Sky)
+palette = 4=#0099FF
+palette = 12=#5AC8FA
+
+# Magenta / Exotic Protocols (Hot Magenta & Neon Fuchsia)
+palette = 5=#E024FF
+palette = 13=#FF5CDE
+
+# Cyan / Primary Vectors (Cyber Cyan & Luminous Ice)
+palette = 6=#00FFFF
+palette = 14=#70FFFF
+
+# White / Pure Output (Clean Luminous Silver & Optic White)
+palette = 7=#D1D5E5
+palette = 15=#FFFFFF

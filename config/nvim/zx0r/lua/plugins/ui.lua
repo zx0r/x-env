@@ -82,7 +82,66 @@ return {
       input = { enabled = true },
       zen = { enabled = true, win = { width = 120, backdrop = { transparent = true, blend = 40 } } },
       dim = { enabled = true },
-      image = { enabled = true },
+      image = {
+        enabled = true,
+        math = { enabled = true },
+      },
+
+      explorer = {
+        enabled = false,
+        replace_netrw = false,
+      },
+
+      terminal = {
+        enabled = true,
+        shell = vim.env.SHELL or "/bin/bash",
+        win = {
+          style = "terminal",
+        },
+      },
+
+      scope = {
+        enabled = true,
+        char = "│",
+        underline = false,
+        only_current = false,
+        hl = "SnacksIndentScope",
+      },
+
+      indent = {
+        enabled = true,
+        char = "│",
+        hl = "SnacksIndent",
+        animate = { enabled = false },
+      },
+
+      styles = {
+        float = {
+          border = "rounded",
+        },
+        input = {
+          border = "rounded",
+        },
+        notification = {
+          border = "rounded",
+          zindex = 100,
+          wo = {
+            winblend = 5,
+            wrap = false,
+            list = false,
+          },
+        },
+        notification_history = {
+          border = "rounded",
+          width = 0.6,
+          height = 0.6,
+          title = " Notification History ",
+          title_pos = "center",
+          wo = {
+            list = false,
+          },
+        },
+      },
     },
 
     keys = {
@@ -116,10 +175,10 @@ return {
         pattern = "VeryLazy",
         callback = function()
           if vim.env.NVIM_DEBUG then
-            _G.dd = function(...)
+            local dd = function(...)
               Snacks.debug.inspect(...)
             end
-            vim.print = _G.dd
+            vim.print = dd
           end
 
           Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
@@ -136,13 +195,12 @@ return {
       })
     end,
   },
-
   -- ========================================================================
   -- scrollEOF.nvim — Smooth viewport scrolling past end of buffer
   -- ========================================================================
   {
     "Aasim-A/scrollEOF.nvim",
-    event = "CursorMoved",
+    event = { "BufReadPost", "BufNewFile" },
     opts = {},
   },
 }

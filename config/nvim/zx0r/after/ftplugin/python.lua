@@ -1,6 +1,9 @@
 -- ftplugin/python.lua — Python-specific overrides
 -- basedpyright + ruff | venv auto-detection | DVC integration
 
+if vim.b.did_ftplugin then return end
+vim.b.did_ftplugin = 1
+
 -- Indentation (PEP 8)
 vim.opt_local.tabstop    = 4
 vim.opt_local.shiftwidth = 4
@@ -34,9 +37,10 @@ end
 
 vim.b.python_path = detect_venv()
 
--- Removed dead DVC logic (now in ftdetect/dvc.lua)
-
 -- Folding for Python classes/functions
 vim.opt_local.foldmethod = "expr"
 vim.opt_local.foldexpr   = "v:lua.vim.treesitter.foldexpr()"
 vim.opt_local.foldlevel  = 2  -- Show top-level + classes, fold methods
+
+local undo = "setlocal tabstop< shiftwidth< expandtab< foldmethod< foldexpr< foldlevel< | unlet! b:python_path"
+vim.b.undo_ftplugin = (vim.b.undo_ftplugin and (vim.b.undo_ftplugin .. " | ") or "") .. undo

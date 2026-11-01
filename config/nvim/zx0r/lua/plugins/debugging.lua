@@ -92,10 +92,9 @@ return {
     },
 
     dependencies = {
-      {
-        "rcarriga/nvim-dap-ui",
+      { "rcarriga/nvim-dap-ui", lazy = true,
         dependencies = {
-          "nvim-neotest/nvim-nio",
+          { "nvim-neotest/nvim-nio", lazy = true },
         },
         opts = {
           controls = {

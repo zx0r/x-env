@@ -20,6 +20,9 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
+    cond = function()
+      return #vim.api.nvim_list_uis() > 0
+    end,
     opts = function()
       local mode = {
         "mode",
@@ -48,11 +51,22 @@ return {
         path = 0,
         shorting_target = 45,
         file_status = true,
-        symbols = { modified = "", readonly = " 󰌾", unnamed = "[No Name]", newfile = " ＋" },
+        symbols = { modified = "", readonly = "", unnamed = "[No Name]", newfile = " ＋" },
         fmt = function(str)
           return (str:gsub("%s+$", ""))
         end,
         color = "LualineFilename",
+        padding = { left = 0, right = 0 },
+      }
+
+      local readonly_lock = {
+        function()
+          return "  "
+        end,
+        cond = function()
+          return vim.bo.readonly or not vim.bo.modifiable
+        end,
+        color = "DiagnosticError",
         padding = { left = 0, right = 0 },
       }
 
@@ -175,6 +189,7 @@ return {
           lualine_c = {
             { "filetype", icon_only = true, colored = true, separator = "", padding = { left = 1, right = 0 } },
             filename,
+            readonly_lock,
             diagnostics,
           },
           lualine_x = {
@@ -198,6 +213,7 @@ return {
           lualine_c = {
             { "filetype", icon_only = true, colored = true, separator = "", padding = { left = 1, right = 0 } },
             filename,
+            readonly_lock,
           },
           lualine_x = { location },
           lualine_y = {},

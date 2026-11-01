@@ -1,0 +1,21 @@
+[theme]
+name = "x_slate"
+parent = "default"
+
+[colors]
+Base = "#BCC4DD"
+Title = "#7B8496"
+Annotation = "#646B84"
+Muted = "#4A5168"
+Guidance = "#00FFFF"
+Important = "#CD00F7"
+AlertInfo = "#0A84FF"
+AlertWarn = "#FFFF00"
+AlertError = "#646B84"
+
+SyntaxCommand = "#BB00FF"
+SyntaxFlag = "#77FF11"
+SyntaxString = "#DAEFA3"
+SyntaxVariable = "#FF9122"
+SyntaxOperator = "#FF0080"
+SyntaxComment = "#646464"

@@ -1,4 +1,13 @@
-# Light Palette — Cyberdream Light
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Light Palette - x.tmux
 
 # --- Core ---
 set -ogq @ui_bg         "#f5f5f7"
@@ -26,6 +35,12 @@ set -ogq @ui_highlight  "#d17c00"
 set -ogq @ui_selection  "#F28534"
 set -ogq @ui_pink       "#f40064"
 set -ogq @ui_lavender   "#a018ff"
+
+# --- Border Accents ---
+set -ogq @ui_border_1        "#008c99"
+set -ogq @ui_border_2        "#d100bf"
+set -ogq @ui_border_3        "#a018ff"
+set -ogq @ui_border_active   "#008c99"
 
 # --- Compat (binds.conf popup) ---
 set -ogq @base00 "default"

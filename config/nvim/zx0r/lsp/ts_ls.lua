@@ -4,7 +4,6 @@ return {
     "tsconfig.json",
     "jsconfig.json",
     "package.json",
-    ".git",
   },
   settings = {
     typescript = {
@@ -20,6 +19,10 @@ return {
       suggest = {
         includeCompletionsForModuleExports = true,
       },
+      preferences = {
+        importModuleSpecifierPreference = "shortest",
+        updateImportsOnFileMove = "always",
+      },
     },
     javascript = {
       inlayHints = {
@@ -33,6 +36,10 @@ return {
       },
       suggest = {
         includeCompletionsForModuleExports = true,
+      },
+      preferences = {
+        importModuleSpecifierPreference = "shortest",
+        updateImportsOnFileMove = "always",
       },
     },
   },

@@ -5,10 +5,10 @@
 # layer: "Functions"
 # responsibility: "Provides reusable TUI primitives (spinners, checkboxes, formatted output, notifications) for interactive shell tools"
 # dependencies: []
-# backlinks: ["functions/brew_maintain.fish", "functions/storage_audit.fish", "functions/storage_clean.fish"]
+# backlinks: ["functions/brew_maintain.fish", "functions/storage_audit.fish", "functions/storage_clean.fish", "functions/power.fish"]
 # created_at: "2026-10-03"
-# updated_at: "2026-10-05"
-# tags: ["tui", "spinner", "ux", "shared", "primitives"]
+# updated_at: "2026-10-22"
+# tags: ["tui", "spinner", "ux", "shared", "primitives", "terminal-clamp", "termios", "tty-guard", "drain-stdin"]
 # ---
 
 # ==============================================================================
@@ -18,6 +18,7 @@
 # storage_clean into a single, testable, DRY module.
 #
 # Primitives:
+#   __tui_clamp         Defensive string clamp preventing terminal wrap / scroll
 #   __tui_spin_run      Braille spinner wrapping background command execution
 #   __tui_print_row     Fixed 3-column aligned output row (name | size | path)
 #   __tui_section       Section header with tier color coding
@@ -54,6 +55,52 @@ set -g __tui_c_ok      (printf "\e[1;32m")      # Bold green: success [✔]
 set -g __tui_c_warn    (printf "\e[1;33m")      # Bold yellow: warnings [⚠]
 set -g __tui_c_err     (printf "\e[1;31m")      # Bold red: errors [✖]
 set -g __tui_c_spin    (printf "\e[38;5;141m")  # Purple (Dracula lavender): animated Braille glyphs
+
+
+# ------------------------------------------------------------------------------
+# Defensive Terminal Clamp: Prevents ANSI lines from exceeding terminal width
+# Clamps visible string length to (COLUMNS - 1) to guarantee zero auto-wrapping
+# Essential for in-place carriage return (\r) spinners to prevent staircase spam
+# Usage: set safe_line (__tui_clamp "$raw_line")
+# ------------------------------------------------------------------------------
+function __tui_clamp -a text max_cols
+    set -l cols $COLUMNS
+    test -n "$cols"; or set cols 80
+    test $cols -gt 20; or set cols 80
+    test -n "$max_cols"; and set cols $max_cols
+
+    set -l limit (math "$cols - 1")
+    if test (string length -V -- "$text") -gt $limit
+        printf "%s%s" (string shorten -m $limit -- "$text") $__tui_c_reset
+    else
+        printf "%s" "$text"
+    end
+end
+
+
+# ------------------------------------------------------------------------------
+# TTY State Manager: Guard against ghost line duplicates and cursor artifacts
+# Suppresses local echo (-echo) while keeping signal processing (ISIG) intact.
+# Drains unread input buffer non-blockingly (VMIN=0, VTIME=0) before restoration.
+# ------------------------------------------------------------------------------
+function __tui_tty_enter_spinner
+    set -l saved (stty -g 2>/dev/null)
+    # Suppress local echo: prevents user keypresses (Enter) from emitting newlines & breaking carriage return
+    stty -echo 2>/dev/null
+    printf "\e[?25l" # Hide cursor
+    echo "$saved"
+end
+
+function __tui_tty_exit_spinner -a saved_tty
+    # Non-blocking drain of unread keyboard inputs (e.g. accidental Enter keypresses)
+    # Uses POSIX VMIN=0 VTIME=0 in non-canonical mode to drain without process forks
+    stty -icanon min 0 time 0 2>/dev/null
+    while read -z -n 1024 _discard 2>/dev/null; end
+
+    # Atomically restore terminal attributes
+    test -n "$saved_tty"; and stty $saved_tty 2>/dev/null
+    printf "\e[?25h" # Restore cursor
+end
 
 
 # ------------------------------------------------------------------------------
@@ -102,17 +149,37 @@ function __tui_spin_run -a step_prefix label cmd log_file
         return $rc
     end
 
-    # Interactive TTY: Animated Braille spinner with cursor management
+    # Interactive TTY: Animated Braille spinner with cursor & TTY echo management
     set -l start_time (date +%s)
-    fish -c "$cmd" >> $log_file 2>&1 &
+    fish -c "$cmd" < /dev/null >> $log_file 2>&1 &
     set -l pid $last_pid
     set -l spin_chars "⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏"
     set -l idx 1
 
-    printf "\e[?25l" # Hide cursor
+    set -l saved_tty (__tui_tty_enter_spinner)
+    set -l is_done 0
+
+    function __spin_run_cleanup --no-scope-shadowing
+        test $is_done -eq 1; and return 0
+        set is_done 1
+        if test -n "$pid"
+            if /bin/kill -0 $pid 2>/dev/null
+                /bin/kill -TERM $pid 2>/dev/null
+                /bin/kill -KILL $pid 2>/dev/null
+            end
+        end
+        __tui_tty_exit_spinner "$saved_tty"
+        functions -e __spin_run_on_int
+    end
+
+    function __spin_run_on_int --on-signal INT --no-scope-shadowing
+        __spin_run_cleanup
+        return 130
+    end
 
     while /bin/kill -0 $pid 2>/dev/null
-        printf "\r\e[2K  %b%s%b  %b %b" $__tui_c_spin $spin_chars[$idx] $__tui_c_reset "$step_fmt" "$label_fmt"
+        set -l line (printf "  %b%s%b  %b %b" $__tui_c_spin $spin_chars[$idx] $__tui_c_reset "$step_fmt" "$label_fmt")
+        printf "\r\e[2K%s" (__tui_clamp "$line")
         set idx (math "$idx % 10 + 1")
         sleep 0.08
     end
@@ -120,15 +187,17 @@ function __tui_spin_run -a step_prefix label cmd log_file
     set -l rc $status
     set -l elapsed (math (date +%s) - $start_time)
 
-    printf "\e[?25h" # Restore cursor
+    __spin_run_cleanup
 
     if test $rc -eq 0
-        printf "\r\e[2K  %b✔%b  %b %b %b(%ds)%b\n" \
-            $__tui_c_ok $__tui_c_reset "$step_fmt" "$label_fmt" $__tui_c_dim $elapsed $__tui_c_reset
-        echo "  ✔ $step_prefix $label ({$elapsed}s)" >> $log_file
+        set -l out_line (printf "  %b✔%b  %b %b %b(%ds)%b" \
+            $__tui_c_ok $__tui_c_reset "$step_fmt" "$label_fmt" $__tui_c_dim $elapsed $__tui_c_reset)
+        printf "\r\e[2K%s\n" (__tui_clamp "$out_line")
+        echo "  ✔ $step_prefix $label ("$elapsed"s)" >> $log_file
     else
-        printf "\r\e[2K  %b✖%b  %b %b %b(failed: %d)%b\n" \
-            $__tui_c_err $__tui_c_reset "$step_fmt" "$label_fmt" $__tui_c_err $rc $__tui_c_reset
+        set -l out_line (printf "  %b✖%b  %b %b %b(failed: %d)%b" \
+            $__tui_c_err $__tui_c_reset "$step_fmt" "$label_fmt" $__tui_c_err $rc $__tui_c_reset)
+        printf "\r\e[2K%s\n" (__tui_clamp "$out_line")
         echo "  ✖ $step_prefix $label (failed: $rc)" >> $log_file
     end
     return $rc
@@ -158,6 +227,7 @@ function __tui_spin_item -a label cmd log_file
         if test -f "$item_out"
             string match -qri '\bwarning:' (cat $item_out); and set has_warn 1
         end
+        rm -f "$item_out" 2>/dev/null
 
         if test $rc -eq 0 -a $has_warn -eq 0
             printf "       \e[32m[✔]\e[0m %b \e[90m(%ds)\e[0m\n" "$label" $dt | tee -a $log_file
@@ -174,15 +244,36 @@ function __tui_spin_item -a label cmd log_file
     # Interactive TTY: Animated Braille spinner inside brackets [⠋] -> [✔] / [⚠] / [✖]
     set -l start_time (date +%s)
     set -l item_out (mktemp)
-    fish -c "$cmd" > $item_out 2>&1 &
+    fish -c "$cmd" < /dev/null > $item_out 2>&1 &
     set -l pid $last_pid
     set -l spin_chars "⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏"
     set -l idx 1
 
-    printf "\e[?25l" # Hide cursor
+    set -l saved_tty (__tui_tty_enter_spinner)
+    set -l is_done 0
+
+    function __spin_item_cleanup --no-scope-shadowing
+        test $is_done -eq 1; and return 0
+        set is_done 1
+        if test -n "$pid"
+            if /bin/kill -0 $pid 2>/dev/null
+                /bin/kill -TERM $pid 2>/dev/null
+                /bin/kill -KILL $pid 2>/dev/null
+            end
+        end
+        __tui_tty_exit_spinner "$saved_tty"
+        functions -e __spin_item_on_int
+    end
+
+    function __spin_item_on_int --on-signal INT --no-scope-shadowing
+        __spin_item_cleanup
+        rm -f "$item_out" 2>/dev/null
+        return 130
+    end
 
     while /bin/kill -0 $pid 2>/dev/null
-        printf "\r\e[2K       %b[%s]%b %b" $__tui_c_spin $spin_chars[$idx] $__tui_c_reset "$label"
+        set -l line (printf "       %b[%s]%b %b" $__tui_c_spin $spin_chars[$idx] $__tui_c_reset "$label")
+        printf "\r\e[2K%s" (__tui_clamp "$line")
         set idx (math "$idx % 10 + 1")
         sleep 0.08
     end
@@ -191,26 +282,30 @@ function __tui_spin_item -a label cmd log_file
     set -l elapsed (math (date +%s) - $start_time)
     cat $item_out >> $log_file
 
-    printf "\e[?25h" # Restore cursor
+    __spin_item_cleanup
 
     set -l has_warn 0
     if test -f "$item_out"
         string match -qri '\bwarning:' (cat $item_out); and set has_warn 1
     end
+    rm -f "$item_out" 2>/dev/null
 
     if test $rc -eq 0 -a $has_warn -eq 0
         # Success: Green checkmark
-        printf "\r\e[2K       \e[32m[✔]\e[0m %b \e[90m(%ds)\e[0m\n" "$label" $elapsed
-        echo "       [✔] $label ({$elapsed}s)" >> $log_file
+        set -l out_line (printf "       \e[32m[✔]\e[0m %b \e[90m(%ds)\e[0m" "$label" $elapsed)
+        printf "\r\e[2K%s\n" (__tui_clamp "$out_line")
+        echo "       [✔] $label ("$elapsed"s)" >> $log_file
         return 0
     else if test $rc -eq 0 -a $has_warn -eq 1
         # Warn: Yellow warning triangle
-        printf "\r\e[2K       \e[33m[⚠]\e[0m %b \e[33m(with warnings)\e[0m \e[90m(%ds)\e[0m\n" "$label" $elapsed
-        echo "       [⚠] $label (with warnings, {$elapsed}s)" >> $log_file
+        set -l out_line (printf "       \e[33m[⚠]\e[0m %b \e[33m(with warnings)\e[0m \e[90m(%ds)\e[0m" "$label" $elapsed)
+        printf "\r\e[2K%s\n" (__tui_clamp "$out_line")
+        echo "       [⚠] $label (with warnings, "$elapsed"s)" >> $log_file
         return 2
     else
         # Error: Red cross
-        printf "\r\e[2K       \e[31m[✖]\e[0m %b \e[31m(failed: %d)\e[0m\n" "$label" $rc
+        set -l out_line (printf "       \e[31m[✖]\e[0m %b \e[31m(failed: %d)\e[0m" "$label" $rc)
+        printf "\r\e[2K%s\n" (__tui_clamp "$out_line")
         echo "       [✖] $label (failed: $rc)" >> $log_file
         return $rc
     end
@@ -232,23 +327,43 @@ function __tui_spin_transient -a label cmd
         return $status
     end
 
-    fish -c "$cmd" >/dev/null 2>&1 &
+    set -l saved_tty (__tui_tty_enter_spinner)
+    set -l is_done 0
+
+    function __spin_transient_cleanup --no-scope-shadowing
+        test $is_done -eq 1; and return 0
+        set is_done 1
+        if test -n "$pid"
+            if /bin/kill -0 $pid 2>/dev/null
+                /bin/kill -TERM $pid 2>/dev/null
+                /bin/kill -KILL $pid 2>/dev/null
+            end
+        end
+        __tui_tty_exit_spinner "$saved_tty"
+        printf "\r\e[2K"
+        functions -e __spin_transient_on_int
+    end
+
+    function __spin_transient_on_int --on-signal INT --no-scope-shadowing
+        __spin_transient_cleanup
+        return 130
+    end
+
+    fish -c "$cmd" < /dev/null >/dev/null 2>&1 &
     set -l pid $last_pid
     set -l spin_chars "⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏"
     set -l idx 1
 
-    printf "\e[?25l" # Hide cursor
-
     while /bin/kill -0 $pid 2>/dev/null
-        printf "\r\e[2K  %b%s%b  \e[90m%s\e[0m" $__tui_c_spin $spin_chars[$idx] $__tui_c_reset "$label"
+        set -l line (printf "  %b%s%b  \e[90m%s\e[0m" $__tui_c_spin $spin_chars[$idx] $__tui_c_reset "$label")
+        printf "\r\e[2K%s" (__tui_clamp "$line")
         set idx (math "$idx % 10 + 1")
         sleep 0.08
     end
     wait $pid
     set -l rc $status
 
-    # Erase the spinner line completely and restore cursor
-    printf "\r\e[2K\e[?25h"
+    __spin_transient_cleanup
     return $rc
 end
 

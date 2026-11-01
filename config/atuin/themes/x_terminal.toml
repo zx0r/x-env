@@ -1,0 +1,21 @@
+[theme]
+name = "x_terminal"
+parent = "default"
+
+[colors]
+Base = "#BCC4DD"
+Title = "#7B8496"
+Annotation = "#646B84"
+Muted = "#4A5168"
+Guidance = "#00FFFF"
+Important = "#CD00F7"
+AlertInfo = "#0A84FF"
+AlertWarn = "#FFFF00"
+AlertError = "#646B84"
+
+SyntaxCommand = "#00FF88"
+SyntaxFlag = "#FFAA00"
+SyntaxString = "#FF9580"
+SyntaxVariable = "#58BAF5"
+SyntaxOperator = "#FFAD59"
+SyntaxComment = "#808080"

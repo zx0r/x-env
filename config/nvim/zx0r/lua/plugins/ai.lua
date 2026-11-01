@@ -39,9 +39,9 @@ return {
     },
 
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "ravitemer/mcphub.nvim",
+      { "nvim-lua/plenary.nvim", lazy = true },
+      { "nvim-treesitter/nvim-treesitter", lazy = true },
+      { "ravitemer/mcphub.nvim", lazy = true },
     },
 
     opts = {
@@ -185,37 +185,21 @@ return {
               role = "user",
 
               content = function()
-                -- Size-gate: check stat before full diff to avoid blocking on huge diffs
-                local stat = vim.system(
-                  { "git", "diff", "--cached", "--stat" },
-                  { text = true }
-                ):wait(5000)
-
-                if stat.code == 124 then
-                  vim.notify("git diff --stat timed out after 5s", vim.log.levels.WARN)
-                  return "Git diff timed out. Staged changes may be too large."
-                end
-
-                local stat_out = stat.stdout or ""
-                if #stat_out == 0 then
-                  return "No staged changes found. Stage files with `git add` first."
-                end
-
-                if #stat_out > 50000 then
-                  vim.notify("Staged changes exceed 50KB; diff may be truncated", vim.log.levels.WARN)
-                end
-
+                -- Single fast-path diff inspection with tight 800ms timeout
                 local result = vim.system(
                   { "git", "diff", "--cached" },
                   { text = true }
-                ):wait(5000)
+                ):wait(800)
 
-                if result.code == 124 then
-                  vim.notify("git diff timed out after 5s", vim.log.levels.WARN)
-                  return "Git diff timed out. Staged changes may be too large."
+                if result.code == 124 or not result.stdout then
+                  vim.notify("git diff timed out or failed", vim.log.levels.WARN)
+                  return "Git diff timed out. Staged changes may be too large or lock held."
                 end
 
-                local diff = (result.stdout or ""):gsub("%s+$", "")
+                local diff = result.stdout:gsub("%s+$", "")
+                if #diff == 0 then
+                  return "No staged changes found. Stage files with `git add` first."
+                end
 
                 -- Truncate very large diffs to prevent LLM context overflow
                 local max_len = 50000
@@ -405,10 +389,15 @@ return {
         ),
 
         callback = function()
-          local ok, hub = pcall(require, "mcphub")
-
-          if ok and hub.stop_all then
-            hub.stop_all()
+          if package.loaded["mcphub"] then
+            local ok, hub = pcall(require, "mcphub")
+            if ok then
+              if hub.stop_all then
+                pcall(hub.stop_all)
+              elseif hub.stop then
+                pcall(hub.stop, hub)
+              end
+            end
           end
         end,
       })

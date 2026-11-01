@@ -1,0 +1,274 @@
+# NOTE:-----------------------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# DOMAIN: HIGH-DENSITY MONOSPACED TYPOGRAPHY & GPU RASTERIZATION ENGINE
+# Target Hardware: Apple Silicon ARM64 | Display: Liquid Retina XDR (Display P3)
+# Shapers: CoreText (macOS Native 8-bit Gray Mask) + Metal GPU Pipeline
+# Platform: macOS | Terminal: Ghostty 1.3.1 | Colorspace: Display P3
+# Shell: fish | Multiplexer: tmux | Editor: neovim | Layout: splits & tabs
+# Reference Parity: Kitty 0.49.2 Architecture (Zero Cognitive Friction)
+# -----------------------------------------------------------------------------
+
+# == [ 01 ] MODULAR ARCHITECTURE INCLUDES =====================================
+
+# Chromatic Theme (Environment X : Dark Tier 16-color ANSI Palette)
+theme = x.ghosty
+
+# Modular Typography Engine (Maple Mono NF, OpenType Features, Codepoint Fallbacks)
+config-file = fonts/maple.ghostty
+
+# Modular Keyboard Matrix & Keybindings (Kitty & alacritty.BAK full parity)
+config-file = keymaps/binds.ghostty
+
+# Explicitly load default config search paths alongside modular files
+config-default-files = true
+
+# Terminal Type Identity
+term = xterm-ghostty
+
+# == [ 02 ] WINDOW GEOMETRY & DISPLAY ARCHITECTURE ===========================
+
+# Auto-Fullscreen & Geometry Lifecycle Management (MacBook Pro 14)
+# 'true'                   : Native macOS fullscreen space (hides menu bar & dock).
+# 'non-native-padded-notch': Instant zero-latency fullscreen with notch compensation.
+# Auto-Launch in Full-Perimeter Notch Canvas (Zero-latency non-native fullscreen)
+# fullscreen                 = false
+# maximize                   = true
+fullscreen                 = non-native-padded-notch
+maximize                   = false
+
+# macOS Display P3 Wide Gamut Interpreter & Linear Gamma Correction
+window-colorspace          = display-p3
+alpha-blending             = linear-corrected
+
+# Edge Alignment & Padding Normalization
+window-padding-x           = 4
+window-padding-y           = 4
+window-padding-balance     = true
+window-padding-color       = background
+
+# Frame Timing & 120Hz ProMotion Refresh Rate Synchronization (Zero Screen Tearing)
+window-vsync               = true
+
+# Window Dimensions & Geometry Constraints (0 = automatic/default sizing)
+window-width               = 0
+window-height              = 0
+# window-position-x          = 100
+# window-position-y          = 100
+window-new-tab-position    = current
+window-subtitle            = false
+# window-title-font-family   = "SF Pro Display"
+# window-titlebar-background = #1d1f21
+# window-titlebar-foreground = #ffffff
+
+# Window State & Lifecycle Management
+window-inherit-working-directory = true
+tab-inherit-working-directory    = true
+split-inherit-working-directory  = true
+window-inherit-font-size         = true
+window-theme                     = dark
+window-show-tab-bar              = never
+resize-overlay                   = never
+resize-overlay-position          = center
+resize-overlay-duration          = 750ms
+window-save-state                = default
+window-step-resize               = false
+confirm-close-surface            = true
+initial-window                   = true
+quit-after-last-window-closed    = false
+# quit-after-last-window-closed-delay = 5s
+
+# == [ 03 ] MACOS PLATFORM INTEGRATION =======================================
+# Pure Minimalist Tiling Frame: Hidden Titlebar & Window Controls (Tiling Canvas Only)
+window-decoration             = auto
+macos-titlebar-style          = hidden
+macos-window-buttons          = hidden
+macos-titlebar-proxy-icon     = hidden
+macos-window-shadow           = true
+macos-dock-drop-behavior      = new-tab
+macos-auto-secure-input       = true
+macos-secure-input-indication = true
+macos-applescript             = true
+macos-icon                    = official
+macos-icon-frame              = aluminum
+# macos-custom-icon             = ~/.config/ghostty/Ghostty.icns
+# macos-icon-ghost-color        = #00ffff
+# macos-icon-screen-color       = #1a1b26
+macos-hidden                  = never
+macos-shortcuts               = ask
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MACOS NOTCH & FULL-PERIMETER CANVAS ARCHITECTURE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# PREREQUISITE (SYSTEM SETTINGS):
+#   macOS System Settings -> Desktop & Dock ->
+#   "Automatically hide and show the menu bar" -> Set to "Always"
+#
+# BEHAVIOR & HARDWARE INTEGRATION:
+#   - Bypasses macOS native Spaces letterboxing / blackout bar.
+#   - Terminal surface wraps around the camera notch into top corners ("ears").
+#   - Zero transition delay (instantaneous frame resize without workspace switch).
+#
+# KEYBINDS & MODE SWITCHING:
+#   - <Cmd+Ctrl+F> or <Cmd+Enter> : Toggle Full-Perimeter Notch Canvas.
+#   - <Cmd+Ctrl+M> or <Cmd+Alt+M> : Toggle Maximized (standard desktop bounds).
+#   - <Cmd+Alt+D>                 : Toggle Window Titlebar / Frame Decorations.
+#
+# OPTIONS:
+#   * `true`         : Complete physical screen coverage wrapping around notch.
+#   * `padded-notch` : Full perimeter without blackout, but terminal grid is padded
+#                      down below physical camera plastic.
+#   * `false`        : macOS Native Spaces Fullscreen (with blackout letterbox).
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+macos-non-native-fullscreen   = true
+
+# Hardware Option-as-Alt Key Mapping
+# Intercepts macOS Option key to behave as standard Meta/Alt escape prefix
+# rather than outputting special typography glyphs (å, ø, ¬, etc.)
+macos-option-as-alt = true
+
+# == [ 04 ] BACKGROUND, SHADERS & SURFACE CALIBRATION ========================
+background-opacity         = 0.65
+background-blur            = 15
+background-opacity-cells   = false
+
+# Custom Shaders & GPU Post-processing (Metal / GLSL Shader Pipeline)
+# Stacking order: 1) Cursor Motion Trail -> 2) Physical Optical Bloom & Dispersion
+custom-shader-animation    = false
+# custom-shader              = shaders/glow.glsl
+# custom-shader              = shaders/cursor_blaze.glsl
+
+# Background Canvas Graphic Backdrop
+# background-image           = ~/.config/ghostty/backgrounds/canvas.png
+background-image-opacity   = 1
+background-image-position  = center
+background-image-fit       = contain
+background-image-repeat    = false
+
+# Split Surface Mechanics & Material Elements
+unfocused-split-opacity    = 1
+# unfocused-split-fill       = #16161e
+split-preserve-zoom        = navigation
+
+# Selection Geometry & Ergonomics
+selection-clear-on-typing  = true
+selection-clear-on-copy    = false
+selection-word-chars       =  	'"│`|:;,()[]{}<>$
+minimum-contrast           = 1.1
+# bold-color                 = #ffffff
+faint-opacity              = 0.5
+
+# Palette Algorithms & Color Reporting
+palette-generate           = false
+palette-harmonious         = false
+osc-color-report-format    = 16-bit
+
+# == [ 05 ] CURSOR & PRECISION INTERACTION ===================================
+cursor-style               = underline
+cursor-style-blink         = true
+cursor-click-to-move       = false
+cursor-opacity             = 1
+
+# Mouse Dynamics
+mouse-hide-while-typing    = true
+mouse-reporting            = true
+mouse-shift-capture        = false
+mouse-scroll-multiplier    = precision:1,discrete:3
+copy-on-select             = false
+right-click-action         = context-menu
+click-repeat-interval      = 0
+focus-follows-mouse        = false
+
+# == [ 06 ] SCROLLBACK, CLIPBOARD & PROTOCOLS ================================
+scrollback-limit           = 20000000
+scrollbar                  = system
+scroll-to-bottom           = keystroke,no-output
+
+# URL & Hyperlink Protocol (OSC 8)
+link-url                   = true
+link-previews              = true
+
+# Clipboard Security & OSC 52 Operations
+clipboard-read             = ask
+clipboard-write            = allow
+clipboard-trim-trailing-spaces = true
+clipboard-paste-protection = true
+clipboard-paste-bracketed-safe = true
+# clipboard-codepoint-map    = 0x00A0=0x0020
+
+# Image Storage Protocol (Kitty Graphics Protocol Support: 512MB Buffer)
+image-storage-limit        = 536870912
+
+# Terminal Control Protocols & Emulation Features
+vt-kam-allowed             = false
+# enquiry-response         = "ghostty"
+undo-timeout               = 5s
+
+# == [ 07 ] PROCESS TELEMETRY, SHELL & SIGNALS ===============================
+command                    = /opt/homebrew/bin/fish --login
+wait-after-command         = false
+title-report               = false
+progress-style             = true
+async-backend              = auto
+abnormal-command-exit-runtime = 250
+# input                    =
+# key-remap                = ctrl+a=home
+# language                 = en_US.UTF-8
+# env                      = TERM_PROGRAM=ghostty
+# title                    = "Workstation"
+# initial-command          = /opt/homebrew/bin/fish
+# working-directory        = ~/dev
+
+# Shell Integration Suite
+shell-integration          = detect
+shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo,path
+
+# Background Task Notification Engine (Parity: Kitty notify_on_cmd_finish)
+notify-on-command-finish        = unfocused
+notify-on-command-finish-action = notify,bell
+notify-on-command-finish-after  = 10s
+
+# Application & System Notifications
+app-notifications          = clipboard-copy,config-reload
+desktop-notifications      = true
+
+# Audio & Visual Bell Signals
+bell-features              = attention,title,no-audio,no-system
+# bell-audio-path            = /System/Library/Sounds/Ping.aiff
+bell-audio-volume          = 0.5
+
+# Auto-Update Lifecycle (Engineered for Stable Release Channel)
+auto-update                = off
+auto-update-channel        = stable
+
+# == [ 08 ] QUICK TERMINAL (QUAKE-STYLE HUD) =================================
+quick-terminal-position               = top
+quick-terminal-screen                 = main
+quick-terminal-animation-duration     = 0.15
+quick-terminal-autohide               = true
+quick-terminal-space-behavior         = move
+quick-terminal-keyboard-interactivity = on-demand
+
+# == [ 09 ] PLATFORM COMPATIBILITY LAYER (PASSIVE / LINUX-GTK-X11) ===========
+# Defined for total config coverage; passive when running on macOS Quartz/Metal
+# gtk-single-instance                  = detect
+# gtk-titlebar                         = true
+# gtk-titlebar-style                   = native
+# gtk-titlebar-hide-when-maximized     = false
+# gtk-toolbar-style                    = raised
+# gtk-tabs-location                    = top
+# gtk-wide-tabs                        = true
+# gtk-quick-terminal-layer             = top
+# gtk-quick-terminal-namespace         = ghostty-quick-terminal
+# gtk-opengl-debug                     = false
+# gtk-custom-css                       =
+# linux-cgroup                         = never
+# linux-cgroup-hard-fail               = false
+# linux-cgroup-memory-limit            =
+# linux-cgroup-processes-limit         =
+# class                                =
+# x11-instance-name                    =

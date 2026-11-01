@@ -1,0 +1,12 @@
+# DOCS https://pandoc.org/MANUAL.html#option--metadata-file
+# "Metadata values specified inside the document, or by using -M,
+# overwrite values specified with this option. The file will be
+# searched for first in the working directory, and then in the metadata
+# subdirectory of the user data directory (see --data-dir)."
+
+# INFO These values serve as fallback values when none have been provided in the
+# markdown document metadata
+#───────────────────────────────────────────────────────────────────────────────
+
+lang: de-DE
+author: Christopher Grieser

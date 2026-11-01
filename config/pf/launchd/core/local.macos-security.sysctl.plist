@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.macos-security.sysctl</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/sbin/sysctl</string>
+        <string>net.inet.tcp.blackhole=2</string>
+        <string>net.inet.udp.blackhole=1</string>
+        <string>net.inet.icmp.bmcastecho=0</string>
+        <string>net.inet.ip.redirect=0</string>
+        <string>net.inet6.ip6.redirect=0</string>
+        <string>net.inet.icmp.drop_redirect=1</string>
+        <string>net.inet.tcp.drop_synfin=1</string>
+        <string>net.inet.tcp.always_keepalive=1</string>
+        <string>net.inet.tcp.randomize_ports=1</string>
+        <string>net.inet.tcp.icmp_may_rst=0</string>
+        <string>kern.ipc.somaxconn=2048</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>LaunchOnlyOnce</key>
+    <true/>
+    <key>ProcessType</key>
+    <string>System</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/macos-security.sysctl.out</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/macos-security.sysctl.err</string>
+</dict>
+</plist>

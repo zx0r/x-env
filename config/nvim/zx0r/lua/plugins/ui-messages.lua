@@ -40,6 +40,73 @@ end
 local function setup_progress_adapters()
   -- ── LSP Progress Telemetry HUD ──────────────────────────────────
   local tasks, order = {}, {}
+  local pending = false
+  local timer
+
+  local function render_hud()
+    pending = false
+    local lines, all_done, any_err, clients = {}, true, false, {}
+    for _, k in ipairs(order) do
+      local t = tasks[k]
+      if t then
+        if not t.done then
+          all_done = false
+        end
+        if t.err then
+          any_err = true
+        end
+        clients[t.client] = true
+
+        local desc
+        if t.title ~= "" and t.msg ~= "" then
+          desc = t.title .. ": " .. t.msg
+        elseif t.title ~= "" then
+          desc = t.title
+        elseif t.msg ~= "" then
+          desc = t.msg
+        else
+          desc = "Processing"
+        end
+        desc = desc:gsub("[%s·%.]+$", "")
+
+        local icon = t.done and (t.err and " " or "󰄬 ") or (spinner() .. " ")
+        lines[#lines + 1] = icon .. desc
+      end
+    end
+    if #lines == 0 then
+      return
+    end
+
+    local names = vim.tbl_keys(clients)
+    table.sort(names)
+    local card_title = #names > 0 and table.concat(names, ", ") or "Workspace"
+
+    vim.notify(table.concat(lines, "\n"), any_err and vim.log.levels.ERROR or vim.log.levels.INFO, {
+      id = "workspace_telemetry",
+      title = card_title,
+      timeout = all_done and 2500 or false,
+      opts = function(n)
+        n.icon = any_err and " " or (all_done and "󰄬 " or spinner())
+        if all_done then
+          n.hl = { icon = any_err and "DiagnosticError" or "DiagnosticOk" }
+        end
+      end,
+    })
+    if all_done then
+      vim.defer_fn(function()
+        local still_done = true
+        for _, t in pairs(tasks) do
+          if not t.done then
+            still_done = false
+            break
+          end
+        end
+        if still_done then
+          tasks, order = {}, {}
+        end
+      end, 2600)
+    end
+  end
 
   vim.api.nvim_create_autocmd("LspProgress", {
     group = vim.api.nvim_create_augroup("core_lsp_progress", { clear = true }),
@@ -75,67 +142,13 @@ local function setup_progress_adapters()
         err = err,
       }
 
-      -- Render unified HUD
-      local lines, all_done, any_err, clients = {}, true, false, {}
-      for _, k in ipairs(order) do
-        local t = tasks[k]
-        if t then
-          if not t.done then
-            all_done = false
-          end
-          if t.err then
-            any_err = true
-          end
-          clients[t.client] = true
-
-          local desc
-          if t.title ~= "" and t.msg ~= "" then
-            desc = t.title .. ": " .. t.msg
-          elseif t.title ~= "" then
-            desc = t.title
-          elseif t.msg ~= "" then
-            desc = t.msg
-          else
-            desc = "Processing"
-          end
-          desc = desc:gsub("[%s·%.]+$", "")
-
-          local icon = t.done and (t.err and " " or "󰄬 ") or (spinner() .. " ")
-          lines[#lines + 1] = icon .. desc
-        end
-      end
-      if #lines == 0 then
-        return
-      end
-
-      local names = vim.tbl_keys(clients)
-      table.sort(names)
-      local card_title = #names > 0 and table.concat(names, ", ") or "Workspace"
-
-      vim.notify(table.concat(lines, "\n"), any_err and vim.log.levels.ERROR or vim.log.levels.INFO, {
-        id = "workspace_telemetry",
-        title = card_title,
-        timeout = all_done and 2500 or false,
-        opts = function(n)
-          n.icon = any_err and " " or (all_done and "󰄬 " or spinner())
-          if all_done then
-            n.hl = { icon = any_err and "DiagnosticError" or "DiagnosticOk" }
-          end
-        end,
-      })
-      if all_done then
-        vim.defer_fn(function()
-          local still_done = true
-          for _, t in pairs(tasks) do
-            if not t.done then
-              still_done = false
-              break
-            end
-          end
-          if still_done then
-            tasks, order = {}, {}
-          end
-        end, 2600)
+      if done then
+        if timer and timer:is_active() then timer:stop() end
+        render_hud()
+      elseif not pending then
+        pending = true
+        if not timer then timer = vim.uv.new_timer() end
+        timer:start(80, 0, vim.schedule_wrap(render_hud))
       end
     end,
   })
@@ -262,24 +275,6 @@ local function setup_progress_adapters()
     end
   end
 
-  -- Guaranteed interception via package.preload
-  package.preload["nvim-treesitter.log"] = function()
-    package.preload["nvim-treesitter.log"] = nil
-    local searchers = package.loaders or package.searchers
-    local fn
-    for i = 2, #searchers do
-      local res = searchers[i]("nvim-treesitter.log")
-      if type(res) == "function" then
-        fn = res
-        break
-      end
-    end
-    if fn then
-      local mod = fn("nvim-treesitter.log")
-      setup_treesitter(mod)
-      return mod
-    end
-  end
 
   if package.loaded["nvim-treesitter.log"] or package.loaded["nvim-treesitter"] then
     setup_treesitter()
@@ -378,24 +373,6 @@ local function setup_progress_adapters()
     end)
   end
 
-  -- Guaranteed interception via package.preload
-  package.preload["mason-registry"] = function()
-    package.preload["mason-registry"] = nil
-    local searchers = package.loaders or package.searchers
-    local fn
-    for i = 2, #searchers do
-      local res = searchers[i]("mason-registry")
-      if type(res) == "function" then
-        fn = res
-        break
-      end
-    end
-    if fn then
-      local mod = fn("mason-registry")
-      setup_mason(mod)
-      return mod
-    end
-  end
 
   if package.loaded["mason-registry"] or package.loaded["mason"] then
     setup_mason()
@@ -593,7 +570,7 @@ return {
   {
     "folke/noice.nvim",
     event = "VeryLazy",
-    dependencies = { "MunifTanjim/nui.nvim" },
+    dependencies = { { "MunifTanjim/nui.nvim", lazy = true } },
     opts = {
       notify = { enabled = false },
       messages = { enabled = true, view = "mini", view_error = "notify", view_warn = "notify" },
@@ -635,6 +612,9 @@ return {
               { find = "%d lines yanked" },
               { find = "%d lines changed" },
               { find = "%d changes;" },
+              { find = "has changed since reading it" },
+              { find = "W11:" },
+              { find = "W12:" },
             },
           },
           opts = { skip = true },

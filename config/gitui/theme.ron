@@ -1,0 +1,32 @@
+//NOTE:-------------------------------------------------------
+//   ██╗  ██╗    W O R K S T A T I O N
+//   ╚██╗██╔╝
+//    ╚███╔╝     SYSTEMS OVER SCRIPTS
+//    ██╔██╗     INTENT OVER DRIFT
+//   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+//   ╚═╝  ╚═╝
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(
+    selected_tab: Some(Reset),
+    command_fg: Some(White),
+    selection_bg: Some(Rgb(68, 71, 90)),
+    selection_fg: Some(Rgb(248, 248, 242)),
+    cmdbar_bg: Some(Rgb(40, 42, 54)),
+    cmdbar_extra_lines_bg: Some(Rgb(40, 42, 54)),
+    disabled_fg: Some(Rgb(98, 114, 164)),
+    diff_line_add: Some(Rgb(80, 250, 123)),
+    diff_line_delete: Some(Rgb(255, 85, 85)),
+    diff_file_added: Some(Rgb(80, 250, 123)),
+    diff_file_removed: Some(Rgb(255, 85, 85)),
+    diff_file_moved: Some(Rgb(189, 147, 249)),
+    diff_file_modified: Some(Rgb(255, 184, 108)),
+    commit_hash: Some(Rgb(189, 147, 249)),
+    commit_time: Some(Rgb(98, 114, 164)),
+    commit_author: Some(Rgb(139, 233, 253)),
+    danger_fg: Some(Rgb(255, 85, 85)),
+    push_gauge_bg: Some(Rgb(98, 114, 164)),
+    push_gauge_fg: Some(Rgb(248, 248, 242)),
+    tag_fg: Some(Rgb(241, 250, 140)),
+    branch_fg: Some(Rgb(255, 121, 198)),
+)

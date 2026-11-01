@@ -19,11 +19,7 @@ end
 
 -- ── 1. Synchronous I/O Invariant ─────────────────────────────────────────────
 function M.audit_sync_calls(callback)
-  local config_root = vim.fn.stdpath("config")
-  local lua_dir = config_root .. "/lua"
-  if vim.uv.fs_stat(config_root .. "/x0r/lua") then
-    lua_dir = config_root .. "/x0r/lua"
-  end
+  local lua_dir = vim.fs.joinpath(vim.fn.stdpath("config"), "lua")
 
   local patterns = {
     "vim%.fn%.system%s*%(",
@@ -102,8 +98,9 @@ function M.audit_global_hygiene()
     "rawlen", "rawset", "require", "select", "setfenv", "setmetatable", "svim",
     "tonumber", "tostring", "type", "unpack", "xpcall", "coroutine", "debug", "io",
     "math", "os", "package", "string", "table", "bit", "jit", "vim", "Snacks",
-    "MiniIcons", "MiniAlign", "Colorizer",
+    "MiniIcons", "MiniAlign", "Colorizer", "ACP",
   }
+
 
   local allowed = {}
   for _, k in ipairs(WHITELIST) do allowed[k] = true end
@@ -211,10 +208,11 @@ end
 
 -- ── 7. Lua Memory Footprint ──────────────────────────────────────────────────
 function M.audit_memory()
+  collectgarbage("step", 100)
   local kb = collectgarbage("count")
   local mb = kb / 1024
-  local pass = mb < 60.0
-  local warn = (mb >= 60.0 and mb < 100.0)
+  local pass = mb < 30.0
+  local warn = (mb >= 30.0 and mb < 60.0)
 
   return {
     id = "memory",
@@ -226,7 +224,39 @@ function M.audit_memory()
   }
 end
 
--- ── 8. Buffer Secret & Credential Scanner ────────────────────────────────────
+-- ── 8. Anti-Pattern & AST Static Analysis Invariant ──────────────────────────
+function M.audit_antipatterns()
+  local ok, ap = pcall(require, "core.audit.antipatterns")
+  if not ok then
+    return {
+      id = "antipatterns",
+      title = "Anti-Pattern & AST Static Analysis (core.audit.antipatterns)",
+      pass = false,
+      warn = false,
+      value = "Module load failed",
+      details = { "core.audit.antipatterns failed to require" },
+    }
+  end
+
+  local res = ap.scan_all()
+  local pass = (res.findings_count == 0)
+  local details = {}
+  for _, f in ipairs(res.findings) do
+    table.insert(details, string.format("[%s] %s (%s:%d)", f.code, f.title, f.file, f.line))
+  end
+
+  return {
+    id = "antipatterns",
+    title = "Anti-Pattern & AST Invariant (CODA / Zero-Overhead)",
+    pass = pass,
+    warn = false,
+    value = pass and string.format("0 violations (%d/%d verified in %.1fms)", res.passed_count, res.total_rules, res.duration_ms)
+                 or string.format("%d violations detected", res.findings_count),
+    details = details,
+  }
+end
+
+-- ── 9. Buffer Secret & Credential Scanner ────────────────────────────────────
 function M.scan_secrets(buf, callback)
   buf = buf or vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
@@ -286,6 +316,7 @@ function M.check()
     M.audit_event_loop(),
     M.audit_global_hygiene(),
     M.audit_memory(),
+    M.audit_antipatterns(),
   }
 
   for _, r in ipairs(results) do
@@ -312,6 +343,7 @@ function M.run(opts)
     M.audit_event_loop(),
     M.audit_global_hygiene(),
     M.audit_memory(),
+    M.audit_antipatterns(),
   }
 
   M.audit_sync_calls(function(sync_res)

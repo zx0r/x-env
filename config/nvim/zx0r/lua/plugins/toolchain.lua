@@ -57,6 +57,16 @@ return {
 
         "sqls",
         "marksman",
+        "ansible-language-server",
+        "graphql-language-service-cli",
+        "htmx-lsp",
+        "svelte-language-server",
+        "astro-language-server",
+        "vue-language-server",
+        "lemminx",
+        "cssmodules-language-server",
+        "css-variables-language-server",
+        "biome",
 
         -- --------------------------------------------------------------------
         -- Formatters (consumed by coding.lua / conform.nvim)
@@ -64,6 +74,7 @@ return {
 
         "stylua",
         "prettier",
+        "prettierd",
         "ruff",
         "shfmt",
         "gofumpt",
@@ -78,6 +89,7 @@ return {
         -- Linters (consumed by coding.lua / nvim-lint)
         -- --------------------------------------------------------------------
 
+        "selene",
         "luacheck",
         "eslint_d",
         "shellcheck",
@@ -86,6 +98,10 @@ return {
         "markdownlint",
         "yamllint",
         "golangci-lint",
+        "ansible-lint",
+        "statix",
+        "vale",
+        "typos",
 
         -- --------------------------------------------------------------------
         -- Debuggers (consumed by debug.lua / DAP)
@@ -93,8 +109,11 @@ return {
 
         "delve",
         "codelldb",
+        "debugpy",
+        "js-debug-adapter",
       },
     },
+
 
     config = function(_, opts)
       require("mason").setup(opts)

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.macos-security.drift</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/x0r/x/dev/own/macos-security/bin/macos-security</string>
+        <string>--cfc</string>
+        <string>--quiet</string>
+        <string>1</string>
+        <string>--log-oslog</string>
+    </array>
+    <key>WatchPaths</key>
+    <array>
+        <string>/Library/LaunchDaemons</string>
+        <string>/etc/pf.anchors/local.macos-security</string>
+        <string>/etc/pf.conf</string>
+    </array>
+    <key>ThrottleInterval</key>
+    <integer>60</integer>
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/macos-security.drift.out</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/macos-security.drift.err</string>
+</dict>
+</plist>

@@ -1,0 +1,74 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Core Application Settings
+theme = "cyberpunk"
+mode = "auto"                        # "auto" | "split" | "unified"
+vcs = "git"                          # "git" | "jj" | "sl"
+watch = false                        # Auto-reload changeset when working tree changes
+exclude_untracked = false            # Include untracked files in working tree diff
+prompt_save_view_preferences = false # Never prompt to save view overrides on exit
+
+# Layout, Spacing & Viewport Ergonomics
+side_panel_width = 0.3333     # Fractional sidebar width (1/3 screen ratio)
+sidebar = "auto"              # "auto" | true | false
+menu_bar = true               # Show top contextual menu bar
+hunk_headers = true           # Show @@ -start,len +start,len @@ metadata headers
+line_numbers = true           # 1-indexed source line numbers
+wrap_lines = false            # Truncate long lines to preserve tabular split view
+tab_width = 4                 # Tab stops (1-16)
+file_gap = 1                  # Row separator height between files (including ─)
+hunk_gap = 1                  # Blank rows before subsequent hunks in a file
+wheel_scroll_lines = "auto"   # "auto" acceleration or 1-10 fixed rows per event
+animations = false            # Instant pane transitions (zero UI latency)
+agent_notes = true            # Render AI agent rationale and sidecar notes
+copy_decorations = false      # Omit line numbers and gutters when copying text
+transparent_background = true # Let terminal background show through surfaces
+
+# Cyberpunk Neon Theme Definition
+[themes.cyberpunk]
+base = "dracula"
+label = "Cyberpunk Neon"
+accent = "#00ffff"       # Electric Neon Cyan (active indicators & cursor)
+panel = "#161925"        # Deep Cyber Obsidian surface
+noteBorder = "#ff00ff"   # Neon Magenta (agent callout borders)
+
+# TextMate & Shiki Scope Token Palette (Cyberpunk High-Contrast)
+[themes.cyberpunk.syntax_scopes]
+"comment" = "#6272a4"
+"punctuation.definition.comment" = "#6272a4"
+"keyword" = "#ff00ff"
+"keyword.control" = "#ff00ff"
+"keyword.operator" = "#00ffff"
+"keyword.other" = "#ff00ff"
+"entity.name.function" = "#00ff88"
+"entity.name.type" = "#00ffff"
+"entity.name.class" = "#00ffff"
+"entity.other.inherited-class" = "#ff79c6"
+"storage.type" = "#00ffff"
+"storage.modifier" = "#ff00ff"
+"string" = "#50fa7b"
+"string.quoted" = "#50fa7b"
+"string.regexp" = "#f1fa8c"
+"constant.numeric" = "#bd93f9"
+"constant.language" = "#ff79c6"
+"constant.character" = "#bd93f9"
+"variable" = "#f8f8f2"
+"variable.parameter" = "#ffb86c"
+"variable.language" = "#bd93f9"
+"support.function" = "#00ff88"
+"support.type" = "#00ffff"
+"support.class" = "#00ffff"
+"support.constant" = "#bd93f9"
+"markup.heading" = "#00ffff"
+"markup.bold" = "#ff00ff"
+"markup.italic" = "#f1fa8c"
+"markup.inserted" = "#00ff88"
+"markup.deleted" = "#ff0055"
+"markup.changed" = "#00ffff"

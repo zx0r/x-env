@@ -1,0 +1,11 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Transient Obsidian window state & cache
+workspace.json
+workspace-mobile.json
+cache/
+.trash/
+*.log
+plugins/
