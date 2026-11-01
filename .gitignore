@@ -2,3 +2,4 @@
 *.inc
 !*.example
 /config/git/profiles/*.inc
+/config/obsidian/plugins/
