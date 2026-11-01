@@ -1,5 +1,148 @@
-# Ignore private Git profile inclusions (zero credential/identity leak)
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Workstation-as-a-Code (WaaC) — Root Git Ignore Matrix
+# Platform    : macOS (Apple Silicon arm64 Darwin 25+)
+# Specification: Strict XDG Base Directory Standard v0.8+
+# Security    : Zero-Leak Credential & Ephemeral Runtime Defense
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ==============================================================================
+# 1. OPERATING SYSTEM & APFS SUBSTRATES (macOS)
+# ==============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# ==============================================================================
+# 2. CRYPTOGRAPHIC PROVENANCE, PRIVATE KEYS & IDENTITY (ZERO-LEAK)
+# ==============================================================================
+# SSH Private Keys, Host Secrets & Runtime Multiplexing
+/config/ssh/*.pub
+/config/ssh/id_*
+/config/ssh/*.key
+/config/ssh/*.pem
+/config/ssh/*.p12
+/config/ssh/*.pfx
+/config/ssh/cm-*
+/config/ssh/ssh_auth_sock
+/config/ssh/known_hosts.old
+/config/ssh/conf.d/*local*.conf
+
+# GnuPG / age / SOPS / 1Password
+*.age
+*.key
+*.sec
+secring.*
+private-keys-v1.d/
+/config/op/
+age.key
+
+# ==============================================================================
+# 3. ENVIRONMENT SECRETS, TOKENS & FIXTURES
+# ==============================================================================
+.env
+.env.*
+*.env
+*.secret
+*.token
+*.local
+credentials.json
+secrets.json
+
+# Whitelist environment templates
+!.env.example
+!*.example.env
+
+# ==============================================================================
+# 4. VERSION CONTROL & GIT IDENTITY OVERRIDES
+# ==============================================================================
+# Private Git Profiles (Enterprise / NDA inclusions)
+/config/git/profiles/*.inc
 *.inc
 !*.example
-/config/git/profiles/*.inc
+
+# GitHub CLI OAuth and Auth tokens
+/config/gh/hosts.yml
+
+# ==============================================================================
+# 5. SHELL RUNTIMES, HISTORY & IPC (STATE ISOLATION)
+# ==============================================================================
+# Fish Shell Runtime History & Generated State
+/config/fish/fish_history
+/config/fish/fish_history.bak
+/config/fish/generated_completions/
+/config/fish/.history_export*
+
+# Atuin / xstory / Terminal History
+/config/atuin/history.db*
+*.tsv
+.xstory/
+
+# ==============================================================================
+# 6. PKM, EDITORS & IDE RUNTIMES
+# ==============================================================================
+# Obsidian Plugins (Heavy vendor bundles) & Session State
 /config/obsidian/plugins/
+/config/obsidian/workspace*
+/config/obsidian/cache/
+/config/obsidian/.trash/
+
+# Neovim / Vim Swap, Undo & Session Dumps
+*.swp
+*.swo
+*.swn
+*.bak
+*~
+*.orig
+undo/
+view/
+shada/
+
+# ==============================================================================
+# 7. TERMINAL, PAGER & TOOLCHAIN RUNTIMES
+# ==============================================================================
+# Bat Theme Binary Cache & Test Fixtures
+/config/bat/themes.bin
+/config/bat/tests/
+
+# Tmux Resurrect State & Sockets
+/config/tmux/resurrect/
+/config/tmux/*.sock
+
+# Yazi Package Caches
+/config/yazi/packages/
+
+# ==============================================================================
+# 8. NETWORK & DAEMON LOGS / RUNTIME CACHES
+# ==============================================================================
+*.log
+/config/dnscrypt-proxy/*.log
+/config/curl/.curl_*
+/config/wget/.wget-*
+
+# ==============================================================================
+# 9. BUILD SYSTEMS, DEPENDENCIES & LINTER CACHES
+# ==============================================================================
+node_modules/
+.pnpm-store/
+.npm/
+.eslintcache
+.ruff_cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+target/
+Cargo.lock
+
+# Temporary repository artifacts
+README_new.md
+/pkg/

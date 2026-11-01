@@ -1,0 +1,16 @@
+# NOTE:-------------------------------------------------------
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# OpenSSH Client Configuration Orchestrator
+# Platform: macOS Sequoia (Apple Silicon arm64 Darwin 25+)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Global parser compatibility directives
+IgnoreUnknown UseKeychain
+
+# Modular configuration includes (lexicographical precedence: 01-79 hosts, 80-99 global)
+Include conf.d/*.conf
