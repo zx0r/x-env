@@ -1,25 +1,43 @@
-[![Platform](https://img.shields.io/badge/macOS-Apple_Silicon_arm64-black.svg)](#)
-[![Shell](https://img.shields.io/badge/Shell-Fish_4.x-00ff41.svg)](#shell-architecture)
-[![Subsystems](https://img.shields.io/badge/Subsystems-40-orange.svg)](#subsystem-registry)
-[![XDG](https://img.shields.io/badge/XDG-Base_Directory-green.svg)](#xdg-layout)
-[![Startup](https://img.shields.io/badge/Startup-7.6_ms-blue.svg)](#performance)
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-macOS_Apple_Silicon-007AFF?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
+  <img src="https://img.shields.io/badge/Shell-Fish_4.x-00CED1?style=flat-square" alt="Fish" />
+  <img src="https://img.shields.io/badge/Terminal-Ghostty-FF6B35?style=flat-square&logo=ghostery&logoColor=white" alt="Ghostty" />
+  <img src="https://img.shields.io/badge/Editor-Neovim-57A143?style=flat-square&logo=neovim&logoColor=white" alt="Neovim" />
+  <img src="https://img.shields.io/badge/Multiplexer-Tmux-1BB91F?style=flat-square&logo=tmux&logoColor=white" alt="Tmux" />
+</p>
 
-### XDG-compliant configuration files for a macOS developer workstation on Apple Silicon.
+### The System as Interface: A Zero-Latency Workstation Control Plane for macOS Apple Silicon
+
+> Declarative, XDG-compliant macOS environment featuring an AOT/SWR shell caching engine, zero-overhead toolchain resolution, and Secure Enclave SSH/Git attestation.
+
+<p align="center">
+  <img src="assets/images/nvim.webp" alt="Neovim — Systems Engineering & Zero-Cost Architecture" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+<p align="center">
+  <img src="assets/images/terminal.webp" alt="Ghostty Terminal — Display P3 Gamut & Typography Matrix" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+<p align="center">
+  <img src="assets/images/tmux.webp" alt="Tmux Workspace & Subsystem Navigation" style="border-radius: 8px; max-width: 100%;" />
+</p>
 
 ---
 
 ## Performance
 
-### `hyperfine --warmup 10 -r 150 'fish -i -c exit'`
-
-**Benchmark 1: `fish -i -c exit` (150 runs)**
+```fish
+hyperfine --warmup 10 -r 150 'fish -i -c exit'
+```  
 
 | Metric | mean | σ | min | max |
 | :--- | :---: | :---: | :---: | :---: |
 | Wall Time [ms] | 7.4 | 0.5 | 6.6 | 8.5 |
 | Memory [MiB] | 6.6 | 0.0 | 6.5 | 6.7 |
 
-### `fish --profile-startup /tmp/fish.prof -ic exit && sort -nrk2 /tmp/fish.prof | head -20`
+```fish
+fish --profile-startup /tmp/fish.prof -ic exit && sort -nrk2 /tmp/fish.prof | head -20
+```
 
 | Time (µs) | Sum (µs) | Command / Trace |
 | :---: | :---: | :--- |
@@ -76,7 +94,7 @@ x-env/
 ├── alacritty/                    # Alacritty terminal
 ├── tmux/                         # Terminal multiplexer
 ├── starship/                     # Prompt
-├── /xstory                       # Shell history
+├── xstory/                       # Shell history
 ├── git/                          # Git
 ├── jj/                           # Jujutsu VCS
 ├── gh/                           # GitHub CLI
