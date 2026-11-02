@@ -6,9 +6,17 @@
   <img src="https://img.shields.io/badge/Multiplexer-Tmux-1BB91F?style=flat-square&logo=tmux&logoColor=white" alt="Tmux" />
 </p>
 
+<p align="center">
+  <img src="assets/images/saas.webp" alt="Workstation Control Plane Banner" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+---
+
 ### The System as Interface: A Zero-Latency Workstation Control Plane for macOS Apple Silicon
 
 > Declarative, XDG-compliant macOS environment featuring an AOT/SWR shell caching engine, zero-overhead toolchain resolution, and Secure Enclave SSH/Git attestation.
+
+---
 
 <p align="center">
   <img src="assets/images/nvim.webp" alt="Neovim — Systems Engineering & Zero-Cost Architecture" style="border-radius: 8px; max-width: 100%;" />
@@ -24,7 +32,7 @@
 
 ---
 
-## Performance
+## Benchmark
 
 ```fish
 hyperfine --warmup 10 -r 150 'fish -i -c exit'
@@ -71,7 +79,7 @@ CLI tool on the workstation lives here under `xdg/`, which gets symlinked to `~/
 Changes are version-controlled, diffable, and reproducible across machines.
 
 ```
-~/x/config/xdg/  ──symlink──▶  ~/.config/
+<your-path>  ──symlink──▶  ~/.config/
 ```
 
 **Key properties:**
