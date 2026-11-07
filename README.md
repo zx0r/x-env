@@ -16,17 +16,9 @@
 
 ### The System as Interface: A Zero-Latency Workstation Control Plane for macOS Apple Silicon
 
-> **Coordinate:** `[c] config` $\in \mathcal{X} = \{\text{[a] agents}, \text{[b] brain}, \text{[c] config}, \text{[d] dev}\}$
-
-```text
-┌─────────── [a] agents (Agency: Who acts?) ───────────┐
-│                                                      │
-▼                                                      ▼
-[c] config (Control: Invariants) ◄────► [d] dev (Production: Artifacts)
-▲                                                      │
-│                                                      ▼
-└─────────── [b] brain (Knowledge: State Model) ───────┘
-```
+$$
+\mathcal{X} = \langle \underset{\text{agents}}{\mathcal{A}}, \; \underset{\text{brain}}{\mathcal{B}}, \; \underset{\text{config}}{\mathcal{C}}, \; \underset{\text{dev}}{\mathcal{D}} \rangle
+$$
 
 ---
 
@@ -40,6 +32,18 @@
 ├── [b] brain     → Knowledge  (What is known?)
 ├── [c] config    → Control    (How is execution governed?)
 └── [d] dev       → Production (What is constructed?)
+```
+
+### Closed-Loop Control
+
+```text
+       ┌─────────── [a] agents (Agency: Who acts?) ───────────┐
+       │                                                      │
+       ▼                                                      ▼
+[c] config (Control: Invariants) ◄────► [d] dev (Production: Artifacts)
+       ▲                                                      │
+       │                                                      ▼
+       └─────────── [b] brain (Knowledge: State Model) ───────┘
 ```
 
 `x-env` is **not a legacy dotfile repository**. It is a version-controlled, declarative single source of truth (SSOT) that governs system policies, toolchain declarations, and application runtimes while strictly isolating persistent configuration from volatile runtime state.
