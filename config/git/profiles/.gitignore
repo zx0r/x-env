@@ -1,3 +1,0 @@
-# Ignore private Git profile inclusions (zero credential/identity leak)
-*.inc
-!*.example

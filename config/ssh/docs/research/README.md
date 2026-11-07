@@ -36,3 +36,17 @@ This archive houses empirical and theoretical research investigations establishi
   2. Mathematical proof of RFC 5647 §7.1 AES-GCM IV=0 invocation counter reset immunity.
   3. Apple Silicon ARMv8.5-A hardware benchmarks: ML-KEM-768 (+1.2% overhead) vs. sntrup761 (+3.8% overhead).
   4. Lexicographical configuration resolution invariants and strict first-match evaluation guarantees.
+
+---
+
+### [Volume 3: Workstation Control Plane & Hardware-Bound SSH Infrastructure (2026-11)](file:///Users/x0r/.ssh/docs/research/2026-11-workstation-control-plane-ssh/ssh-client-as-production-infrastructure.md)
+* **Directory**: [`~/.ssh/docs/research/2026-11-workstation-control-plane-ssh/`](file:///Users/x0r/.ssh/docs/research/2026-11-workstation-control-plane-ssh)
+* **Date**: November 2026
+* **Artifacts**:
+  * [`ssh-client-as-production-infrastructure.md`](file:///Users/x0r/.ssh/docs/research/2026-11-workstation-control-plane-ssh/ssh-client-as-production-infrastructure.md): Academic research paper (*"SSH Client as Production Infrastructure: Securing a macOS Workstation Control Plane via Hardware-Bound Identity, Deterministic Socket Hashing, and Post-Quantum Cryptographic Agility"*).
+* **Core Topics**:
+  1. Darwin XNU kernel `struct sockaddr_un.sun_path` 104-byte bound and deterministic SHA-1 connection hashing (`%C`).
+  2. Apple Silicon Secure Enclave (SEP) hardware identity and mathematical decoupling from Store-Now-Decrypt-Later (SNDL) threats.
+  3. Formal proof of AES-256-GCM Terrapin immunity under RFC 5647 §7.1 and ARMv8.5-A `PMULL`/`AESE` line-rate acceleration.
+  4. Dual-recipient disaster recovery envelope protocol (NIST SP 800-57 §8.1) resolving the hardware enclave SPOF trap via SOPS and age.
+  5. C source audit of OpenSSH (`ssh.c:1358-1363`) runtime demotion of `UpdateHostKeys` under `ControlPersist`.
