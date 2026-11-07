@@ -17,7 +17,7 @@
 ### The System as Interface: A Zero-Latency Workstation Control Plane for macOS Apple Silicon
 
 $$
-\mathcal{X} = \langle \underset{\text{agents}}{\mathcal{A}}, \; \underset{\text{brain}}{\mathcal{B}}, \; \underset{\text{config}}{\mathcal{C}}, \; \underset{\text{dev}}{\mathcal{D}} \rangle
+\mathcal{X} = \langle \underset{\text{agents}}{\mathcal{A}}, \underset{\text{brain}}{\mathcal{B}}, \underset{\text{config}}{\mathcal{C}}, \underset{\text{dev}}{\mathcal{D}} \rangle
 $$
 
 ---
