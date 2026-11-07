@@ -16,26 +16,33 @@
 
 ### The System as Interface: A Zero-Latency Workstation Control Plane for macOS Apple Silicon
 
-> **Coordinate:** `[c] config` $\in \mathcal{X} = \{\text{[a] agents}, \text{[b] brain}, \text{[c] config}, \text{[d] dev}\}$  
-> **Compliance:** Strict XDG Base Directory Standard v0.8+ · POSIX IEEE Std 1003.1-2024  
-> **Platform:** macOS Darwin (Apple Silicon arm64) · Cold Boot SLA: < 10.0 ms (3.82 ms non-interactive / 7.4 ms interactive)  
-> **Security:** Zero-Disk-Leak Credential Model · Hardware-Anchored Identity (Apple Secure Enclave Processor)
+> **Coordinate:** `[c] config` $\in \mathcal{X} = \{\text{[a] agents}, \text{[b] brain}, \text{[c] config}, \text{[d] dev}\}$
+
+```text
+┌─────────── [a] agents (Agency: Who acts?) ───────────┐
+│                                                      │
+▼                                                      ▼
+[c] config (Control: Invariants) ◄────► [d] dev (Production: Artifacts)
+▲                                                      │
+│                                                      ▼
+└─────────── [b] brain (Knowledge: State Model) ───────┘
+```
 
 ---
 
 ## 1. Ontological Coordinate & Scope
 
-`x-config` is the **deterministic Control Plane** of the personal computational environment. Within the four-domain model of **X Meta Workspace**, it governs how execution occurs across all actors and subsystems:
+`x-env` is the **deterministic Control Plane** of the personal computational environment. Within the four-domain model of **X Meta Workspace**, it governs how execution occurs across all actors and subsystems:
 
 ```text
 [x] META-WORKSPACE ($HOME/x)
 ├── [a] agents    → Agency     (Who acts?)
 ├── [b] brain     → Knowledge  (What is known?)
-├── [c] config    → Control    (How is execution governed?)  <-- [x-config]
+├── [c] config    → Control    (How is execution governed?)
 └── [d] dev       → Production (What is constructed?)
 ```
 
-`x-config` is **not a legacy dotfile repository**. It is a version-controlled, declarative single source of truth (SSOT) that governs system policies, toolchain declarations, and application runtimes while strictly isolating persistent configuration from volatile runtime state.
+`x-env` is **not a legacy dotfile repository**. It is a version-controlled, declarative single source of truth (SSOT) that governs system policies, toolchain declarations, and application runtimes while strictly isolating persistent configuration from volatile runtime state.
 
 Targeting macOS on Apple Silicon hardware, the repository structures configurations under a centralized configuration namespace (`config/`), projected idempotently into the host system in strict adherence to the **XDG Base Directory Specification** (`~/.config/`). It establishes the deterministic execution baseline for both interactive human workflows and automated AI agents.
 
@@ -60,7 +67,6 @@ Targeting macOS on Apple Silicon hardware, the repository structures configurati
 The root repository layout strictly isolates user-space configurations and package manifests into two core operational trees:
 
 ```text
-x-config/ ($HOME/x/config)
 ├── config/                       # Single Source of Truth for $XDG_CONFIG_HOME (~/.config)
 │   ├── fish/                     # Shell: decade-spaced conf.d/ topology & SWR cache engine
 │   ├── ghostty/                  # Primary GPU terminal: native macOS Zig renderer
@@ -158,190 +164,7 @@ fish --profile-startup /tmp/fish.prof -ic exit && sort -nrk2 /tmp/fish.prof | he
 
 ---
 
-## 6. Zero-Fork Performance Model
-
-Traditional shell initialization sequences accumulate 80–150 ms of latency through repeated `fork-exec` cycles. This control plane systematically eliminates each blocking subprocess:
-
-| Eliminated Subprocess | Conventional Approach | Zero-Fork Replacement |
-| :--- | :--- | :--- |
-| `starship init fish \| source` | Spawns external process on every boot | Pre-compiled to `$XDG_CACHE_HOME/fish/static_init/starship.fish`; sourced directly |
-| `zoxide init fish \| source` | Spawns external process on every boot | Pre-compiled to static cache file |
-| `atuin init fish \| source` | Spawns external process + UUID fork | Cached + patched: `atuin uuid` replaced with native Fish `random` arithmetic |
-| `eval (brew shellenv)` | Spawns Ruby interpreter (~40 ms) | Replaced by static variable declarations in `02_toolchain.fish` |
-| `set -gx GPG_TTY (tty)` | Synchronous `/usr/bin/tty` subprocess | Bypassed via Secretive SSH signing; legacy fallback deferred to autoload wrapper |
-| Micromamba shell hook | Reads massive completion sets (~5.9 ms) | Isolated to `functions/micromamba.fish`; completions deferred to `Tab` trigger |
-| `fish_add_path` | Blocking universal variable write | Replaced by in-memory C++ builtins `path normalize` + `path filter -d` in `02_toolchain.fish` |
-
----
-
-## 7. Subsystem Architecture
-
-### 7.1 Interactive Shell Subsystem (Fish)
-
-Fish shell configuration files located in [`config/fish/conf.d/`](config/fish/conf.d/) are evaluated in lexicographic (ASCII) order prior to `config.fish`. A **decade-spaced decimal topology** guarantees deterministic dependency resolution:
-
-```text
-config/fish/config.fish  (Orchestrator)
-└── conf.d/
-    ├── 00-09  Foundation Layer     · 00_bootstrap · 01_env · 02_toolchain (AOT PATH & mise)
-    ├── 10-19  Infrastructure Layer · 10_hooks (SWR Cache) · 11_ipc (Secretive SSH Socket)
-    ├── 20-29  Commands Layer       · 20_abbrs (Lazy JIT Abbreviations)
-    ├── 30-39  UX / Styling Layer   · 30_ui (Prompt, Vi Cursor & Color Themes)
-    ├── 40-49  Input Layer          · 40_bindings (Vi-Mode Keymaps & Widgets)
-    ├── 50-59  Tooling Layer        · 50_search (FZF & Ripgrep Integrations)
-    └── 90-99  Extension Layer      · 99_local (Machine-Local Overrides, git-ignored)
-```
-
-| Layer Range | Bounded Context | Canonical Modules | Core Responsibility |
-| :--- | :--- | :--- | :--- |
-| **00–09** | Foundation | `00_bootstrap.fish`<br/>`01_env.fish`<br/>`02_toolchain.fish` | XDG directory bootstrapping, static Homebrew mapping, unified AOT PATH static cache, mise shims compatibility, and telemetry opt-outs |
-| **10–19** | Infrastructure | `10_hooks.fish`<br/>`11_ipc.fish` | SWR AOT cache engine (`frontend.fish`) and hardware Secure Enclave socket propagation (Secretive) |
-| **20–29** | Commands | `20_abbrs.fish` | Abbreviation registry (JIT deferred); macOS subsystem maintenance commands; filesystem shortcuts |
-| **30–39** | UX / Styling | `30_ui.fish` | Asynchronous prompt rendering, Vi-cursor state transitions, interactive color scheme loading |
-| **40–49** | Input | `40_bindings.fish` | Vi-mode bindings, FZF widget key assignments, clipboard integration |
-| **50–59** | Tooling | `50_search.fish` | FZF environment options, Ripgrep preview integrations, Bat pager theme, Zoxide configuration |
-| **90–99** | Extension | `99_local.fish` | Machine-local credentials and private overrides; git-ignored, not committed to repository |
-
-### 7.2 Terminal Multiplexer Subsystem (Tmux)
-
-The Tmux configuration in [`config/tmux/`](config/tmux/) enforces cognitive load minimization through role-based window partitioning:
-- **Three-Window Operational Model:** Sessions partition strictly into Window 1 (Dev — primary editor), Window 2 (Ops — Git, system maintenance, ad-hoc commands), and Window 3 (Run — active services, servers, databases).
-- **Contextual Stage Routing (`stages/`):** Environment injection (`X_STAGE`) dynamically sources `stages/dev.tmux` or `stages/prod.tmux`, applying distinct border palettes and safety invariants.
-- **Mode Schemas (`modes/`):** Toggles between `modes/human.tmux` for interactive keybindings and `modes/agent.tmux` for automated AI agent manipulation.
-- **Persistent SSH Socket Symlink:** macOS rotates agent socket paths across sleep/wake events. Layer `11_ipc.fish` maintains an atomic symlink at `~/.ssh/ssh_auth_sock` pointing to the live socket, ensuring multiplexer panes never lose authentication state.
-
-### 7.3 Primary Editor Subsystem (Neovim)
-
-The editor configuration in [`config/nvim/`](config/nvim/) implements a Capability-Oriented Domain Architecture (CODA):
-- **Domain Decoupling:** Flat domain manifests (`lua/plugins/*.lua`) define system capabilities (coding, navigation, diagnostics, LSP) rather than tying configuration to specific plugin implementations.
-- **Three-Ring Execution Lifecycle:**
-  - *Ring 0 (Instant Baseline, < 1.0 ms):* Bytecode loader (`vim.loader.enable()`), core performance overrides (`core.perf`), and direct theme rendering (`colorscheme("x")`).
-  - *Ring 1 (Lazy Bootstrap, 5–15 ms):* Sandboxed plugin specification compilation via `lazy.nvim`.
-  - *Ring 2 (Deferred Ergonomics):* Autocommands, `:CoreDoctor` invariant auditing, and keybindings deferred to `VeryLazy` event execution after the UI is interactive.
-- **Zero-Overhead Invariants:** Zero active background polling timers (`vim.uv.walk` verified) and zero synchronous process executions (`vim.system` async execution only).
-
-### 7.4 Hardware Cryptography & Secret Management
-
-Security and authentication operate under a strict zero-ambient-leakage model:
-- **Hardware-Anchored Identity (Apple Secure Enclave):** Master SSH keys reside exclusively in the Apple Secure Enclave Processor (SEP) managed via Secretive. Private keys never touch persistent SSD storage or general RAM. Git commits are cryptographically signed via `PROTOCOL.sshsig` bound to Touch ID authentication.
-- **Deterministic Socket Hashing:** OpenSSH connection multiplexing utilizes deterministic SHA-1 connection parameter hashing (`ControlPath ~/.ssh/cm-%C`), capping Darwin Unix domain socket paths at ~59 bytes (well below the XNU 104-byte limit).
-- **Post-Quantum Cryptographic Agility:** OpenSSH transport enforces ML-KEM-768 hybrid key exchange (FIPS 203) alongside Terrapin-immune AEAD ciphers (`aes256-gcm@openssh.com`).
-- **Encrypted Master Store:** Declarative secrets are encrypted at rest using Mozilla SOPS with `age` keys (`~/.config/secrets.enc.yaml`).
-- **Volatile RAM Cache & Scope-Isolated Execution:** Secrets resolve at runtime into a volatile RAM cache in `$TMPDIR/secrets.env` (< 1 ms latency). Functions `get-secret` and `with-secret` inject credentials strictly into child process memory scopes (`set -lx`), preventing ambient environment leakage.
-
----
-
-## 8. Subsystem Registry
-
-### Shell & Prompt
-
-| Subsystem | Source Path | Role & Architecture |
-| :--- | :--- | :--- |
-| **Fish** | [`config/fish/`](config/fish/) | Primary interactive shell; decade-spaced `conf.d/` topology; SWR AOT cache; 7.4 ms cold boot |
-| **Starship** | [`config/starship/`](config/starship/) | Cross-shell prompt; pre-compiled into static cache |
-| **xstory** | [`config/fish/conf.d/`](config/fish/conf.d/) | Zero-copy mmap TSV shell history engine with tree-sitter highlighting |
-| **FZF** | [`config/fish/functions/__x_init_fzf.fish`](config/fish/functions/__x_init_fzf.fish) | Fuzzy finder; Ripgrep preview pipelines; Git integration; process management |
-
-### GPU Terminals
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Ghostty** | [`config/ghostty/`](config/ghostty/) | Primary GPU terminal; native macOS; Zig renderer; Display P3 color gamut |
-| **Kitty** | [`config/kitty/`](config/kitty/) | Tab-bar plugin; dark-mode automation; split kitten; custom themes |
-| **Alacritty** | [`config/alacritty/`](config/alacritty/) | Minimal GPU terminal; Catppuccin & Gruvbox themes |
-
-### Terminal Multiplexer
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Tmux** | [`config/tmux/`](config/tmux/) | Modular config; dual themes; FZF pane nav; status bar (CPU, RAM, SSD, net, git, uptime) |
-
-### Version Control & Attestation
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Git** | [`config/git/`](config/git/) | Touch ID commit signing (SSH `sshsig`); APFS normalization; FSEvents integration |
-| **Jujutsu** | [`config/jj/`](config/jj/) | Git-compatible VCS; operation log; conflict-first workflow |
-| **Lazygit** | [`config/lazygit/`](config/lazygit/) | Fast terminal UI for Git; Delta pager renderer; Neovim integration |
-| **GitUI** | [`config/gitui/`](config/gitui/) | Rust-based high-throughput Git TUI |
-| **GitHub CLI** | [`config/gh/`](config/gh/) | GitHub REST/GraphQL API workflows; PR/issue management |
-| **Gitleaks** | [`config/gitleaks/`](config/gitleaks/) | Pre-commit secret scanning engine |
-| **Cocogitto** | [`config/cocogitto/`](config/cocogitto/) | Conventional commits verification; automated changelog generation |
-| **Commitlint** | [`config/commitlint/`](config/commitlint/) | Commit message standard format enforcement |
-| **Lefthook** | [`config/lefthook/`](config/lefthook/) | High-performance polyglot Git hook orchestration |
-
-### Search, Navigation & Pagers
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Ripgrep** | [`config/ripgrep/`](config/ripgrep/) | Global ignore patterns; binary skipping; custom search flags |
-| **Bat** | [`config/bat/`](config/bat/) | 17+ custom syntaxes; 300+ themes; man pager integration |
-| **Yazi** | [`config/yazi/`](config/yazi/) | Async terminal file manager; Starship integration; custom previewers |
-
-### Network & Infrastructure Security
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **SSH** | [`config/ssh/`](config/ssh/) | Post-quantum KEX (ML-KEM-768); deterministic socket hashing (`cm-%C`); Secretive SEP |
-| **pf** | [`config/pf/`](config/pf/) | macOS Packet Filter kernel firewall rules |
-| **macOS Security** | [`config/macos-security/`](config/macos-security/) | NIST 800-53 / CIS Level 2 / DISA STIG baselines via mSCP |
-| **cURL** | [`config/curl/`](config/curl/) | HTTP/3; ML-KEM-768 TLS 1.3; AppleSecTrust; XDG-isolated caches |
-| **wget** | [`config/wget/`](config/wget/) | TLS 1.3 enforced; absolute path HSTS; APFS xattr preservation |
-| **DNSCrypt-Proxy** | [`config/dnscrypt-proxy/`](config/dnscrypt-proxy/) | Encrypted DNS client supporting DoH and DNSCrypt protocols |
-
-### Editors & Authoring
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Neovim** | [`config/nvim/`](config/nvim/) | Capability-Oriented Domain Architecture; 3-ring execution lifecycle; Bob version managed |
-| **Obsidian** | [`config/obsidian/`](config/obsidian/) | Knowledge management vault configuration and styling |
-| **Pandoc** | [`config/pandoc/`](config/pandoc/) | Universal document converter template library |
-| **Glow** | [`config/glow/`](config/glow/) | Terminal markdown renderer |
-
-### System & Input Configuration
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Karabiner-Elements** | [`config/karabiner/`](config/karabiner/) | Low-level kernel keyboard remapping and hyper-key rules |
-| **Btop** | [`config/btop/`](config/btop/) | Terminal resource monitor (CPU, GPU, RAM, Disks, Networks) |
-
-### Themes & Palette Databases
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **colorsdb** | [`config/colorsdb`](config/colorsdb) | Canonical 16/256-color palette dictionary |
-| **iconsdb** | [`config/iconsdb`](config/iconsdb) | Nerd Font icon and glyph symbol reference |
-| **ls_colors** | [`config/ls_colors`](config/ls_colors) | Comprehensive GNU LS_COLORS configuration |
-| **eza_colors** | [`config/eza_colors`](config/eza_colors) | Eza directory color overrides |
-
-### Declarative Package & Toolchain Manifests
-
-| Subsystem | Source Path | Technical Specifications |
-| :--- | :--- | :--- |
-| **Brewfile** | [`pkg/Brewfile`](pkg/Brewfile) | Declarative Homebrew manifest (CLI tools, GUI casks, fonts, AI agent runtimes) |
-| **Mise Substrate** | [`pkg/mise.toml`](pkg/mise.toml) | Environment substrate, XDG base directory enforcement, runtime tool versions |
-| **Rustup Toolchain** | [`pkg/rustup.toml`](pkg/rustup.toml) | Rust toolchain components, compiler channels, and cross-compilation targets |
-
----
-
-## 9. XDG Base Directory Mapping
-
-All runtime state is isolated strictly under [XDG Base Directory Specification v0.8+](https://specifications.freedesktop.org/basedir-spec/latest/):
-
-| Variable | Path | Core Responsibility |
-| :--- | :--- | :--- |
-| `XDG_CONFIG_HOME` | `~/.config` | Static configuration tree (symlinked from `config/`) |
-| `XDG_CACHE_HOME` | `~/.cache` | Regenerable binary caches, AOT snapshots, SWR artifacts |
-| `XDG_DATA_HOME` | `~/.local/share` | Persistent application state and databases |
-| `XDG_STATE_HOME` | `~/.local/state` | Session logs, history buffers, runtime states |
-| `XDG_BIN_HOME` | `~/.local/bin` | User-installed standalone binaries and utility shims |
-| `XDG_RUNTIME_DIR` | `$TMPDIR` | Volatile runtime files, IPC sockets, ephemeral decrypted secrets |
-
-*Zero dotfile pollution in `$HOME`. All configuration files live under deterministic XDG paths.*
-
----
-
-## 10. References & Upstream Specifications
+## 6. References & Upstream Specifications
 
 ### Standards & Specifications
 - [XDG Base Directory Specification v0.8+](https://specifications.freedesktop.org/basedir-spec/latest/)
