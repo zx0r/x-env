@@ -1,10 +1,4 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Platform-macOS_Apple_Silicon-007AFF?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
-  <img src="https://img.shields.io/badge/Security-Apple_Secure_Enclave-grey?style=flat-square&logo=apple&logoColor=white" alt="SEP" />
-  <img src="https://img.shields.io/badge/KEX-ML--KEM--768-orange?style=flat-square" alt="PQC" />
-</p>
-
-<p align="center">
   <img src="assets/images/saas.webp" alt="Workstation Control Plane Banner" style="border-radius: 8px; max-width: 100%;" />
 </p>
 
