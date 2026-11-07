@@ -1,9 +1,5 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-macOS_Apple_Silicon-007AFF?style=flat-square&logo=apple&logoColor=white" alt="macOS" />
-  <img src="https://img.shields.io/badge/Shell-Fish_4.x-00CED1?style=flat-square" alt="Fish" />
-  <img src="https://img.shields.io/badge/Terminal-Ghostty-FF6B35?style=flat-square&logo=ghostery&logoColor=white" alt="Ghostty" />
-  <img src="https://img.shields.io/badge/Editor-Neovim-57A143?style=flat-square&logo=neovim&logoColor=white" alt="Neovim" />
-  <img src="https://img.shields.io/badge/Multiplexer-Tmux-1BB91F?style=flat-square&logo=tmux&logoColor=white" alt="Tmux" />
   <img src="https://img.shields.io/badge/Security-Apple_Secure_Enclave-grey?style=flat-square&logo=apple&logoColor=white" alt="SEP" />
   <img src="https://img.shields.io/badge/KEX-ML--KEM--768-orange?style=flat-square" alt="PQC" />
 </p>
