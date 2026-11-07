@@ -14,8 +14,6 @@
 
 ---
 
-# x-config
-
 ### The System as Interface: A Zero-Latency Workstation Control Plane for macOS Apple Silicon
 
 > **Coordinate:** `[c] config` $\in \mathcal{X} = \{\text{[a] agents}, \text{[b] brain}, \text{[c] config}, \text{[d] dev}\}$  
