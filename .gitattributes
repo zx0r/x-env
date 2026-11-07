@@ -1,0 +1,18 @@
+# -----------------------------------------------------------------------------
+# GitHub Linguist Language Detection Overrides
+# Reference: https://github.com/github-linguist/linguist/blob/master/docs/overrides.md
+# -----------------------------------------------------------------------------
+
+# Exclude BibTeX / Pandoc bibliography data from repository language statistics
+*.bib linguist-detectable=false
+*.bib linguist-documentation=true
+config/pandoc/main-bibliography.bib linguist-detectable=false
+
+# Exclude test fixtures
+config/bat/tests/fixtures/** linguist-vendored
+
+# Exclude third-party themes, styles, and templates
+config/pandoc/csl/** linguist-vendored
+config/pandoc/github.css linguist-documentation=true
+config/obsidian/themes/** linguist-vendored
+config/yazi/flavors/** linguist-vendored
