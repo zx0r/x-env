@@ -27,13 +27,13 @@ $$
 ### Closed-Loop Control
 
 ```text
-       ┌─────────── [a] agents (Agency: Who acts?) ───────────┐
-       │                                                      │
-       ▼                                                      ▼
-[c] config (Control: Invariants) ◄────► [d] dev (Production: Artifacts)
-       ▲                                                      │
-       │                                                      ▼
-       └─────────── [b] brain (Knowledge: State Model) ───────┘
+       ┌────────────────────► [a] agents ────────────────────┐
+       │                                                     │
+       │                                                     ▼
+[c] config ◄─────────────────────────────────────────────► [d] dev
+       ▲                                                     │
+       │                                                     ▼
+       └───────────────────── [b] brain ◄────────────────────┘
 ```
 
 `x-env` is **not a legacy dotfile repository**. It is a version-controlled, declarative single source of truth (SSOT) that governs system policies, toolchain declarations, and application runtimes while strictly isolating persistent configuration from volatile runtime state.
