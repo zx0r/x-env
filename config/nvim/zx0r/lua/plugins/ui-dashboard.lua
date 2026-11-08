@@ -513,7 +513,7 @@ local function workspace_dock(self)
   local domain_meta = {
     agents = { icon = " ", hl = "SnacksDashboardIcon", key = "a" },
     brain = { icon = " ", hl = "SnacksDashboardIcon", key = "b" },
-    core = { icon = " ", hl = "SnacksDashboardIcon", key = "c" },
+    config = { icon = " ", hl = "SnacksDashboardIcon", key = "c" },
     dev = { icon = " ", hl = "SnacksDashboardIcon", key = "d" },
   }
 

@@ -58,10 +58,35 @@ return {
         nix = { "nix", "statix" },
 
         go = { "golangcilint" },
+        swift = { "swiftlint" },
 
         proto = { "buf_lint" },
         ["*"] = { "typos" },
       }
+
+      lint.linters.swiftlint = vim.tbl_deep_extend("force", lint.linters.swiftlint or {}, {
+        condition = function(ctx)
+          local filename = ctx and ctx.filename or vim.api.nvim_buf_get_name(0)
+          if filename == "" or filename:match("%.swiftinterface$") then
+            return false
+          end
+
+          local ignored_patterns = {
+            "/[%.]build/",
+            "/Pods/",
+            "/Carthage/",
+            "/DerivedData/",
+            "/[%.]sourcekit%-lsp/",
+          }
+          for _, pattern in ipairs(ignored_patterns) do
+            if filename:find(pattern) then
+              return false
+            end
+          end
+
+          return true
+        end,
+      })
 
       lint.linters.selene = vim.tbl_deep_extend("force", lint.linters.selene or {}, {
         condition = function(ctx)
@@ -150,6 +175,33 @@ return {
           end,
         }
       )
+
+      -- ======================================================================
+      -- SWIFTLINT AUTOCORRECT COMMAND (Zero-Overhead Async I/O)
+      -- ======================================================================
+
+      vim.api.nvim_create_user_command("SwiftLintFix", function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local filename = vim.api.nvim_buf_get_name(bufnr)
+        if vim.bo[bufnr].filetype ~= "swift" or filename == "" then
+          vim.notify("SwiftLintFix: Current buffer is not a valid Swift file on disk", vim.log.levels.WARN)
+          return
+        end
+
+        if vim.bo[bufnr].modified then
+          vim.cmd("silent write")
+        end
+
+        vim.system({ "swiftlint", "lint", "--fix", "--quiet", filename }, { text = true }, vim.schedule_wrap(function(obj)
+          if obj.code == 0 then
+            vim.cmd("checktime " .. bufnr)
+            vim.notify("SwiftLint: Autofix applied successfully", vim.log.levels.INFO, { title = "SwiftLint" })
+          else
+            local err = (obj.stderr and #obj.stderr > 0 and obj.stderr) or obj.stdout or "unknown error"
+            vim.notify("SwiftLint fix error: " .. err, vim.log.levels.ERROR, { title = "SwiftLint" })
+          end
+        end))
+      end, { desc = "SwiftLint: Autocorrect current buffer violations asynchronously" })
     end,
   },
 

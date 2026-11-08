@@ -47,6 +47,14 @@ return {
       "BufNewFile",
     },
 
+    cmd = {
+      "LspInfo",
+      "LspRestart",
+      "LspStart",
+      "LspStop",
+      "LspLog",
+    },
+
     dependencies = {
       { "b0o/schemastore.nvim", lazy = true },
     },
@@ -87,6 +95,43 @@ return {
       vim.lsp.config("*", {
         capabilities = capabilities,
       })
+
+      -- LSP Lifecycle: Deterministic LspRestart command for Neovim >= 0.12
+      if vim.fn.exists(":LspRestart") == 0 then
+        vim.api.nvim_create_user_command("LspRestart", function(info)
+          local name = info.args ~= "" and info.args or nil
+          local clients = vim.lsp.get_clients(name and { name = name } or {})
+          if #clients == 0 then
+            vim.notify("No active LSP client" .. (name and (" matching " .. name) or ""), vim.log.levels.WARN)
+            return
+          end
+          for _, client in ipairs(clients) do
+            local bufs = vim.lsp.get_buffers_by_client_id(client.id)
+            local cname = client.name
+            client:stop()
+            vim.notify("Restarting LSP: " .. cname, vim.log.levels.INFO)
+            vim.defer_fn(function()
+              for _, bufnr in ipairs(bufs) do
+                if vim.api.nvim_buf_is_valid(bufnr) then
+                  vim.api.nvim_buf_call(bufnr, function()
+                    vim.cmd("edit!")
+                  end)
+                end
+              end
+            end, 200)
+          end
+        end, {
+          nargs = "?",
+          desc = "Restart LSP clients and reattach buffers",
+          complete = function()
+            local names = {}
+            for _, c in ipairs(vim.lsp.get_clients()) do
+              table.insert(names, c.name)
+            end
+            return names
+          end,
+        })
+      end
 
 
       -- ======================================================================
@@ -342,6 +387,7 @@ return {
         cssmodules_ls = "cssmodules-language-server",
         css_variables = "css-variables-language-server",
         biome = "biome",
+        sourcekit = "sourcekit-lsp",
       }
 
       vim.lsp.enable(vim.tbl_keys(servers))
@@ -662,5 +708,63 @@ return {
       { "<leader>cT", "<cmd>TWValues<cr>", desc = "Tailwind CSS values" },
     },
     opts = {},
+  },
+
+  -- ==========================================================================
+  -- SWIFT & APPLE PLATFORMS (xcodebuild.nvim: macOS GUI, CLI & XCODE SCHEMES)
+  -- ==========================================================================
+  {
+    "wojciech-kulik/xcodebuild.nvim",
+    ft = { "swift", "objc", "objcpp" },
+    cmd = {
+      "XcodebuildSetup",
+      "XcodebuildPicker",
+      "XcodebuildSelectScheme",
+      "XcodebuildSelectDevice",
+      "XcodebuildBuild",
+      "XcodebuildBuildRun",
+      "XcodebuildBuildForTesting",
+      "XcodebuildTest",
+      "XcodebuildToggleLogs",
+      "XcodebuildOpenLogs",
+      "XcodebuildCloseLogs",
+      "XcodebuildCleanDerivedData",
+      "XcodebuildCleanBuild",
+      "XcodebuildProjectManager",
+      "XcodebuildShowConfig",
+      "XcodebuildBootSimulator",
+      "XcodebuildCancel",
+    },
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+    },
+    opts = {
+      show_build_progress_bar = false, -- Prevent recurring timer overhead (Zero-Overhead Contract)
+      logs = {
+        auto_open_on_success_ended = false,
+        auto_open_on_failed_build = true,
+        auto_close_on_app_launch = true,
+        only_summary = false,
+      },
+      integrations = {
+        xcode_build_server = {
+          enabled = true,
+        },
+        dap = {
+          enabled = true,
+          adapter = "lldb-dap",
+        },
+      },
+    },
+    keys = {
+      { "<leader>XS", "<cmd>XcodebuildSetup<cr>", desc = "Xcodebuild: Project Setup Wizard" },
+      { "<leader>Xp", "<cmd>XcodebuildPicker<cr>", desc = "Xcodebuild: Show Project Actions" },
+      { "<leader>Xs", "<cmd>XcodebuildSelectScheme<cr>", desc = "Xcodebuild: Select Scheme" },
+      { "<leader>Xb", "<cmd>XcodebuildBuild<cr>", desc = "Xcodebuild: Build Project" },
+      { "<leader>Xr", "<cmd>XcodebuildBuildRun<cr>", desc = "Xcodebuild: Build & Run" },
+      { "<leader>Xt", "<cmd>XcodebuildTest<cr>", desc = "Xcodebuild: Run Tests" },
+      { "<leader>Xl", "<cmd>XcodebuildToggleLogs<cr>", desc = "Xcodebuild: Toggle Build Logs" },
+      { "<leader>Xc", "<cmd>XcodebuildCleanDerivedData<cr>", desc = "Xcodebuild: Clean DerivedData" },
+    },
   },
 }

@@ -65,6 +65,9 @@ return {
         -- Rust
         "rust",
 
+        -- Swift
+        "swift",
+
         -- Go
         "go",
         "gomod",

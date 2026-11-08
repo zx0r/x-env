@@ -188,6 +188,7 @@ return {
         },
 
         rust = { "rustfmt" },
+        swift = { "swiftformat", "swift", stop_after_first = true },
 
         go = {
           "gofumpt",
@@ -280,6 +281,12 @@ return {
       },
 
       formatters = {
+        swiftformat = {
+          prepend_args = {
+            "--quiet",
+          },
+        },
+
         stylua = {
           prepend_args = {
             "--indent-type",

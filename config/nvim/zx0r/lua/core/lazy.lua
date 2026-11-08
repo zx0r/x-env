@@ -73,7 +73,7 @@ if ok then
     install = {
       -- Deterministic supply-chain: do not check/install missing plugins on launch.
       -- Plugin provisioning is performed explicitly via :Lazy install / sync.
-      missing = is_bootstrap,
+      missing = true,
 
       -- Temporary fallback colorscheme used during initial installation when
       -- the user's configured colorscheme is not available yet.
