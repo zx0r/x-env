@@ -9,8 +9,8 @@
 # Platform: macOS Sequoia (Apple Silicon arm64 Darwin 25+)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Global parser compatibility directives
-IgnoreUnknown UseKeychain
+# Global parser compatibility directives (Apple Darwin platform extensions)
+IgnoreUnknown UseKeychain,AppleMultipath
 
 # Modular configuration includes (lexicographical precedence: 01-79 hosts, 80-99 global)
 Include conf.d/*.conf
