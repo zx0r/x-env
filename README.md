@@ -62,32 +62,55 @@ The root repository layout strictly isolates user-space configurations and packa
 
 ```text
 ├── config/                       # Single Source of Truth for $XDG_CONFIG_HOME (~/.config)
-│   ├── fish/                     # Shell: decade-spaced conf.d/ topology & SWR cache engine
-│   ├── ghostty/                  # Primary GPU terminal: native macOS Zig renderer
-│   ├── kitty/                    # Terminal: tab-bar automation, custom themes
-│   ├── alacritty/                # Minimal GPU terminal
-│   ├── tmux/                     # Terminal multiplexer: 3-window model & stage routing
-│   ├── nvim/                     # Primary editor: Capability-Oriented Domain Architecture
-│   ├── starship/                 # Cross-shell prompt (pre-compiled into AOT cache)
-│   ├── git/                      # Git: Secure Enclave commit signing & APFS normalization
-│   ├── jj/                       # Jujutsu VCS: conflict-first workflow
-│   ├── ssh/                      # OpenSSH: post-quantum KEX & deterministic socket hashing
-│   ├── bat/                      # Syntax-highlighted pager (17+ custom syntaxes)
-│   ├── yazi/                     # Modern async terminal file manager
-│   ├── ripgrep/                  # High-performance search & ignore rules
-│   ├── dnscrypt-proxy/           # DoH/DNSCrypt encrypted DNS
-│   ├── pf/                       # macOS Packet Filter firewall rules
-│   ├── macos-security/           # NIST / CIS / DISA STIG compliance baselines
-│   ├── obsidian/                 # Knowledge management vault configuration
-│   ├── karabiner/                # Keyboard remapping rules
+│   ├── alacritty/                # Minimal GPU-accelerated terminal emulator
+│   ├── atuin/                    # [Deprecated] Superseded by xstory (superior open-source, SQL-free zero-overhead history engine)
+│   ├── bat/                      # Syntax-highlighted pager with custom syntaxes & themes
+│   ├── bob/                      # Neovim version manager
 │   ├── btop/                     # System & hardware resource monitor
-│   ├── curl/ & wget/             # Hardened network clients (TLS 1.3, ML-KEM-768)
-│   ├── colorsdb & iconsdb        # Canonical named color & Nerd Font icon reference
-│   └── ls_colors & eza_colors    # Terminal directory colorization specifications
+│   ├── ccstatusline/             # Claude Code custom statusline configuration
+│   ├── chromium-flags.conf       # Hardened Chromium runtime flags
+│   ├── cocogitto/                # Conventional Commits changelog & versioning engine
+│   ├── codium-flags.conf         # Hardened VSCodium runtime flags
+│   ├── colorsdb                  # Terminal color database definitions
+│   ├── commitlint/               # Commit message linting rules
+│   ├── curl/                     # Curl network client configuration & hardening
+│   ├── dnscrypt-proxy/           # Encrypted DNS proxy (DoH, DNSCrypt)
+│   ├── eslint/                   # ECMAScript & TypeScript linter configuration
+│   ├── fish/                     # Interactive shell: decade-spaced conf.d/ & SWR cache
+│   ├── gh/                       # GitHub CLI configuration & credentials
+│   ├── gh-dash/                  # GitHub CLI terminal dashboard
+│   ├── ghostty/                  # Primary GPU terminal: native macOS Zig renderer
+│   ├── git/                      # Git: Secure Enclave commit signing & APFS normalization
+│   ├── git-graph/                # Git branching & revision visualizer configuration
+│   ├── github-copilot/           # GitHub Copilot CLI integration
+│   ├── gitleaks/                 # Pre-commit secret scanning engine rules
+│   ├── gitui/                    # Terminal UI for Git operations
+│   ├── glow/                     # Terminal Markdown renderer configuration
+│   ├── hunk/                     # Interactive diff/patch tool configuration
+│   ├── iconsdb                   # Nerd Font icons database
+│   ├── jj/                       # Jujutsu VCS: conflict-first workflow
+│   ├── karabiner/                # Karabiner-Elements keyboard remapping rules
+│   ├── kitty/                    # GPU terminal: tab-bar automation & custom themes
+│   ├── lazydocker/               # Terminal UI for Docker containers
+│   ├── lazygit/                  # Terminal UI for Git workflows
+│   ├── lefthook/                 # Fast, parallel Git hooks manager
+│   ├── macos-security/           # NIST / CIS / DISA STIG compliance baselines
+│   ├── nvim/                     # Primary editor: Capability-Oriented Domain Architecture
+│   ├── obsidian/                 # Knowledge management vault configuration
+│   ├── pandoc/                   # Document compiler, CSL styles & citation bibliographies
+│   ├── pf/                       # macOS Packet Filter firewall rules
+│   ├── repomix/                  # Codebase packager for LLM context injection
+│   ├── ripgrep/                  # High-performance search & ignore rules
+│   ├── ruff/                     # Python linter and formatter configuration
+│   ├── ssh/                      # OpenSSH: post-quantum KEX & deterministic socket hashing
+│   ├── starship/                 # Cross-shell prompt (pre-compiled into AOT cache)
+│   ├── tig/                      # Text-mode interface for Git
+│   ├── tmux/                     # Terminal multiplexer: 3-window model & stage routing
+│   ├── wget/                     # Wget network client configuration & hardening
+│   └── yazi/                     # Modern async terminal file manager
 │
 ├── pkg/                          # Declarative System & Toolchain Manifests
 │   ├── Brewfile                  # Homebrew bundle (CLI utilities, GUI casks, fonts, AI agents)
-│   ├── mise.toml                 # Environment substrate, XDG vars, toolchain versions
 │   └── rustup.toml               # Rust toolchain components and targets
 │
 └── README.md                     # Systems architecture specification & benchmarks
@@ -174,6 +197,7 @@ fish --profile-startup /tmp/fish.prof -ic exit && sort -nrk2 /tmp/fish.prof | he
 ### Core Runtimes & Subsystems
 - [Fish Shell Documentation](https://fishshell.com/docs/current/)
 - [Ghostty Terminal](https://ghostty.org)
+- [Kitty Terminal](https://sw.kovidgoyal.net/kitty/)
 - [Tmux Terminal Multiplexer](https://github.com/tmux/tmux)
 - [Neovim Documentation](https://neovim.io)
-- [Mise Development Environment](https://mise.jdx.dev)
+- [xstory Shell History Engine](https://github.com/zx0r/xstory)
