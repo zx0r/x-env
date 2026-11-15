@@ -9,7 +9,7 @@
 # created_at: "2026-06-24"
 # updated_at: "2026-10-18"
 # last_commit: "pending"
-# tags: ["keymaps", "bindings", "vi-mode", "widgets", "xstory"]
+# tags: ["keymaps", "bindings", "vi-mode", "widgets", "xc"]
 # ---
 
 # 1. Custom Key Bindings Registry (Must be defined BEFORE setting fish_key_bindings)

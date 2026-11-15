@@ -28,6 +28,11 @@ function __x_init_vars --description "Initialize interactive variables, colors, 
     set -q X_CONFIG; or set -gx X_CONFIG "$X_ROOT/config"
     set -q X_DEV; or set -gx X_DEV "$X_ROOT/dev"
 
+    # ━━━ 1. STATE VARIABLES (Operational Context) ━━━━━━━━━━━━━━━━━━━━
+    set -q X_MODE; or set -gx X_MODE human # human | agent | zen | cast
+    set -q X_STAGE; or set -gx X_STAGE dev # dev | staging | prod
+    set -q X_THEME; or set -gx X_THEME dark # dark | light
+
     # ━━━━━━━━━━━━━━ Core POSIX & System Directives ━━━━━━━━━━━━━━
     set -gx COPYFILE_DISABLE 1
     set -gx BASH_SILENCE_DEPRECATION_WARNING 1
@@ -51,10 +56,14 @@ function __x_init_vars --description "Initialize interactive variables, colors, 
     set -gx GIT_DISCOVERY_ACROSS_FILESYSTEM 0
     set -gx GIT_TERMINAL_PROMPT 1
 
-    # ━━━━━━━━━━━━━━ Toolchain Homes & Secrets ━━━━━━━━━━━━━━
+    # ━━━━━━━━━━━━━━ Language Toolchains (XDG-Substrate) ━━━━━━━━━━━━━━
+    set -gx GOPATH "$XDG_DATA_HOME/go"
+    set -gx GOBIN "$XDG_BIN_HOME"
     set -gx GHQ_ROOT "$HOME/x/dev"
     set -gx RUSTUP_HOME "$HOME/.local/share/rustup"
     set -gx CARGO_HOME "$HOME/.local/share/.cargo"
+
+    # ━━━━━━━━━━━━━━ Toolchain Homes & Secrets ━━━━━━━━━━━━━━
     set -gx BOB_HOME "$XDG_DATA_HOME/bob/nvim-bin"
     set -gx BOB_CONFIG "$XDG_CONFIG_HOME/bob/config.json"
     set -gx TRASHDIR "$HOME/.Trash"
@@ -90,7 +99,7 @@ function __x_init_vars --description "Initialize interactive variables, colors, 
     set -gx HOMEBREW_CURL_RETRIES 3
     set -gx HOMEBREW_FORCE_VENDOR_RUBY 1
     set -gx CURL_HOME "$XDG_CONFIG_HOME/curl"
-    set -gx CURL_BIN "/opt/homebrew/opt/curl/bin"
+    set -gx CURL_BIN /opt/homebrew/opt/curl/bin
     set -gx CURL_CA_BUNDLE "/opt/homebrew/etc/ca-certificates/cert.pem"
     set -gx SSL_CERT_FILE "/opt/homebrew/etc/ca-certificates/cert.pem"
     set -gx HOMEBREW_FORCE_BREWED_CURL 1

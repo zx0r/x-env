@@ -3,11 +3,11 @@
 # id: "functions/__x_build_cache.fish"
 # title: "AOT Snapshot Compiler with SWR Engine"
 # layer: "Infrastructure / Compilation"
-# responsibility: "Compiles external CLI initializers (Starship, Zoxide, xStory, FZF) into ~/.cache/fish/aot/snapshot.fish with SWR revalidation and Single-Flight Mutex"
+# responsibility: "Compiles external CLI initializers (Starship, Zoxide, xc, FZF) into ~/.cache/fish/aot/snapshot.fish with SWR revalidation and Single-Flight Mutex"
 # dependencies: []
 # backlinks: ["conf.d/init.fish", "functions/__x_init_runtimes.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-10-19"
+# updated_at: "2026-11-15"
 # tags: ["aot", "cache", "swr"]
 # ---
 
@@ -69,7 +69,7 @@ function __x_build_cache --description "AOT Monolithic Runtime Snapshot Compiler
     # Temporary files for parallel compilation
     set -l tmp_starship "$aot_dir/starship.tmp.$fish_pid"
     set -l tmp_zoxide "$aot_dir/zoxide.tmp.$fish_pid"
-    set -l tmp_xstory "$aot_dir/xstory.tmp.$fish_pid"
+    set -l tmp_xc "$aot_dir/xc.tmp.$fish_pid"
     set -l tmp_fzf "$aot_dir/fzf.tmp.$fish_pid"
 
     set -l invalidation_checks ""
@@ -106,10 +106,10 @@ function __x_build_cache --description "AOT Monolithic Runtime Snapshot Compiler
     #     end &
     # end
 
-    # if set -l bin_path (command -s xstory)
-    #     set invalidation_checks "$invalidation_checks; or test \"$bin_path\" -nt \"$snapshot_file\""
-    #     xstory init fish --print >"$tmp_xstory" 2>/dev/null &
-    # end
+    if set -l bin_path (command -s xc)
+        set invalidation_checks "$invalidation_checks; or test \"$bin_path\" -nt \"$snapshot_file\""
+        xc init fish >"$tmp_xc" 2>/dev/null &
+    end
 
     if set -l bin_path (command -s fzf)
         set invalidation_checks "$invalidation_checks; or test \"$bin_path\" -nt \"$snapshot_file\""
@@ -172,11 +172,11 @@ function __x_build_cache --description "AOT Monolithic Runtime Snapshot Compiler
         #     echo ""
         # end
 
-        # Section 3.1: xStory History Search Engine
-        if test -f "$tmp_xstory"
-            echo "# --- xStory History Search Engine ---"
-            cat "$tmp_xstory"
-            command rm -f "$tmp_xstory"
+        # Section 3.1: xc History Search Engine
+        if test -f "$tmp_xc"
+            echo "# --- xc History Search Engine ---"
+            cat "$tmp_xc"
+            command rm -f "$tmp_xc"
             echo ""
         end
 

@@ -59,13 +59,13 @@ function fish_should_add_to_history --argument-names cmd --description "Determin
 
     switch "$clean"
         # Terminal viewport controls & session terminators
-        case 'c' 'clear' 'exit' 'pwd'
+        case c clear exit pwd
             return 1
-        # Bare directory inspections without scoped targets
-        case 'l' 'll' 'ls' 'la' 'l.' 'lt' 't' 't2' 't3' 't4'
+            # Bare directory inspections without scoped targets
+        case l ll ls la 'l.' lt t t2 t3 t4
             return 1
-        # History inspection invocations
-        case 'history' 'history *'
+            # History inspection invocations
+        case history 'history *'
             return 1
     end
 
@@ -82,7 +82,7 @@ function fish_should_add_to_history --argument-names cmd --description "Determin
 
     # ━━━ Phase 4: Path-Aware Security Enclave Exclusion ━━━━━━━━━━━
     # Suppress recording commands executed inside RAM-disks or SOPS directories
-    set -l cwd (command -s pwd-P >/dev/null; and pwd -P; or $PWD)
+    set -l cwd (command -s pwd -P >/dev/null; and pwd -P; or $PWD)
     if string match -qr '(/Volumes/RamDisk|/\.secrets)' -- "$cwd"
         return 1
     end

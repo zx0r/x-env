@@ -1,5 +1,4 @@
-# ---
-# schema: "mdd-node-v1"
+# NOTE:---
 # id: "conf.d/init.fish"
 # title: "Unified Zero-Fork Workstation Kernel (Single Entrypoint)"
 # layer: "Foundation & Orchestration (00-99)"
