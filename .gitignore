@@ -75,6 +75,7 @@ secrets.json
 # ==============================================================================
 # Private Git Profiles (Enterprise / NDA inclusions)
 /config/git/allowed_signers
+/config/git/revoked_signers
 /config/git/profiles/*.inc
 *.inc
 !*.example

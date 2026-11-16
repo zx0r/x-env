@@ -49,7 +49,11 @@
     program = /usr/bin/ssh-keygen
     # Out-of-band trust store managed via MDM / root configuration
     allowedSignersFile = ~/.config/git/allowed_signers
-    # revocationFile = ~/.config/git/git_revoked_signers
+
+    #  WARNING: Cryptographic Key Revocation List (OpenSSH KRL / PROTOCOL.sshsig):
+    # Uncomment ONLY if you generate and maintain a revocation file (ssh-keygen -k).
+    # If enabled, the target file MUST exist on disk, otherwise ssh-keygen -Y verify fails.
+    # revocationFile = ~/.config/git/revoked_signers
 
 [commit]
     # Enforce mandatory cryptographic signing for all commits
