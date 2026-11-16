@@ -25,6 +25,14 @@ set -q XDG_RUNTIME_DIR; or begin
     end
 end
 
+# Hardware Secure Enclave Agent Routing (Fail-Safe, Zero-Fork, Headless-Protected)
+if not set -q SSH_CONNECTION; and not set -q SSH_CLIENT
+    set -l _secretive_sock "$HOME/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"
+    if test -S "$_secretive_sock"
+        set -gx SSH_AUTH_SOCK "$_secretive_sock"
+    end
+end
+
 set -gx COPYFILE_DISABLE 1
 set -gx BASH_SILENCE_DEPRECATION_WARNING 1
 set -gx LANG en_US.UTF-8
@@ -58,16 +66,6 @@ set -gx PATH \
     $ghostty_bin
 
 status is-interactive; or return 0
-
-if not set -q SSH_CLIENT; and not set -q SSH_CONNECTION; and not set -q SSH_TTY
-    set -l _stable_link "$HOME/.ssh/ssh_auth_sock"
-    set -l _secretive_sock "$HOME/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"
-    if test -S "$_stable_link"
-        set -gx SSH_AUTH_SOCK "$_stable_link"
-    else if test -S "$_secretive_sock"
-        set -gx SSH_AUTH_SOCK "$_secretive_sock"
-    end
-end
 
 set -g fish_greeting ""
 set -g fish_key_bindings fish_vi_key_bindings

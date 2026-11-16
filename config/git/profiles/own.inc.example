@@ -12,7 +12,7 @@
 [user]
     name = <your-github-username>
     email = <your-github-id>+<username>@users.noreply.github.com
-    signingkey = ~/.ssh/<your-secure-enclave-public-key>.pub
+    signingkey = ~/.ssh/identities/<your-secure-enclave-public-key>.pub
 
 [commit]
     gpgsign = true

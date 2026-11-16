@@ -12,7 +12,7 @@
 [user]
     name = <your-full-name>
     email = <your-work-or-client-email@company.com>
-    signingkey = ~/.ssh/<your-client-or-hardware-signing-key>.pub
+    signingkey = ~/.ssh/identities/<your-client-or-hardware-signing-key>.pub
 
 [commit]
     gpgsign = true

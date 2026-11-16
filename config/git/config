@@ -47,8 +47,9 @@
 
 [gpg "ssh"]
     program = /usr/bin/ssh-keygen
-    # Namespace-isolated trust store for commit provenance verification
+    # Out-of-band trust store managed via MDM / root configuration
     allowedSignersFile = ~/.config/git/allowed_signers
+    # revocationFile = ~/.config/git/git_revoked_signers
 
 [commit]
     # Enforce mandatory cryptographic signing for all commits
@@ -67,6 +68,9 @@
     # Display verified signature provenance by default in git log
     showSignature = true
     date = iso-strict
+
+[merge]
+    verifySignatures = true
 
 # 3. APFS & APPLE SILICON PERFORMANCE ENGINE
 [core]
@@ -396,3 +400,5 @@
     # Hunk Desktop-Inspired Diff Inspector
     hunk = "!hunk diff"
     hunks = "!hunk diff --staged"
+
+    rebase-fast = "!f() { git -c commit.gpgSign=false rebase \"$@\"; }; f"

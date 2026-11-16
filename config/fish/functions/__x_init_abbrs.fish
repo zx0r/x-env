@@ -360,8 +360,7 @@ function __x_init_abbrs --description "Hydrate user command abbreviations"
     # SSH and file transfer commands
     abbr -a kssh "kitten ssh"
     abbr -a ssh256 "set -gx TERM xterm-256color command ssh"
-    abbr -a ssh-cm-clean "rm -f ~/.ssh/cm-*"
-    abbr -a ssh-auth-check "SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock ssh-add -l"
+    abbr -a ssh-cm-clean "rm -f ~/.ssh/sockets/*"
     abbr -a mosh "set -gx TERM xterm-256color command mosh"
     abbr -a sshrev 'ssh -CqTnN -R 0.0.0.0:8443:192.168.1.2:443 user@202.115.8.1' # # Reverse Proxy: Forward port (8443) from external host (202.115.8.1) to internal host (192.168.1.2:443)
     abbr -a sshfwd 'ssh -CqTnN -L 0.0.0.0:8443:192.168.1.2:443 user@192.168.1.3' # # Forward Proxy: Forward local port (8443) through 192.168.1.3 to internal host (192.168.1.2:443)

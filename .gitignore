@@ -27,6 +27,13 @@
 # ==============================================================================
 # SSH Private Keys, Host Secrets & Runtime Multiplexing
 /config/ssh/*.pub
+/config/ssh/identities/*
+!/config/ssh/identities/.gitkeep
+!/config/ssh/identities/README.md
+!/config/ssh/identities/*.example
+/config/ssh/sockets/*
+!/config/ssh/sockets/.gitkeep
+!/config/ssh/sockets/README.md
 /config/ssh/id_*
 /config/ssh/*.key
 /config/ssh/*.pem
@@ -148,3 +155,4 @@ Cargo.lock
 # Temporary repository artifacts
 README_new.md
 /pkg/
+/X-ABCD-English-Release_1_1/

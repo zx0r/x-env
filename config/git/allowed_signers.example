@@ -1,0 +1,27 @@
+# ==============================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Git SSH Allowed Signers (Cryptographic Provenance Trust Store)
+# Platform : macOS (Apple Silicon arm64 Darwin 25+)
+# Standard : OpenSSH PROTOCOL.sshsig / RFC 8308
+# Target   : ~/.config/git/allowed_signers
+# ==============================================================
+#
+# HOW TO CONFIGURE:
+# 1. Copy this template to ~/.config/git/allowed_signers:
+#      cp ~/.config/git/allowed_signers.example ~/.config/git/allowed_signers
+#
+# 2. Add your developer email and hardware-backed public key:
+#      <email> namespaces="git" <key-type> <base64-public-key> [comment]
+#
+# Examples:
+#
+# Apple Secure Enclave / Secretive (NIST P-256):
+# user@example.com namespaces="git" ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABB... user@workstation
+#
+# FIDO2 / YubiKey (ecdsa-sk):
+# user@example.com namespaces="git" sk-ecdsa-sha2-nistp256@openssh.com AAAAGnNrLWVjZHNhLXNoYTItbmlzdHAyNTZ... user@yubikey
