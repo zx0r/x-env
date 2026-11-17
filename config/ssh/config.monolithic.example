@@ -26,7 +26,7 @@ Host github.com gist.github.com
     HostName github.com
     AddKeysToAgent no
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/identities/zx0r_ecdsa-sha2-nistp256@github.pub
+    IdentityFile ~/.ssh/id/zx0r_ecdsa-sha2-nistp256@github.pub
     PreferredAuthentications publickey
     VerifyHostKeyDNS no
     ObscureKeystrokeTiming no
@@ -38,7 +38,7 @@ Host ssh.github.com *.ssh.github.com 443.github.com *.443.github.com
     Port 443
     HostName ssh.github.com
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/identities/zx0r_ecdsa-sha2-nistp256@github.pub
+    IdentityFile ~/.ssh/id/zx0r_ecdsa-sha2-nistp256@github.pub
     PreferredAuthentications publickey
     VerifyHostKeyDNS no
     ObscureKeystrokeTiming no
@@ -50,7 +50,7 @@ Host github-443
     Port 443
     HostName ssh.github.com
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/identities/zx0r_ecdsa-sha2-nistp256@github.pub
+    IdentityFile ~/.ssh/id/zx0r_ecdsa-sha2-nistp256@github.pub
     PreferredAuthentications publickey
     VerifyHostKeyDNS no
     ObscureKeystrokeTiming no
@@ -61,7 +61,7 @@ Host openwrt openwrt.lan
     Port 22222
     HostName openwrt.lan
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/identities/zx0r_ecdsa-sha2-nistp256@github.pub
+    IdentityFile ~/.ssh/id/zx0r_ecdsa-sha2-nistp256@github.pub
     PreferredAuthentications publickey
     StrictHostKeyChecking accept-new
     ServerAliveInterval 10
@@ -85,7 +85,7 @@ Host *
     AppleMultipath yes
     ControlMaster auto
     ControlPersist 10m
-    ControlPath ~/.ssh/sockets/%C
+    ControlPath ~/.ssh/sock/%C
     ChannelTimeout session=15m direct-tcpip=30m forwarded-tcpip=30m
     TCPKeepAlive yes
     ConnectionAttempts 3

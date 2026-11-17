@@ -28,15 +28,15 @@
 # 1.1 IDENTITY PROFILES ORCHESTRATION
 # Primary developer identity across entire ~/x workspace
 [includeIf "gitdir/i:~/x/**"]
-    path = ~/.config/git/profiles/own.inc
+    path = ~/.config/git/profiles/own.conf
 [includeIf "worktree/i:~/**"]
-    path = ~/.config/git/profiles/own.inc
+    path = ~/.config/git/profiles/own.conf
 
 # Contextual override for NDA / commercial client projects (~/x/dev/nda)
 [includeIf "gitdir/i:~/x/dev/nda/**"]
-    path = ~/.config/git/profiles/nda.inc
+    path = ~/.config/git/profiles/nda.conf
 [includeIf "worktree/i:~/x/dev/nda/**"]
-    path = ~/.config/git/profiles/nda.inc
+    path = ~/.config/git/profiles/nda.conf
 
 # 2. CRYPTOGRAPHIC PROVENANCE & SECURE ENCLAVE COMMIT SIGNING
 # Bypasses fragile legacy GPG daemon stacks (gpg-agent/pinentry) in favor of
@@ -49,10 +49,9 @@
     program = /usr/bin/ssh-keygen
     # Out-of-band trust store managed via MDM / root configuration
     allowedSignersFile = ~/.config/git/allowed_signers
-
-    #  WARNING: Cryptographic Key Revocation List (OpenSSH KRL / PROTOCOL.sshsig):
+    # Cryptographic Key Revocation List (OpenSSH KRL / PROTOCOL.sshsig):
     # Uncomment ONLY if you generate and maintain a revocation file (ssh-keygen -k).
-    # If enabled, the target file MUST exist on disk, otherwise ssh-keygen -Y verify fails.
+    # WARNING: If enabled, the target file MUST exist on disk, otherwise ssh-keygen -Y verify fails.
     # revocationFile = ~/.config/git/revoked_signers
 
 [commit]

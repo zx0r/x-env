@@ -1,0 +1,22 @@
+# ==============================================================
+#   ██╗  ██╗    W O R K S T A T I O N
+#   ╚██╗██╔╝
+#    ╚███╔╝     SYSTEMS OVER SCRIPTS
+#    ██╔██╗     INTENT OVER DRIFT
+#   ██╔╝ ██╗    AUTOMATION WITH CONTROL
+#   ╚═╝  ╚═╝
+# Git Profile Template: NDA / Commercial / Client Projects (~/x/dev/nda)
+# Copy this file to nda.conf and fill in your corporate/client values:
+#   cp nda.conf.example nda.conf
+# ==============================================================
+[user]
+    name = <your-full-name>
+    email = <your-work-or-client-email@company.com>
+    signingkey = ~/.ssh/id/<your-client-or-hardware-signing-key>.pub
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgSign = true
+    forceSignAnnotated = true

@@ -6,13 +6,13 @@
 #   ██╔╝ ██╗    AUTOMATION WITH CONTROL
 #   ╚═╝  ╚═╝
 # Git Profile Template: Own / Open Source / Personal (~/x/dev/own)
-# Copy this file to own.inc and fill in your personal identity values:
-#   cp own.inc.example own.inc
+# Copy this file to own.conf and fill in your personal identity values:
+#   cp own.conf.example own.conf
 # ==============================================================
 [user]
     name = <your-github-username>
     email = <your-github-id>+<username>@users.noreply.github.com
-    signingkey = ~/.ssh/identities/<your-secure-enclave-public-key>.pub
+    signingkey = ~/.ssh/id/<your-secure-enclave-public-key>.pub
 
 [commit]
     gpgsign = true
