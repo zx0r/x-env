@@ -121,6 +121,16 @@ The root repository layout strictly isolates user-space configurations and packa
 ## 4. Visual Showcase
 
 <p align="center">
+  <a href="assets/video/ii-demo.mp4">
+    <img src="assets/gif/ii-preview.gif" alt="ii Terminal Graphical Coprocessor Preview Demo" style="border-radius: 8px; max-width: 100%;" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="assets/images/fmt.webp" alt="ii Multi-Format Polyglot Rendering" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+<p align="center">
   <img src="assets/images/nvim.webp" alt="Neovim — Systems Engineering & Zero-Cost Architecture" style="border-radius: 8px; max-width: 100%;" />
 </p>
 
