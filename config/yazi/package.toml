@@ -88,6 +88,11 @@ use = "ndtoan96/ouch"
 rev = "596b666"
 hash = "c2f4f4aca257dcceafa9e3b828dbf1c9"
 
+[[plugin.deps]]
+use = "zx0r/ii"
+rev = "333fc5c"
+hash = "2c4f8bd97c3ce995f8167b792b1ea19d"
+
 [[flavor.deps]]
 use = "ZimCodes/yazi-flavors:obsidian-soft-glow"
 rev = "c64630b"
