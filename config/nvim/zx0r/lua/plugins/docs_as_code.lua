@@ -9,6 +9,64 @@
 return {
 
   -- ==========================================================================
+  --  ii.nvim: Terminal graphical coprocessor integration for Neovim (KGP / Sixel)
+  --  Zero-latency asynchronous IPC over Unix domain socket with ordered rendering
+  -- ==========================================================================
+  {
+    "zx0r/ii.nvim",
+    ft = {
+      "markdown",
+      "markdown.mdx",
+      "md",
+      "mdx",
+      "quarto",
+      "qmd",
+      "rmd",
+      "ipynb",
+      "tex",
+      "plaintex",
+      "latex",
+      "typst",
+      "typ",
+      "mermaid",
+      "mmd",
+      "dot",
+      "gv",
+      "svg",
+      "png",
+      "csv",
+      "tsv",
+      "plotly",
+      "vl",
+      "vega",
+      "vegalite",
+      "chem",
+      "mhchem",
+      "zip",
+      "jar",
+      "whl",
+      "tar",
+      "tgz",
+      "tbz2",
+      "txz",
+      "tzst",
+    },
+    cmd = { "Ii", "IiRender", "IiToggle", "IiClear", "IiPreview" },
+    keys = {
+      { "<leader>pr", "<cmd>IiRender<cr>", desc = "ii: Render buffer" },
+      { "<leader>pt", "<cmd>IiToggle<cr>", desc = "ii: Toggle KGP rendering" },
+      { "<leader>pc", "<cmd>IiClear<cr>", desc = "ii: Clear decorations" },
+      { "<leader>pp", "<cmd>IiPreview<cr>", desc = "ii: Instant preview" },
+    },
+    opts = {
+      -- 10ms debounce tuned for Apple ProMotion 120Hz displays (8.33ms frame window)
+      debounce_ms = 10,
+      -- IPC deadline timeout for complex multi-node vector charts
+      timeout_ms = 3000,
+    },
+  },
+
+  -- ==========================================================================
   -- QUARTO
   -- ==========================================================================
   {
@@ -27,8 +85,20 @@ return {
     },
     keys = {
       { "<leader>qa", "<cmd>QuartoActivate<cr>", desc = "Quarto: Activate" },
-      { "<leader>qp", function() require("quarto").quartoPreview() end, desc = "Quarto: Preview" },
-      { "<leader>qc", function() require("quarto").quartoClosePreview() end, desc = "Quarto: Close Preview" },
+      {
+        "<leader>qp",
+        function()
+          require("quarto").quartoPreview()
+        end,
+        desc = "Quarto: Preview",
+      },
+      {
+        "<leader>qc",
+        function()
+          require("quarto").quartoClosePreview()
+        end,
+        desc = "Quarto: Close Preview",
+      },
     },
   },
 
@@ -40,186 +110,6 @@ return {
     ft = { "quarto" },
     dependencies = { { "nvim-treesitter/nvim-treesitter", lazy = true } },
     opts = { buffers = { set_filetype = true } },
-  },
-
-  -- ==========================================================================
-  -- RENDER MARKDOWN (Presentation layer)
-  -- ==========================================================================
-  {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown", "quarto", "norg", "rmd", "org" },
-    dependencies = { { "nvim-treesitter/nvim-treesitter", lazy = true }, { "echasnovski/mini.icons", lazy = true } },
-    opts = {
-      render_modes = { "n", "c", "v", "V" },
-      debounce = 150,
-      anti_conceal = { enabled = false },
-      win_options = {
-        conceallevel = { default = vim.o.conceallevel, rendered = 3 },
-        concealcursor = { default = "nvc", rendered = "nvc" },
-      },
-      file_types = { "markdown", "quarto", "norg", "rmd", "org" },
-
-      heading = {
-        enabled = true,
-        sign = true,
-        position = "overlay",
-        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
-        signs = { "󰫎 " },
-        width = "block",
-        left_pad = 0,
-        right_pad = 2,
-        min_width = 0,
-        border = false,
-      },
-
-      code = {
-        enabled = true,
-        sign = true,
-        style = "full",
-        position = "left",
-        language_pad = 2,
-        language_name = true,
-        language_icon = true,
-        border = "thin",
-        width = "block",
-        right_pad = 2,
-        disable = { "mermaid" },
-      },
-
-      dash = {
-        enabled = true,
-        icon = "─",
-        width = "full",
-      },
-
-      bullet = {
-        enabled = true,
-        icons = { "●", "○", "◆", "◇" },
-        right_pad = 1,
-      },
-
-      checkbox = {
-        enabled = true,
-        position = "inline",
-        unchecked = { icon = "󰄱 " },
-        checked = { icon = "󰄵 " },
-        custom = {
-          todo = { raw = "[-]", rendered = "󰥔 ", highlight = "RenderMarkdownTodo" },
-          canceled = { raw = "[~]", rendered = "󰰱 ", highlight = "RenderMarkdownQuote" },
-          important = { raw = "[!]", rendered = "󰀨 ", highlight = "RenderMarkdownError" },
-        },
-      },
-
-      quote = {
-        enabled = true,
-        icon = "▋",
-        repeat_linebreak = false,
-      },
-
-      pipe_table = {
-        enabled = true,
-        preset = "round",
-        style = "full",
-        cell = "padded",
-        padding = 1,
-        alignment_indicator = "━",
-      },
-
-      callout = {
-        note      = { raw = "[!NOTE]",      rendered = "󰋽 Note",      highlight = "RenderMarkdownInfo" },
-        tip       = { raw = "[!TIP]",       rendered = "󰌶 Tip",       highlight = "RenderMarkdownSuccess" },
-        important = { raw = "[!IMPORTANT]", rendered = "󰅾 Important", highlight = "RenderMarkdownHint" },
-        warning   = { raw = "[!WARNING]",   rendered = "󰀪 Warning",   highlight = "RenderMarkdownWarn" },
-        caution   = { raw = "[!CAUTION]",   rendered = "󰳦 Caution",   highlight = "RenderMarkdownError" },
-        abstract  = { raw = "[!ABSTRACT]",  rendered = "󰨸 Abstract",  highlight = "RenderMarkdownInfo" },
-        summary   = { raw = "[!SUMMARY]",   rendered = "󰨸 Summary",   highlight = "RenderMarkdownInfo" },
-        tldr      = { raw = "[!TLDR]",      rendered = "󰨸 Tldr",      highlight = "RenderMarkdownInfo" },
-        info      = { raw = "[!INFO]",      rendered = "󰋽 Info",      highlight = "RenderMarkdownInfo" },
-        todo      = { raw = "[!TODO]",      rendered = "󰗡 Todo",      highlight = "RenderMarkdownTodo" },
-        success   = { raw = "[!SUCCESS]",   rendered = "󰄬 Success",   highlight = "RenderMarkdownSuccess" },
-        question  = { raw = "[!QUESTION]",  rendered = "󰘥 Question",  highlight = "RenderMarkdownWarn" },
-        failure   = { raw = "[!FAILURE]",   rendered = "󰅖 Failure",   highlight = "RenderMarkdownError" },
-        danger    = { raw = "[!DANGER]",    rendered = "󱐌 Danger",    highlight = "RenderMarkdownError" },
-        bug       = { raw = "[!BUG]",       rendered = "󰨰 Bug",       highlight = "RenderMarkdownError" },
-        example   = { raw = "[!EXAMPLE]",   rendered = "󰉹 Example",   highlight = "RenderMarkdownHint" },
-        quote     = { raw = "[!QUOTE]",     rendered = "󱆨 Quote",     highlight = "RenderMarkdownQuote" },
-      },
-
-      link = {
-        enabled = true,
-        footnote = { superscript = true, prefix = "", suffix = "" },
-        image = "󰥶 ",
-        email = "󰇮 ",
-        hyperlink = "󰌹 ",
-        wiki = { icon = "󱗖 ", highlight = "RenderMarkdownWikiLink" },
-      },
-
-      sign = {
-        enabled = true,
-      },
-
-      latex = {
-        enabled = false,
-      },
-    },
-    keys = {
-      { "<leader>tm", "<cmd>RenderMarkdown toggle<cr>", desc = "Markdown: Toggle Render" },
-    },
-  },
-
-  -- ==========================================================================
-  -- LIVE PREVIEW (Markdown, Quarto, Mermaid, MMD)
-  -- ==========================================================================
-  {
-    "iamcco/markdown-preview.nvim",
-    branch = "master",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = function(plugin)
-      vim.cmd("source " .. plugin.dir .. "/autoload/mkdp/util.vim")
-      vim.fn["mkdp#util#install"]()
-    end,
-    config = function()
-      vim.g.mkdp_filetypes = { "markdown", "quarto", "mermaid", "mmd" }
-
-      vim.g.mkdp_auto_start = 0
-      vim.g.mkdp_auto_close = 1
-      vim.g.mkdp_refresh_slow = 0
-      vim.g.mkdp_command_for_global = 0
-      vim.g.mkdp_open_to_the_world = 0
-      vim.g.mkdp_open_ip = ""
-      vim.g.mkdp_browser = ""
-      vim.g.mkdp_echo_preview_url = 1
-      vim.g.mkdp_browserfunc = ""
-      vim.g.mkdp_markdown_css = ""
-      vim.g.mkdp_highlight_css = ""
-      vim.g.mkdp_port = ""
-      vim.g.mkdp_page_title = "「${name}」"
-      vim.g.mkdp_theme = "dark"
-      vim.g.mkdp_combine_preview = 0
-      vim.g.mkdp_combine_preview_auto_refresh = 1
-
-      vim.g.mkdp_preview_options = {
-        mkit = {},
-        katex = {},
-        uml = {},
-        maid = {
-          theme = "dark",
-        },
-        disable_sync_scroll = 0,
-        sync_scroll_type = "middle",
-        hide_yaml_meta = 1,
-        sequence_diagrams = {},
-        flowchart_diagrams = {},
-        content_editable = false,
-        disable_filename = 0,
-        toc = {},
-      }
-    end,
-    keys = {
-      { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown: Toggle Live Preview" },
-      { "<leader>ms", "<cmd>MarkdownPreview<cr>",       desc = "Markdown: Start Live Preview" },
-      { "<leader>mx", "<cmd>MarkdownPreviewStop<cr>",   desc = "Markdown: Stop Live Preview" },
-    },
   },
 
   -- ==========================================================================
@@ -374,6 +264,7 @@ return {
       },
 
       disable_frontmatter = true,
+      ui = { enable = false },
 
       follow_url_func = function(url)
         vim.ui.open(url)
@@ -390,7 +281,8 @@ return {
 
         -- 1. Format-specific date variables (e.g. {{date:YYYYMMDD}}, {{date:YYYY-MM-DD}}, {{date:YYYY-[W]WW}})
         text = text:gsub("{{%s*date:([^}]+)%s*}}", function(fmt)
-          local strftime = fmt:gsub("YYYY", "%%Y")
+          local strftime = fmt
+            :gsub("YYYY", "%%Y")
             :gsub("MM", "%%m")
             :gsub("DD", "%%d")
             :gsub("HH", "%%H")
@@ -446,4 +338,3 @@ return {
     },
   },
 }
-
