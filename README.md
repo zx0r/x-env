@@ -10,6 +10,28 @@ $$
 \mathcal{X} = \langle \underset{\text{agents}}{\mathcal{A}}, \underset{\text{brain}}{\mathcal{B}}, \underset{\text{config}}{\mathcal{C}}, \underset{\text{dev}}{\mathcal{D}} \rangle
 $$
 
+<p align="center">
+  <a href="assets/video/ii-demo.mp4">
+    <img src="assets/gif/ii-preview.gif" alt="ii Terminal Graphical Coprocessor Preview Demo" style="border-radius: 8px; max-width: 100%;" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="assets/images/fmt.webp" alt="ii Multi-Format Polyglot Rendering" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+<p align="center">
+  <img src="assets/images/nvim.webp" alt="Neovim — Systems Engineering & Zero-Cost Architecture" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+<p align="center">
+  <img src="assets/images/terminal.webp" alt="Ghostty Terminal — Display P3 Gamut & Typography Matrix" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
+<p align="center">
+  <img src="assets/images/tmux.webp" alt="Tmux Workspace & Subsystem Navigation" style="border-radius: 8px; max-width: 100%;" />
+</p>
+
 ---
 
 ## 1. Ontological Coordinate & Scope
@@ -118,33 +140,7 @@ The root repository layout strictly isolates user-space configurations and packa
 
 ---
 
-## 4. Visual Showcase
-
-<p align="center">
-  <a href="assets/video/ii-demo.mp4">
-    <img src="assets/gif/ii-preview.gif" alt="ii Terminal Graphical Coprocessor Preview Demo" style="border-radius: 8px; max-width: 100%;" />
-  </a>
-</p>
-
-<p align="center">
-  <img src="assets/images/fmt.webp" alt="ii Multi-Format Polyglot Rendering" style="border-radius: 8px; max-width: 100%;" />
-</p>
-
-<p align="center">
-  <img src="assets/images/nvim.webp" alt="Neovim — Systems Engineering & Zero-Cost Architecture" style="border-radius: 8px; max-width: 100%;" />
-</p>
-
-<p align="center">
-  <img src="assets/images/terminal.webp" alt="Ghostty Terminal — Display P3 Gamut & Typography Matrix" style="border-radius: 8px; max-width: 100%;" />
-</p>
-
-<p align="center">
-  <img src="assets/images/tmux.webp" alt="Tmux Workspace & Subsystem Navigation" style="border-radius: 8px; max-width: 100%;" />
-</p>
-
----
-
-## 5. Performance Benchmarks
+## 4. Performance Benchmarks
 
 ### Measurement Methodology
 
@@ -191,7 +187,7 @@ fish --profile-startup /tmp/fish.prof -ic exit && sort -nrk2 /tmp/fish.prof | he
 
 ---
 
-## 6. References & Upstream Specifications
+## 5. References & Upstream Specifications
 
 ### Standards & Specifications
 - [XDG Base Directory Specification v0.8+](https://specifications.freedesktop.org/basedir-spec/latest/)
