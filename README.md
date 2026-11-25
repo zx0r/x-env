@@ -83,7 +83,7 @@ The root repository layout strictly isolates user-space configurations and packa
 ```text
 ├── config/                       # Single Source of Truth for $XDG_CONFIG_HOME (~/.config)
 │   ├── alacritty/                # Minimal GPU-accelerated terminal emulator
-│   ├── atuin/                    # [Deprecated] Superseded by xstory (superior open-source, SQL-free zero-overhead history engine)
+│   ├── atuin/                    # [Deprecated] Superseded by xc
 │   ├── bat/                      # Syntax-highlighted pager with custom syntaxes & themes
 │   ├── bob/                      # Neovim version manager
 │   ├── btop/                     # System & hardware resource monitor
