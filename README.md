@@ -17,19 +17,17 @@ $$
 </p>
 
 <p align="center">
-  <img src="assets/images/fmt.webp" alt="ii Multi-Format Polyglot Rendering" style="border-radius: 8px; max-width: 100%;" />
+  <img src="assets/images/fmt.webp" width="49%" alt="ii Multi-Format Polyglot Rendering" />
+  <img src="assets/images/nvim.webp" width="49%" alt="Neovim — ii Graphical Coprocessor Integration" />
 </p>
 
 <p align="center">
-  <img src="assets/images/nvim.webp" alt="Neovim — Systems Engineering & Zero-Cost Architecture" style="border-radius: 8px; max-width: 100%;" />
+  <img src="assets/images/terminal.webp" width="49%" alt="Ghostty Terminal — Display P3 Gamut & Typography Matrix" />
+  <img src="assets/images/tmux.webp" width="49%" alt="Tmux Workspace & Subsystem Navigation" />
 </p>
 
 <p align="center">
-  <img src="assets/images/terminal.webp" alt="Ghostty Terminal — Display P3 Gamut & Typography Matrix" style="border-radius: 8px; max-width: 100%;" />
-</p>
-
-<p align="center">
-  <img src="assets/images/tmux.webp" alt="Tmux Workspace & Subsystem Navigation" style="border-radius: 8px; max-width: 100%;" />
+  <img src="assets/images/nvim-workstation.webp" width="100%" alt="Neovim — Systems Engineering & Zero-Cost Architecture" />
 </p>
 
 ---
